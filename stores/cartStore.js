@@ -1,43 +1,56 @@
-import { defineStore,acceptHMRUpdate } from "pinia"
+import { defineStore, acceptHMRUpdate } from "pinia";
 
-export const useCartStore = defineStore("cartStore",{
-state(){
-    return {
-        cartItems:[]
-    }
-},getters:{
-    count(){
-      return this.cartItems.reduce((p,c) => p+= c.fields.count,0);
-    },
-    subtotal(){
-        return (this.cartItems.reduce((p,c)=>p+ c.fields.price * c.fields.count,0)/100).toFixed(2)
-    },
-    taxes(){
-        return (this.subtotal * 0.1).toFixed(2)
-    },
-    totalCost(){
-        return Number(this.subtotal) + Number(this.taxes)
-    }
-},
-actions:{
-    handleAddToCart(product){
-       
-        if( !this.cartItems.find((i)=> i.sys.id == product.sys.id)){
-            product.fields.count = 1
-this.cartItems.push(product)}
-    },
-    changeCount(id, count){
-       
-        
-    let itemToChange =  this.cartItems.find((i)=> i.sys.id == id);
-    itemToChange.fields.count = count
-  
-    } 
+export const useCartStore = defineStore("CartStore", () => {
+  // state
+  const products = ref([]);
+  const taxRate = 0.1;
 
-}
+  // getters
+  const count = computed(() => products.value.length);
+  const isEmpty = computed(() => count.value === 0);
+  const subtotal = computed((state) => {
+    return products.value.reduce((p, product) => {
+      return product?.fields?.price
+        ? product.fields.price * product.count + p
+        : p;
+    }, 0);
+  });
+  const taxTotal = computed(() => subtotal.value * taxRate);
+  const total = computed(() => taxTotal.value + subtotal.value);
 
-}
-)
-if (import.meta.hot) {
-    import.meta.hot.accept(acceptHMRUpdate(useCartStore, import.meta.hot));
+  // actions
+  function removeProducts(productIds) {
+    productIds = Array.isArray(productIds) ? productIds : [productIds];
+    products.value = products.value.filter(
+      (p) => !productIds.includes(p.sys.id)
+    );
   }
+
+  function addProduct(product, count) {
+    const existingProduct = products.value.find(
+      (p) => p.sys.id === product.sys.id
+    );
+    if (existingProduct) {
+      existingProduct.count += count;
+    } else {
+      products.value.push({ ...product, count });
+    }
+    return count;
+  }
+
+  return {
+    products,
+    taxRate,
+    count,
+    isEmpty,
+    subtotal,
+    taxTotal,
+    total,
+    removeProducts,
+    addProduct,
+  };
+});
+
+if (import.meta.hot) {
+  import.meta.hot.accept(acceptHMRUpdate(useCartStore, import.meta.hot));
+}
