@@ -1,5 +1,5 @@
 <script setup>
-  import { useCartStore } from '~~/stores/cartStore';
+const cartStore = useCartStore();
 const selected = ref([]);
 const checkAll = ref();
 
@@ -35,7 +35,7 @@ async function handleCheckout() {
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="item in useCartStore().cartItems" :key="item.sys.id">
+                <tr v-for="product in cartStore.products" :key="product.sys.id">
                   <th>
                     <label>
                       <input
@@ -43,7 +43,7 @@ async function handleCheckout() {
                         type="checkbox"
                         class="checkbox"
                         @change="checkAll.checked = false"
-                        value="5ijmFfTSEqj0G8h73g3CrI"
+                        :value="product.sys.id"
                       />
                     </label>
                   </th>
@@ -52,8 +52,8 @@ async function handleCheckout() {
                       <div class="avatar">
                         <div class="mask mask-squircle w-12 h-12">
                           <img
-                            :src="item.fields.image[0].fields?.file.url"
-                            :alt="item.fields.image[0].fields?.file.description"
+                            :src="product.fields.image[0].fields.file.url"
+                            :alt="product.fields.image[0].fields.title"
                           />
                         </div>
                       </div>
@@ -61,12 +61,12 @@ async function handleCheckout() {
                   </td>
                   <td>
                     <div class="font-bold">
-                     {{item.fields.name}}
+                      {{ product.fields.name }}
                     </div>
-                    <ProductHeat :heat-level="item.fields.heatLevel" />
+                    <ProductHeat :heat-level="product.fields.heatLevel" />
                   </td>
                   <td>
-                    <ProductPrice :price="item.fields.price" />
+                    <ProductPrice :price="product.fields.price" />
                   </td>
 
                   <td>
@@ -74,16 +74,14 @@ async function handleCheckout() {
                     
                       class="input input-bordered w-20"
                       type="number"
-                      v-model="item.fields.count"
-                      
-                      @change="useCartStore().changeCount(item.sys.id , item.fields.count)"
+                      v-model="product.count"
                     />
                   </td>
                   <th>
                     <NuxtLink
                       :to="{
                         name: 'products-id',
-                        params: { id: item.sys.id },
+                        params: { id: product.sys.id },
                       }"
                     >
                       <button class="btn btn-ghost btn-xs">details</button>
@@ -92,7 +90,14 @@ async function handleCheckout() {
                 </tr>
               </tbody>
             </table>
-            <button v-if="selected.length" class="text-sm text-red-500">
+            <button
+              v-if="selected.length"
+              class="text-sm text-red-500"
+              @click="
+                cartStore.removeProducts(selected);
+                selected = [];
+              "
+            >
               Remove Selected
             </button>
           </div>
@@ -103,9 +108,18 @@ async function handleCheckout() {
         <div class="card bg-slate-50">
           <div class="card-body">
             <ul>
-              <li><strong>Subtotal</strong>: ${{useCartStore().subtotal}}</li>
-              <li><strong>Estimated Taxes </strong>: ${{useCartStore().taxes}}</li>
-              <li><strong>Total</strong>: ${{useCartStore().totalCost}}</li>
+              <li>
+                <strong>Subtotal</strong>:
+                <ProductPrice :price="cartStore.subtotal" />
+              </li>
+              <li>
+                <strong>Estimated Taxes </strong>:
+                <ProductPrice :price="cartStore.taxTotal" />
+              </li>
+              <li>
+                <strong>Total</strong>:
+                <ProductPrice :price="cartStore.total" />
+              </li>
             </ul>
             <div class="card-actions justify-end w-full">
               <button class="btn btn-primary w-full" @click="handleCheckout">
