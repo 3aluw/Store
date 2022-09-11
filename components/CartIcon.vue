@@ -1,4 +1,5 @@
 <script setup>
+import { useCartStore } from "~~/stores/cartStore";
 defineProps({
   count: {
     type: Number,
@@ -9,6 +10,7 @@ defineProps({
     default: false,
   },
 });
+
 </script>
 <template>
   <label tabindex="0" class="btn btn-ghost btn-circle">
@@ -28,7 +30,7 @@ defineProps({
         />
       </svg>
       <span v-show="!loading" class="badge badge-sm indicator-item">
-        {{ count }}
+        {{ useCartStore().count }}
       </span>
       <AppSpinner
         v-show="loading"

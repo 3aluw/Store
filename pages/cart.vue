@@ -1,4 +1,5 @@
 <script setup>
+  import { useCartStore } from '~~/stores/cartStore';
 const selected = ref([]);
 const checkAll = ref();
 
@@ -34,7 +35,7 @@ async function handleCheckout() {
                 </tr>
               </thead>
               <tbody>
-                <tr>
+                <tr v-for="item in useCartStore().cartItems" :key="item.sys.id">
                   <th>
                     <label>
                       <input
@@ -51,8 +52,8 @@ async function handleCheckout() {
                       <div class="avatar">
                         <div class="mask mask-squircle w-12 h-12">
                           <img
-                            src="//images.ctfassets.net/v7fvzlkum53d/5vUkOQDUSZAKSwXByyeruQ/8d503e499b0a9649a0165b399efbaeca/61N0eH6L6LL._SX679_.jpeg"
-                            alt="Heartbeat Hot Sauce- Pineapple Habanero"
+                            :src="item.fields.image[0].fields?.file.url"
+                            :alt="item.fields.image[0].fields?.file.description"
                           />
                         </div>
                       </div>
@@ -60,26 +61,29 @@ async function handleCheckout() {
                   </td>
                   <td>
                     <div class="font-bold">
-                      Heartbeat Hot Sauce- Pineapple Habanero
+                     {{item.fields.name}}
                     </div>
-                    <ProductHeat heat-level="Mild" />
+                    <ProductHeat :heat-level="item.fields.heatLevel" />
                   </td>
                   <td>
-                    <ProductPrice :price="1195" />
+                    <ProductPrice :price="item.fields.price" />
                   </td>
 
                   <td>
                     <input
+                    
                       class="input input-bordered w-20"
                       type="number"
-                      value="1"
+                      v-model="item.fields.count"
+                      
+                      @change="useCartStore().changeCount(item.sys.id , item.fields.count)"
                     />
                   </td>
                   <th>
                     <NuxtLink
                       :to="{
                         name: 'products-id',
-                        params: { id: '5ijmFfTSEqj0G8h73g3CrI' },
+                        params: { id: item.sys.id },
                       }"
                     >
                       <button class="btn btn-ghost btn-xs">details</button>
@@ -99,9 +103,9 @@ async function handleCheckout() {
         <div class="card bg-slate-50">
           <div class="card-body">
             <ul>
-              <li><strong>Subtotal</strong>: $11.95</li>
-              <li><strong>Estimated Taxes </strong>: $1.19</li>
-              <li><strong>Total</strong>: $13.14</li>
+              <li><strong>Subtotal</strong>: ${{useCartStore().subtotal}}</li>
+              <li><strong>Estimated Taxes </strong>: ${{useCartStore().taxes}}</li>
+              <li><strong>Total</strong>: ${{useCartStore().totalCost}}</li>
             </ul>
             <div class="card-actions justify-end w-full">
               <button class="btn btn-primary w-full" @click="handleCheckout">
