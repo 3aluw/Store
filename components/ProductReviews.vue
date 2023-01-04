@@ -1,5 +1,7 @@
-<template>{{ data }}
+<template>
+
   <div>
+
 
     <hr class="my-10" />
     <p>Product Reviews </p>
@@ -47,17 +49,16 @@
         </div>
       </div>
       <div class="past-review"></div>
-      <div class="card  bg-base-100 shadow-xl">
+      <div class="card  bg-base-100 shadow-xl" v-for=" { attributes } in res?.data">
         <div class="card-body">
-          <h2 class="card-title">Card title!</h2>
-          <div class="rating rating-sm pointer-events-none">
-            <input type="radio" name="rating-5" class="mask mask-star-2 bg-orange-400" />
-            <input type="radio" name="rating-5" class="mask mask-star-2 bg-orange-400" />
-            <input type="radio" name="rating-5" class="mask mask-star-2 bg-orange-400" />
-            <input type="radio" name="rating-5" class="mask mask-star-2 bg-orange-400" checked />
-            <input type="radio" name="rating-5" class="mask mask-star-2 bg-orange-400" />
+          <h2 class="card-title">{{ attributes.title }}</h2>
+          <div class="rating rating-s pointer-events-none">
+            <input type="radio" name="rating-5" class="mask mask-star-2 bg-orange-400"
+              v-for="star in attributes.rating" />
+            <input type="radio" name="rating-5" class="mask mask-star-2 bg-slate-300"
+              v-for="star in (5 - attributes.rating)" />
           </div>
-          <p>review Text </p>
+          <p>{{ attributes.text }} </p>
           <div class="card-actions justify-end">
 
           </div>
@@ -70,9 +71,20 @@
 <script setup>
 
 
+const props = defineProps({
+  productId: String,
+})
+const Deskree = useDeskree();
+//retreive reviews from Deskree
+const res = ref()
+onMounted(async () => {
+  res.value = await Deskree.reviews.get(props.productId)
+})
 
 
+//User review
 let stars = ref("")
+let reviewText = ref("")
 const test = () => console.log(stars.value)
 
 
