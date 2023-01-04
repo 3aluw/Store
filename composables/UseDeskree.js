@@ -29,7 +29,7 @@ export function useDeskree() {
     ) {
       initUser(userIdInLocalStorage.value);
       loggedInUserInit.value = true;
-      console.log(tokenInLocalStorage.value)
+     //  console.log(tokenInLocalStorage.value)
     }
   });
 
