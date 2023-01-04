@@ -29,6 +29,7 @@ export function useDeskree() {
     ) {
       initUser(userIdInLocalStorage.value);
       loggedInUserInit.value = true;
+      console.log(tokenInLocalStorage.value)
     }
   });
 
@@ -124,6 +125,12 @@ export function useDeskree() {
   const reviews = {
     get(productId) {
       // make request to get reviews for a product here
+       const querryParams =[{
+attribute :"product_id",
+operator : "=",
+value: productId,
+       }]
+return dbRestRequest("/reviews?where=" + JSON.stringify(querryParams))
     },
     submit({ text, rating, title, product_id }) {
       // make request to add a new review here
