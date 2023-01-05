@@ -5,11 +5,12 @@
 
     <hr class="my-10" />
     <p>Product Reviews </p>
+
     <div class="overview flex items-center justify-around">
       <div class="final-mark p-6 border border-black rounded-lg text-center">
         <p> <span class="text-2xl font-semibold"> {{ avregeRating }}</span> out of <span class="text-2xl font-semibold">
             5 </span></p>
-        <p> {{ res.data.length }} reviews </p>
+        <p> {{ res?.data.length }} reviews </p>
       </div>
       <div class="stars -distribution flex flex-col gap-5 ">
 
@@ -29,6 +30,8 @@
       </div>
     </div>
     <div>
+
+
       <div class="writeReview ">
         <div class="collapse  border border-base-300 bg-base-100 rounded-box">
           <input type="checkbox" />
@@ -49,6 +52,8 @@
           </div>
         </div>
       </div>
+
+
       <div class="past-review my-8"></div>
       <h2 class="text-xl font-medium">Other costumers' reviews</h2>
       <p v-if="isLoading" class="text-xl font-medium "> Loading...</p>
@@ -89,7 +94,7 @@ onMounted(() => {
   execute().then((res) => console.log(res));
 })
 //reviews overview
-const avregeRating = computed(() => { return res.value ? res.value.data.reduce((past, current) => past += current.attributes.rating, 0) / res.value.data.length : 5 })
+const avregeRating = computed(() => { return res.value ? (res.value.data.reduce((past, current) => past += current.attributes.rating, 0) / res.value.data.length).toFixed(1) : "Laoding.." })
 
 
 //User review
