@@ -14,19 +14,10 @@
       </div>
       <div class="stars -distribution flex flex-col gap-5 ">
 
-        <div class="progress-cont flex items-center gap-2"> 5 <progress class="progress  progress-warning w-56"
-            value="0" max="100"></progress>
+        <div class="progress-cont flex items-center gap-2" v-for="(reviewsNum, starsNum, index) in starsGrouped">
+          <span>{{ starsNum }} </span>
+          <progress class="progress  progress-warning w-56" :value="reviewsNum" :max="res?.data.length"></progress>
         </div>
-        <div class="progress-cont flex items-center gap-2"> 4<progress class="progress  progress-warning w-56"
-            value="10" max="100">4</progress>
-        </div>
-        <div class="progress-cont flex items-center gap-2"> 3<progress class="progress  progress-warning w-56"
-            value="40" max="100">3</progress>
-        </div>
-        <div class="progress-cont flex items-center gap-2"> 2 <progress class="progress  progress-warning w-56"
-            value="70" max="100">2</progress></div>
-        <div class="progress-cont  flex items-center gap-2">1 <progress class="progress  progress-warning w-56"
-            value="100" max="100">1</progress></div>
       </div>
     </div>
     <div>
@@ -94,7 +85,38 @@ onMounted(() => {
   execute().then((res) => console.log(res));
 })
 //reviews overview
-const avregeRating = computed(() => { return res.value ? (res.value.data.reduce((past, current) => past += current.attributes.rating, 0) / res.value.data.length).toFixed(1) : "Laoding.." })
+
+const avregeRating = computed(() => { return res.value ? (res.value.data.reduce((past, current) => past += current.attributes.rating, 0) / res.value.data.length).toFixed(1) : "..." })
+
+//Grouping reviews' stars to show then organized
+
+
+const starsGrouped = computed(() => {
+  let obj = ref({
+    1: 0,
+    2: 0,
+    3: 0,
+    4: 0,
+    5: 0,
+  })
+
+  if (!res.value) return obj.value;
+  console.log(obj.value)
+  for (let starsNumber in obj.value) {
+
+    let result = res.value.data.reduce((past, current) => {
+
+      if (current.attributes.rating != starsNumber) { return past; }
+      else { return past += 1; }
+
+    }, 0);
+
+    obj.value[starsNumber] = result;
+  }
+
+  return obj.value
+}
+)
 
 
 //User review
