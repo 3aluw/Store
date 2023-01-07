@@ -101,8 +101,8 @@ export function useDeskree() {
     logout() {
       return auth.logout();
     },
-    get() {
-      return loggedInUser.value;
+     get () {
+      return  loggedInUser;
     },
     async updateCart(products) {
       if (!loggedInUser.value || !loggedInUser.value.cartId) return;
@@ -133,7 +133,11 @@ value: productId,
 return dbRestRequest("/reviews?where=" + JSON.stringify(querryParams))
     },
     submit({ text, rating, title, product_id }) {
-      // make request to add a new review here
+      //console.log( text, rating, title, product_id)
+      
+      dbRestRequest("/reviews","POST", {
+        "text":text,"title":title,"rating":rating,"product_id":product_id
+      })
     },
   };
 
