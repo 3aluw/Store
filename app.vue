@@ -8,3 +8,11 @@
     <TheAlerts />
   </div>
 </template>
+<script setup>
+const Deskree = useDeskree();
+
+onMounted(() => {
+  Deskree.loginUserUsingLocalS();
+  console.log(55)
+})
+</script>

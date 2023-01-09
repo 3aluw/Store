@@ -1,15 +1,24 @@
-<template>
-    <p> HI</p>
+<template >
+    <p> HI {{ res }}</p>
 
-</template>
+</template >
+
 <script setup>
+const Deskree = useDeskree();
+const user = computed(() => Deskree.loggedInUser.value)
+
+onMounted(() => {
+    console.log(user.value, user)
+})
 
 definePageMeta({
 
     middleware: () => {
         const Deskree = useDeskree();
-        console.log(Deskree.user.get())
+        const res = computed(() => Deskree.loggedInUser.value)
+
     }
 })
+
 
 </script>

@@ -20,7 +20,7 @@ export function useDeskree() {
   const baseURL = useRuntimeConfig().public.deskreeBaseUrl;
 
   // login the user saved in local storage when page loads
-  onMounted(() => {
+function loginUserUsingLocalS(){
     if (
       tokenInLocalStorage.value &&
       userIdInLocalStorage.value &&
@@ -31,7 +31,8 @@ export function useDeskree() {
       loggedInUserInit.value = true;
      //  console.log(tokenInLocalStorage.value)
     }
-  });
+  };
+  
 
   /**
    * Auth functions exposed from composable
@@ -191,6 +192,7 @@ return dbRestRequest("/reviews?where=" + JSON.stringify(querryParams))
   }
 
   return {
+    loginUserUsingLocalS,
     auth,
     user,
     reviews,
