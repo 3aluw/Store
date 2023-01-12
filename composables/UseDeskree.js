@@ -103,6 +103,7 @@ function loginUserUsingLocalS(){
       return auth.logout();
     },
      get () {
+      
       return  loggedInUser;
     },
     async updateCart(products) {
@@ -141,18 +142,37 @@ return dbRestRequest("/reviews?where=" + JSON.stringify(querryParams))
       })
     },
   };
+const orders ={
+placeOrder({count, sys}){
+  dbRestRequest("/orders","POST", {
+ "count" : count,
+ "product_id": sys.id,
+  "buyer_name": loggedInUser.value.name,
+  "is_delivered" : false,
+  "phone_number" : loggedInUser.value.phone_number,
+  "wilaya": loggedInUser.value.wilaya,
+  "adress": loggedInUser.value.adress,
 
+  })
+}
+
+}
   // private composable functions
   function initToken(token) {
     tokenInLocalStorage.value = token;
   }
+
+
+
+
 
   async function initUser(userIdOrUser) {
     if (typeof userIdOrUser === "string") {
       try {
         const res = await dbRestRequest(`/users/${userIdOrUser}`);
         res.data.cart = await user.getCart();
-        loggedInUser.value = res.data;
+        loggedInUser.value = await  res.data;
+       
       } catch (err) {
         if (!err.body) return;
         const tokenHasExpired = err.body.errors.find(
@@ -162,10 +182,11 @@ return dbRestRequest("/reviews?where=" + JSON.stringify(querryParams))
         if (tokenHasExpired) {
           router.push("/logout");
         }
-      }
+      } 
     } else {
       loggedInUser.value = userIdOrUser;
     }
+    
   }
 
   function integrationsRestRequest(endpoint, method = "GET", body) {
@@ -198,5 +219,7 @@ return dbRestRequest("/reviews?where=" + JSON.stringify(querryParams))
     reviews,
     tokenInLocalStorage,
     loggedInUser,
+    initUser, 
+    orders
   };
 }

@@ -1,11 +1,22 @@
 <script setup>
 const cartStore = useCartStore();
+const Deskree = useDeskree();
 const selected = ref([]);
 const checkAll = ref();
 
+const user = ref(Deskree.loggedInUser);
+
+function handleOrder() {
+  if (user.value.email && user.value.adress && user.value.wilaya && user.value.phone_number) { cartStore.products.forEach((product) => Deskree.orders.placeOrder(product)) }
+  else { console.log("complet the profile", user) }
+
+
+}
 async function handleCheckout() {
   console.log("checking out");
 }
+
+
 </script>
 <template>
   <div class="m-10">
@@ -38,23 +49,16 @@ async function handleCheckout() {
                 <tr v-for="product in cartStore.products" :key="product.sys.id">
                   <th>
                     <label>
-                      <input
-                        v-model="selected"
-                        type="checkbox"
-                        class="checkbox"
-                        @change="checkAll.checked = false"
-                        :value="product.sys.id"
-                      />
+                      <input v-model="selected" type="checkbox" class="checkbox" @change="checkAll.checked = false"
+                        :value="product.sys.id" />
                     </label>
                   </th>
                   <td>
                     <div class="flex items-center space-x-3">
                       <div class="avatar">
                         <div class="mask mask-squircle w-12 h-12">
-                          <img
-                            :src="product.fields.image[0].fields.file.url"
-                            :alt="product.fields.image[0].fields.title"
-                          />
+                          <img :src="product.fields.image[0].fields.file.url"
+                            :alt="product.fields.image[0].fields.title" />
                         </div>
                       </div>
                     </div>
@@ -70,34 +74,23 @@ async function handleCheckout() {
                   </td>
 
                   <td>
-                    <input
-                    
-                      class="input input-bordered w-20"
-                      type="number"
-                      v-model="product.count"
-                    />
+                    <input class="input input-bordered w-20" type="number" v-model="product.count" />
                   </td>
                   <th>
-                    <NuxtLink
-                      :to="{
-                        name: 'products-id',
-                        params: { id: product.sys.id },
-                      }"
-                    >
+                    <NuxtLink :to="{
+                      name: 'products-id',
+                      params: { id: product.sys.id },
+                    }">
                       <button class="btn btn-ghost btn-xs">details</button>
                     </NuxtLink>
                   </th>
                 </tr>
               </tbody>
             </table>
-            <button
-              v-if="selected.length"
-              class="text-sm text-red-500"
-              @click="
-                cartStore.removeProducts(selected);
-                selected = [];
-              "
-            >
+            <button v-if="selected.length" class="text-sm text-red-500" @click="
+  cartStore.removeProducts(selected);
+selected = [];
+            ">
               Remove Selected
             </button>
           </div>
@@ -121,9 +114,24 @@ async function handleCheckout() {
                 <ProductPrice :price="cartStore.total" />
               </li>
             </ul>
-            <div class="card-actions justify-end w-full">
+            <div class="card-actions justify-end w-full flex-col" v-if="Deskree.loggedInUser.value">
+              <p> Name : {{ Deskree.loggedInUser.value.email ? Deskree.loggedInUser.value.email : "not set" }}</p>
+              <p> phone number : <strong> {{
+                Deskree.loggedInUser.value.phone_number.length > 5 ?
+                  Deskree.loggedInUser.value.phone_number : "not set"
+              }}</strong></p>
+              <p> wilaya : <strong> {{
+                Deskree.loggedInUser.value.wilaya ? Deskree.loggedInUser.value.wilaya : "not set"
+              }}</strong></p>
+              <p> adress : <strong> {{
+                Deskree.loggedInUser.value.adress ? Deskree.loggedInUser.value.adress : "not set"
+              }}</strong></p>
+
+              <button class="btn btn-primary w-full" @click="handleOrder">
+                BUY!
+              </button>
               <button class="btn btn-primary w-full" @click="handleCheckout">
-                Checkout
+                Edit my infos
               </button>
             </div>
           </div>
