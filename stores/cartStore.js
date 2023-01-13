@@ -9,7 +9,67 @@ export const useCartStore = defineStore("CartStore", () => {
   const taxRate = 0.1;
   const isFirstLoad = ref(false);
   const loading = ref(false);
-
+ const wilayas = [
+   
+  "Adrar",
+  "Chlef",
+  "Laghouat",
+  "Oum El Bouaghi",
+  "Batna",
+  "Béjaïa",
+  "Biskra",
+  "Béchar",
+  "Blida",
+  "Bouïra",
+  "Tamanrasset",
+  "Tébessa",
+  "Tlemcen",
+  "Tiaret",
+  "Tizi Ouzou",
+  "Algiers",
+  "Djelfa",
+  "Jijel",
+  "Sétif",
+  "Saïda",
+  "Skikda",
+  "Sidi Bel Abbès",
+  "Annaba",
+  "Guelma",
+  "Constantine",
+  "Médéa",
+  "Mostaganem",
+  "M'Sila",
+  "Mascara",
+  "Ouargla",
+  "Oran",
+  "El Bayadh",
+  "Illizi",
+  "Bordj Bou Arréridj",
+  "Boumerdès",
+  "El Tarf",
+  "Tindouf",
+  "Tissemsilt",
+  "El Oued",
+  "Khenchela",
+  "Souk Ahras",
+  "Tipaza",
+  "Mila",
+  "Aïn Defla",
+  "Naâma",
+  "Aïn Témouchent",
+  "Ghardaïa",
+  "Relizane",
+  "El M'Ghair",
+  "El Menia",
+  "Ouled Djellal",
+  "Bordj Baji Mokhtar",
+  "Béni Abbès",
+  "Timimoun",
+  "Touggourt",
+  "Djanet",
+  "In Salah",
+  "In Guezzam"
+];
   // getters
   const count = computed(() => products.value.length);
   const isEmpty = computed(() => count.value === 0);
@@ -70,6 +130,7 @@ export const useCartStore = defineStore("CartStore", () => {
 
   return {
     products,
+    wilayas,
     taxRate,
     count,
     isEmpty,
