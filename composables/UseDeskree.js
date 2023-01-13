@@ -20,14 +20,14 @@ export function useDeskree() {
   const baseURL = useRuntimeConfig().public.deskreeBaseUrl;
 
   // login the user saved in local storage when page loads
-function loginUserUsingLocalS(){
+async function loginUserUsingLocalS(){
     if (
       tokenInLocalStorage.value &&
       userIdInLocalStorage.value &&
       !loggedInUser.value &&
       !loggedInUserInit.value
     ) {
-      initUser(userIdInLocalStorage.value);
+    await  initUser(userIdInLocalStorage.value);
       loggedInUserInit.value = true;
      //  console.log(tokenInLocalStorage.value)
     }
