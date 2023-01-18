@@ -106,6 +106,17 @@ async function loginUserUsingLocalS(){
       
       return  loggedInUser;
     },
+
+    updateUser({name, phone_number, wilaya,address}){
+    //using uid from cart obj can cause errors
+      //console.log(loggedInUser.value.cart.author)
+      dbRestRequest(`/users/${loggedInUser.value.cart.author}`,"PATCH",{
+        "address":address,"wilaya":wilaya,"name":name,"phone_number":phone_number 
+
+      })
+    },
+
+    //cart
     async updateCart(products) {
       if (!loggedInUser.value || !loggedInUser.value.cartId) return;
 
@@ -119,6 +130,7 @@ async function loginUserUsingLocalS(){
       res.data.products = JSON.parse(res.data.products);
       return res.data;
     },
+    
   };
 
   /**

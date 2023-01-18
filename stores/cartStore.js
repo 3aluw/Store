@@ -10,7 +10,7 @@ export const useCartStore = defineStore("CartStore", () => {
   const isFirstLoad = ref(false);
   const loading = ref(false);
  const wilayas = [
-   
+  
   "Adrar",
   "Chlef",
   "Laghouat",
