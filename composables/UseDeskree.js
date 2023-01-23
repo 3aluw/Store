@@ -158,17 +158,28 @@ return dbRestRequest("/reviews?where=" + JSON.stringify(querryParams))
     },
   };
 const orders ={
-placeOrder({count, sys}){
-  dbRestRequest("/orders","POST", {
+
+ getOreders(){
+const querryObj = [{"attribute":"author","operator":"=","value":userIdInLocalStorage.value}]
+
+return dbRestRequest("/orders?where=" + JSON.stringify(querryObj))
+},
+
+
+placeOrder({count, sys, fields}){
+ dbRestRequest("/orders","POST", {
  "count" : count,
  "product_id": sys.id,
   "buyer_name": loggedInUser.value.name,
   "is_delivered" : false,
   "phone_number" : loggedInUser.value.phone_number,
   "wilaya": loggedInUser.value.wilaya,
-  "adress": loggedInUser.value.adress,
-
+  "address": loggedInUser.value.address,
+"price" : fields.price*count ,
   })
+
+  
+
 }
 
 }

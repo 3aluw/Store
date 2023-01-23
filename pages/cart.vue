@@ -7,7 +7,9 @@ const checkAll = ref();
 const user = ref(Deskree.loggedInUser);
 
 function handleOrder() {
-  if (user.value.email && user.value.address && user.value.wilaya && user.value.phone_number) { cartStore.products.forEach((product) => Deskree.orders.placeOrder(product)) }
+  if (user.value.email && user.value.address && user.value.wilaya && user.value.phone_number) {
+    cartStore.products.forEach((product) => Deskree.orders.placeOrder(product))
+  }
   else { console.log("complet the profile", user) }
 
 
