@@ -7,7 +7,7 @@ const checkAll = ref();
 const user = ref(Deskree.loggedInUser);
 
 function handleOrder() {
-  if (user.value.email && user.value.adress && user.value.wilaya && user.value.phone_number) { cartStore.products.forEach((product) => Deskree.orders.placeOrder(product)) }
+  if (user.value.email && user.value.address && user.value.wilaya && user.value.phone_number) { cartStore.products.forEach((product) => Deskree.orders.placeOrder(product)) }
   else { console.log("complet the profile", user) }
 
 
@@ -115,7 +115,7 @@ selected = [];
               </li>
             </ul>
             <div class="card-actions justify-end w-full flex-col" v-if="Deskree.loggedInUser.value">
-              <p> Name : {{ Deskree.loggedInUser.value.email ? Deskree.loggedInUser.value.email : "not set" }}</p>
+              <p> Name : {{ Deskree.loggedInUser.value.email ? Deskree.loggedInUser.value.name : "not set" }}</p>
               <p> phone number : <strong> {{
                 Deskree.loggedInUser.value.phone_number.length > 5 ?
                   Deskree.loggedInUser.value.phone_number : "not set"
@@ -123,16 +123,16 @@ selected = [];
               <p> wilaya : <strong> {{
                 Deskree.loggedInUser.value.wilaya ? Deskree.loggedInUser.value.wilaya : "not set"
               }}</strong></p>
-              <p> adress : <strong> {{
-                Deskree.loggedInUser.value.adress ? Deskree.loggedInUser.value.adress : "not set"
+              <p> address : <strong> {{
+                Deskree.loggedInUser.value.address ? Deskree.loggedInUser.value.address : "not set"
               }}</strong></p>
 
               <button class="btn btn-primary w-full" @click="handleOrder">
                 BUY!
               </button>
-              <button class="btn btn-primary w-full" @click="handleCheckout">
-                Edit my infos
-              </button>
+              <NuxtLink to="user/profile" class="btn btn-primary w-full"> <button>
+                  Edit my infos
+                </button></NuxtLink>
             </div>
           </div>
         </div>

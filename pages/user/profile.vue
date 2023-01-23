@@ -14,10 +14,11 @@
         <FormKit type="text" label="Your address" name="address" v-model="user.address" placeholder="address"
           required />
 
-        <AppButton class="max-w-min px-10 mt-5">save</AppButton>
+        <AppButton class="max-w-min px-10 mt-5" :loading="loading">save</AppButton>
 
       </FormKit>
-      <AppButton class="max-w-min px-10 mt-5 bg-gray-400 hover:bg-gray-600 border-0"> back </AppButton>
+      <AppButton class="max-w-min px-10 mt-5 bg-gray-400 hover:bg-gray-600 border-0" @click.prevent="$router.back()">
+        back </AppButton>
     </div>
 
     <div v-else>...Loading</div>
@@ -36,7 +37,7 @@ const CartStore = useCartStore();
 const wilayas = CartStore.wilayas;
 
 let user = ref(null);
-
+let loading = ref(false)
 
 onMounted(async () => {
   await Deskree.loginUserUsingLocalS();
@@ -44,8 +45,20 @@ onMounted(async () => {
 
 })
 
-function handleSubmit() {
-  Deskree.user.updateUser(user.value)
+
+async function handleSubmit() {
+  loading.value = true
+  try {
+    await Deskree.user.updateUser(user.value)
+    useAlertsStore().success("your infos has been updated")
+    useRouter().push("/")
+  }
+  catch {
+    useAlertsStore().error("cahnges didn't take effect")
+  }
+  finally {
+    loading.value = false
+  }
 }
 
 

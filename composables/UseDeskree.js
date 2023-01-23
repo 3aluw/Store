@@ -107,13 +107,16 @@ async function loginUserUsingLocalS(){
       return  loggedInUser;
     },
 
-    updateUser({name, phone_number, wilaya,address}){
+   async updateUser({name, phone_number, wilaya,address}){
     //using uid from cart obj can cause errors
       //console.log(loggedInUser.value.cart.author)
-      dbRestRequest(`/users/${loggedInUser.value.cart.author}`,"PATCH",{
+     await dbRestRequest(`/users/${loggedInUser.value.cart.author}`,"PATCH",{
         "address":address,"wilaya":wilaya,"name":name,"phone_number":phone_number 
 
       })
+     loggedInUser.value = { ...loggedInUser.value,  "address":address,"wilaya":wilaya,"name":name,"phone_number":phone_number  }
+     
+      // await loginUserUsingLocalS();
     },
 
     //cart
