@@ -9,8 +9,7 @@ export const useCartStore = defineStore("CartStore", () => {
   const taxRate = 0.1;
   const isFirstLoad = ref(false);
   const loading = ref(false);
- const wilayas = [
-  
+ const wilayas = [ 
   "Adrar",
   "Chlef",
   "Laghouat",
