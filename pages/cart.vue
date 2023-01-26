@@ -3,6 +3,8 @@ const cartStore = useCartStore();
 const Deskree = useDeskree();
 const selected = ref([]);
 const checkAll = ref();
+const showConfirmation = ref(false)
+
 
 const user = ref(Deskree.loggedInUser);
 
@@ -14,14 +16,13 @@ function handleOrder() {
 
 
 }
-async function handleCheckout() {
-  console.log("checking out");
-}
 
 
 </script>
 <template>
+  <CheckoutConfirmation v-if="showConfirmation" />
   <div class="m-10">
+
     <h1 class="text-3xl mb-5 font-bold">Your Cart</h1>
     <div class="md:flex w-full">
       <div class="md:w-3/4">
@@ -116,7 +117,7 @@ selected = [];
                 <ProductPrice :price="cartStore.total" />
               </li>
             </ul>
-            <div class="card-actions justify-end w-full flex-col" v-if="Deskree.loggedInUser.value">
+            <div class="card-actions justify-end w-full flex-col my-10" v-if="Deskree.loggedInUser.value">
               <p> Name : {{ Deskree.loggedInUser.value.email ? Deskree.loggedInUser.value.name : "not set" }}</p>
               <p> phone number : <strong> {{
                 Deskree.loggedInUser.value.phone_number.length > 5 ?
