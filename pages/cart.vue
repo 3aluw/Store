@@ -20,8 +20,11 @@ function handleOrder() {
 
 </script>
 <template>
-  <CheckoutConfirmation v-if="showConfirmation" />
+
   <div class="m-10">
+    <CheckoutConfirmation v-if="showConfirmation" @toggleConformation="showConfirmation = !showConfirmation"
+      @placeOrder="handleOrder" />
+
 
     <h1 class="text-3xl mb-5 font-bold">Your Cart</h1>
     <div class="md:flex w-full">
@@ -130,7 +133,7 @@ selected = [];
                 Deskree.loggedInUser.value.address ? Deskree.loggedInUser.value.address : "not set"
               }}</strong></p>
 
-              <button class="btn btn-primary w-full" @click="handleOrder">
+              <button class="btn btn-primary w-full" @click="showConfirmation = !showConfirmation">
                 BUY!
               </button>
               <NuxtLink to="user/profile" class="btn btn-primary w-full"> <button>

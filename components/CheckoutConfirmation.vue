@@ -2,12 +2,18 @@
 const cartStore = useCartStore();
 const Deskree = useDeskree();
 
+const emit = defineEmits(['placeOrder', 'toggleConformation'])
+
+function emitToggleConfirmation() { emit('toggleConformation') }
+function emitPlaceOrder() {
+    emit('placeOrder')
+}
 </script>
 <template>
 
     <div class="cont flex justify-center items-center ">
         <div class="card bg-white max-w-3xl text-center p-10">
-            <p>Please read the following infos carefully before placing your order:</p>
+            <p class="text-lg">Please read the following infos carefully before placing your order:</p>
 
             <p class="my-5">
                 <strong>Total price: </strong>
@@ -31,8 +37,8 @@ const Deskree = useDeskree();
 
             </div>
             <div class="btns">
-                <AppButton class="mx-5">place my order</AppButton>
-                <AppButton class="mx-5">back</AppButton>
+                <AppButton class="mx-5" @click="emitPlaceOrder">place my order</AppButton>
+                <AppButton class="mx-5" @click="emitToggleConfirmation">back</AppButton>
             </div>
 
         </div>
