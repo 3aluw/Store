@@ -8,7 +8,7 @@ export default defineNuxtPlugin((nuxtapp)=>{
 
     const client = createClientFunc({
         space: runtimeConfig .contentfulSpace,
-        accessToken: runtimeConfig.contentfulAcsessToken,
+        accessToken: runtimeConfig.contentfulPublicAccessToken,
       });
       return{
         provide:{
