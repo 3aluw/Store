@@ -3,16 +3,30 @@
     <NuxtLoadingIndicator color="#f04f43" />
     <TheNavbar />
     <NuxtLayout>
-      <NuxtPage />
+      <NuxtPage v-if="loadPage" />
     </NuxtLayout>
     <TheAlerts />
   </div>
 </template>
 <script setup>
 const Deskree = useDeskree();
+const route = useRoute();
 
-onMounted(() => {
-  Deskree.loginUserUsingLocalS();
+const isLoginCompleted = ref(false)
 
+const routesNeedsLogin = ["/user", "/cart"]
+
+//check the route and if it needs to await the login in onMounted
+const loadPage = computed(() => {
+  if (!routesNeedsLogin.find((routeName) => route.fullPath.includes(routeName))) return true;
+  else { return isLoginCompleted.value === true ? true : false }
+
+})
+
+
+onMounted(async () => {
+
+  await Deskree.loginUserUsingLocalS();
+  isLoginCompleted.value = true
 })
 </script>

@@ -29,7 +29,7 @@ async function loginUserUsingLocalS(){
     ) {
     await  initUser(userIdInLocalStorage.value);
       loggedInUserInit.value = true;
-     //  console.log(tokenInLocalStorage.value)
+    
     }
   };
   
@@ -102,9 +102,8 @@ async function loginUserUsingLocalS(){
     logout() {
       return auth.logout();
     },
-     get () {
-      
-      return  loggedInUser;
+     get () { 
+      return  loggedInUser.value;
     },
 
    async updateUser({name, phone_number, wilaya,address}){
