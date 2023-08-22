@@ -107,15 +107,17 @@ async function loginUserUsingLocalS(){
     },
 
    async updateUser({name, phone_number, wilaya,address}){
-    //using uid from cart obj can cause errors
-      //console.log(loggedInUser.value.cart.author)
-     await dbRestRequest(`/users/${loggedInUser.value.cart.author}`,"PATCH",{
+
+
+
+      dbRestRequest(`/users/${userIdInLocalStorage.value }`,"PATCH",{
         "address":address,"wilaya":wilaya,"name":name,"phone_number":phone_number 
 
       })
+   
      loggedInUser.value = { ...loggedInUser.value,  "address":address,"wilaya":wilaya,"name":name,"phone_number":phone_number  }
      
-      // await loginUserUsingLocalS();
+     
     },
 
     //cart
@@ -202,8 +204,7 @@ placeOrder({count, sys, fields}){
         if (!err.body) return;
         const tokenHasExpired = err.body.errors.find(
           (e) =>
-            e.code === "403" && e.detail.startsWith("Auth token has expired")
-        );
+            e.code === "403" && e.detail.startsWith("Auth token has expired"));
         if (tokenHasExpired) {
           router.push("/logout");
         }
