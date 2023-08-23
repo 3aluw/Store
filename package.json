@@ -19,12 +19,14 @@
     "@formkit/vue": "^1.0.0-beta.10",
     "@pinia/nuxt": "^0.3.1",
     "@vueuse/core": "^9.1.0",
+    "apexcharts": "^3.41.1",
     "contentful": "^9.1.33",
     "daisyui": "^2.22.0",
     "marked": "^4.0.18",
     "pinia": "^2.0.18",
     "stripe": "^10.3.0",
     "uuid": "^8.3.2",
-    "vue": "^3.2.37"
+    "vue": "^3.2.37",
+    "vue3-apexcharts": "^1.4.4"
   }
 }
