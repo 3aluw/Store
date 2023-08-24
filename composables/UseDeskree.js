@@ -178,9 +178,11 @@ placeOrder({count, sys, fields}){
   "address": loggedInUser.value.address,
 "price" : fields.price*count ,
   })
+},
+getOredersByDateRange(querryObj){
 
-  
-
+  console.log(querryObj)
+  return dbRestRequest("/orders?where=" + JSON.stringify(querryObj))
 }
 
 }

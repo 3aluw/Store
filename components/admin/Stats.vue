@@ -7,11 +7,11 @@
                 <p class="card-value text-center ">80k</p>
             </div>
             <div class="big-cards">
-                <p class="c-title">orders </p>
+                <p class="c-title">orders</p>
                 <p class="card-value text-center">300</p>
             </div>
             <div class="big-cards">
-                <p class="c-title">number of users </p>
+                <p class="c-title">new users </p>
                 <p class="card-value text-center ">200</p>
             </div>
         </div>
@@ -43,7 +43,7 @@
             </div>
         </div>
 
-        <div class="charts-cont flex flex-wrap ">
+        <div class="charts-cont flex flex-wrap gap-2">
             <div>
                 <ClientOnly>
                     <apexchart width="500" type="line" :options="ordersChartOptions" :series="orderSeries"></apexchart>
@@ -58,13 +58,21 @@
     </div>
 </template>
 <script setup>
+const deskree = useDeskree();
+const adminStore = useAdminStore()
+
+onMounted(() => {
+    adminStore.generateMonthlyMetrics()
+})
+
+
 
 
 //orders charts
 const ordersChartOptions = ref({
     colors: ['#009DFF'],
     chart: {
-        id: "vuechart-example",
+        id: "orders-chart",
     },
     xaxis: {
         type: "datetime"
@@ -122,7 +130,7 @@ const orderSeries = ref([
 const usersChartOptions = ref({
     colors: ['#00FF78'],
     chart: {
-        id: "vuechart-example",
+        id: "users-chart",
     },
     xaxis: {
         type: "datetime"
