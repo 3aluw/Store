@@ -107,18 +107,16 @@ async function loginUserUsingLocalS(){
     },
 
    async updateUser({name, phone_number, wilaya,address}){
-
-
-
       dbRestRequest(`/users/${userIdInLocalStorage.value }`,"PATCH",{
-        "address":address,"wilaya":wilaya,"name":name,"phone_number":phone_number 
-
-      })
-   
-     loggedInUser.value = { ...loggedInUser.value,  "address":address,"wilaya":wilaya,"name":name,"phone_number":phone_number  }
-     
-     
+        "address":address,"wilaya":wilaya,"name":name,"phone_number":phone_number  })
+    loggedInUser.value = { ...loggedInUser.value,  "address":address,"wilaya":wilaya,"name":name,"phone_number":phone_number  }  
     },
+
+ getUsersByDateRange(queryObj){
+  return dbRestRequest("/users?where=" + JSON.stringify(queryObj))
+
+   },
+
 
     //cart
     async updateCart(products) {
@@ -161,9 +159,9 @@ return dbRestRequest("/reviews?where=" + JSON.stringify(querryParams))
 const orders ={
 
  getOreders(){
-const querryObj = [{"attribute":"author","operator":"=","value":userIdInLocalStorage.value}]
+const queryObj = [{"attribute":"author","operator":"=","value":userIdInLocalStorage.value}]
 
-return dbRestRequest("/orders?where=" + JSON.stringify(querryObj))
+return dbRestRequest("/orders?where=" + JSON.stringify(queryObj))
 },
 
 
@@ -179,10 +177,8 @@ placeOrder({count, sys, fields}){
 "price" : fields.price*count ,
   })
 },
-getOredersByDateRange(querryObj){
-
-  console.log(querryObj)
-  return dbRestRequest("/orders?where=" + JSON.stringify(querryObj))
+getOrdersByDateRange(queryObj){
+  return dbRestRequest("/orders?where=" + JSON.stringify(queryObj))
 }
 
 }

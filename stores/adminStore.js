@@ -6,7 +6,7 @@ export const useAdminStore = defineStore("AdminStore", () => {
 
 
 const monthlyMetrics = ref({
-  sales : '',
+  revenue : '',
   newUsers: '',
   orders : '',
 })
@@ -25,15 +25,21 @@ const monthlyMetrics = ref({
    return [{"attribute":"createdAt","operator":">","value":monthStart},{"attribute":"createdAt","operator":"<","value":monthEnd} ]
    }
    
-   const generateMonthlyMetrics = ()=>{
+   const generateMonthlyMetrics = async ()=>{
+    //generate the query object
     const queryObj = generateMonthlyQueryObject();
-    
-    deskree.orders.getOredersByDateRange(queryObj)
+//fetch the data
+  const orders = await deskree.orders.getOrdersByDateRange(queryObj);
+ const newUsers = await deskree.user.getUsersByDateRange(queryObj)
+ //add infos to the monthlyMetrics object
+ monthlyMetrics.value.newUsers = newUsers.meta.total
+ monthlyMetrics.value.orders = orders.meta.total
+ monthlyMetrics.value.revenue = orders.data.reduce(( acc,cur)=> acc + cur.attributes.price , 0)
    }
 
 
 
-  return {generateMonthlyMetrics
+  return {generateMonthlyMetrics, monthlyMetrics
    
   };
 });

@@ -3,16 +3,16 @@
         <p class="text-xl stats-title"> monthly Metrics </p>
         <div class="flex justify-evenly gap-2 flex-wrap py-4">
             <div class="big-cards">
-                <p class="c-title"> sales amount (units)</p>
-                <p class="card-value text-center ">80k</p>
+                <p class="c-title"> revenue </p>
+                <p class="card-value text-center ">{{ adminStore.monthlyMetrics.revenue }} DA</p>
             </div>
             <div class="big-cards">
                 <p class="c-title">orders</p>
-                <p class="card-value text-center">300</p>
+                <p class="card-value text-center"> {{ adminStore.monthlyMetrics.orders }}</p>
             </div>
             <div class="big-cards">
                 <p class="c-title">new users </p>
-                <p class="card-value text-center ">200</p>
+                <p class="card-value text-center ">{{ adminStore.monthlyMetrics.newUsers }}</p>
             </div>
         </div>
 
