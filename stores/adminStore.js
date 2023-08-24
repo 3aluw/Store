@@ -8,8 +8,15 @@ export const useAdminStore = defineStore("AdminStore", () => {
 const monthlyMetrics = ref({
   revenue : '',
   newUsers: '',
+  salesUnits : '',
+  //orders
   orders : '',
+  ordersWaiting : '',
+  ordersDelivering : '',
+  ordersDelivered : ''
 })
+
+
 
   const generateMonthBoundaries = ()=>{
     const  text = new Date().toISOString()
@@ -29,13 +36,31 @@ const monthlyMetrics = ref({
     //generate the query object
     const queryObj = generateMonthlyQueryObject();
 //fetch the data
-  const orders = await deskree.orders.getOrdersByDateRange(queryObj);
- const newUsers = await deskree.user.getUsersByDateRange(queryObj)
+  const orders = await deskree.orders.getOrdersByDateRange(queryObj, '&limit=100');
+ const newUsers = await deskree.user.getUsersByDateRange(queryObj, '&limit=100')
  //add infos to the monthlyMetrics object
  monthlyMetrics.value.newUsers = newUsers.meta.total
  monthlyMetrics.value.orders = orders.meta.total
  monthlyMetrics.value.revenue = orders.data.reduce(( acc,cur)=> acc + cur.attributes.price , 0)
+ monthlyMetrics.value.salesUnits = orders.data.reduce(( acc,cur)=> acc + cur.attributes.count , 0)
+
+  //if the total data is larger than the data fetched - I will depend on deskree to calculate using delivery query-
+  if(orders.meta.total > orders.meta.limit){ fetchOrdersMonthlyMetrics(queryObj)}
+  //if it is smaller (means we got all the data locally)
+  else {
+     monthlyMetrics.value.ordersWaiting = orders.data.reduce((acc, cur) => acc + (cur.attributes.delivery_status === "waiting" ? 1 : 0 ), 0)
+     monthlyMetrics.value.ordersDelivering = orders.data.reduce((acc, cur) => acc + (cur.attributes.delivery_status === "delivering" ? 1 : 0 ), 0)
+     monthlyMetrics.value.ordersDelivered = orders.data.reduce((acc, cur) => acc + (cur.attributes.delivery_status === "delivered" ? 1 : 0 ), 0)
+}
+
    }
+
+//called only by the main function
+const fetchOrdersMonthlyMetrics = (orders,queryObj)=>{
+  const delivery_statusArr = ["waiting", "delivering", "delivered"]
+  
+
+}
 
 
 

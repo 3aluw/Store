@@ -24,7 +24,7 @@ const Deskree = useDeskree();
 const user = computed(() => Deskree.loggedInUser.value)
 
 onMounted(() => {
-    console.log(user.value, user)
+    //console.log(user.value, user)
 })
 
 definePageMeta({

@@ -170,15 +170,15 @@ placeOrder({count, sys, fields}){
  "count" : count,
  "product_id": sys.id,
   "buyer_name": loggedInUser.value.name,
-  "is_delivered" : false,
+  "delivery_status" : "waiting",
   "phone_number" : loggedInUser.value.phone_number,
   "wilaya": loggedInUser.value.wilaya,
   "address": loggedInUser.value.address,
 "price" : fields.price*count ,
   })
 },
-getOrdersByDateRange(queryObj){
-  return dbRestRequest("/orders?where=" + JSON.stringify(queryObj))
+getOrdersByDateRange(queryObj, params =''){
+  return dbRestRequest("/orders?where=" + JSON.stringify(queryObj) + params)
 }
 
 }

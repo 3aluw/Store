@@ -3,12 +3,12 @@
         <p class="text-xl stats-title"> monthly Metrics </p>
         <div class="flex justify-evenly gap-2 flex-wrap py-4">
             <div class="big-cards">
-                <p class="c-title"> revenue </p>
-                <p class="card-value text-center ">{{ adminStore.monthlyMetrics.revenue }} DA</p>
+                <p class="c-title"> sales amount (units) </p>
+                <p class="card-value text-center ">{{ adminStore.monthlyMetrics.salesUnits }} DA</p>
             </div>
             <div class="big-cards">
-                <p class="c-title">orders</p>
-                <p class="card-value text-center"> {{ adminStore.monthlyMetrics.orders }}</p>
+                <p class="c-title">revenue</p>
+                <p class="card-value text-center"> {{ adminStore.monthlyMetrics.revenue }}</p>
             </div>
             <div class="big-cards">
                 <p class="c-title">new users </p>
@@ -20,24 +20,24 @@
             <div class="flex gap-2 ">
                 <div class="order-box flex flex-col">
                     <div class="order-icons"><img src="~/assets/icons/total.svg" alt=""></div>
-                    <p class="order-number">30</p>
+                    <p class="order-number">{{ adminStore.monthlyMetrics.orders }}</p>
                     <p>total orders</p>
                 </div>
                 <div class="order-box flex flex-col">
                     <div class="order-icons"><img src="~/assets/icons/waiting.svg" alt=""></div>
-                    <p class="order-number">8</p>
+                    <p class="order-number">{{ adminStore.monthlyMetrics.ordersWaiting }}</p>
                     <p>waiting shipping</p>
                 </div>
             </div>
             <div class="flex gap-2 ">
                 <div class="order-box flex flex-col">
                     <div class="order-icons"><img src="~/assets/icons/delivering.svg" alt=""></div>
-                    <p class="order-number">7</p>
+                    <p class="order-number">{{ adminStore.monthlyMetrics.ordersDelivering }}</p>
                     <p>shipping...</p>
                 </div>
                 <div class="order-box flex flex-col">
                     <div class="order-icons"><img src="~/assets/icons/delivered.svg" alt=""></div>
-                    <p class="order-number">15</p>
+                    <p class="order-number">{{ adminStore.monthlyMetrics.ordersDelivered }}</p>
                     <p>Orders delivered</p>
                 </div>
             </div>
