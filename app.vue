@@ -30,3 +30,10 @@ onMounted(async () => {
   isLoginCompleted.value = true
 })
 </script>
+<style>
+@media (max-width:640px) {
+  html {
+    font-size: 14px;
+  }
+}
+</style>
