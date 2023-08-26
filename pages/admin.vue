@@ -35,6 +35,7 @@
             <main>
 
                 <AdminStats v-if="componentToShow === 'stats'" />
+                <AdminUsers v-if="componentToShow === 'users'" />
             </main>
         </div>
     </div>

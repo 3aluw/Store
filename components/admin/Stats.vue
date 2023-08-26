@@ -1,8 +1,8 @@
 <template>
     <div class="stats-cont">
-        <p class="text-xl stats-title"> monthly Metrics </p>
 
-        <section class="flex justify-evenly gap-2 flex-wrap py-4">
+        <p class="text-xl stats-title"> monthly Metrics </p>
+        <section class="flex justify-evenly gap-2 flex-wrap pb-4 pt-2">
             <div class="big-cards">
                 <p class="c-title"> sales amount (units) </p>
                 <p class="card-value text-center ">{{ adminStore.monthlyMetrics.salesUnits }} DA</p>
@@ -17,6 +17,7 @@
             </div>
         </section>
 
+        <p class="text-xl stats-title"> orders Metrics </p>
         <section class="flex md:mx-2 flex-wrap  gap-4 py-4 justify-center items-center">
 
             <div class="flex gap-2 items-center flex-grow">
@@ -32,7 +33,7 @@
                 </div>
                 <div class="latest-orders-cont p-4 text-center justify-around">
                     <p>latest orders</p>
-                    <div class="flex gap-8">
+                    <div class="flex gap-8 justify-around">
                         <div class="flex flex-col">
                             <p>John Mango</p>
                             <p>John Mango</p>
@@ -50,7 +51,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="flex gap-2 flex-grow">
                 <div class="order-box flex flex-col">
                     <div class="order-icons"><img src="~/assets/icons/delivering.svg" alt=""></div>
@@ -67,7 +67,7 @@
 
         </section>
 
-        <section class="charts-cont flex flex-wrap gap-2 justify-center">
+        <section class="charts-cont flex flex-wrap gap-2 justify-center pt-4">
             <div>
                 <ClientOnly>
                     <apexchart width="500" type="line" :options="ordersChartOptions" :series="orderSeries"></apexchart>
