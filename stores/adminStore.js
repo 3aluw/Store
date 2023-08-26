@@ -6,14 +6,14 @@ export const useAdminStore = defineStore("AdminStore", () => {
 
 
 const monthlyMetrics = ref({
-  revenue : '',
-  newUsers: '',
-  salesUnits : '',
+  revenue : 0,
+  newUsers: 0,
+  salesUnits : 0,
   //orders
-  orders : '',
-  ordersWaiting : '',
-  ordersDelivering : '',
-  ordersDelivered : ''
+  orders : 0,
+  ordersWaiting : 0,
+  ordersDelivering : 0,
+  ordersDelivered : 0
 })
 
 

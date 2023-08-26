@@ -1,7 +1,8 @@
 <template>
-    <div>
+    <div class="stats-cont">
         <p class="text-xl stats-title"> monthly Metrics </p>
-        <div class="flex justify-evenly gap-2 flex-wrap py-4">
+
+        <section class="flex justify-evenly gap-2 flex-wrap py-4">
             <div class="big-cards">
                 <p class="c-title"> sales amount (units) </p>
                 <p class="card-value text-center ">{{ adminStore.monthlyMetrics.salesUnits }} DA</p>
@@ -14,10 +15,11 @@
                 <p class="c-title">new users </p>
                 <p class="card-value text-center ">{{ adminStore.monthlyMetrics.newUsers }}</p>
             </div>
-        </div>
+        </section>
 
-        <div class="flex md:mx-8 flex-wrap justify-center gap-2 py-4">
-            <div class="flex gap-2 ">
+        <section class="flex md:mx-2 flex-wrap  gap-4 py-4 justify-center items-center">
+
+            <div class="flex gap-2 items-center flex-grow">
                 <div class="order-box flex flex-col">
                     <div class="order-icons"><img src="~/assets/icons/total.svg" alt=""></div>
                     <p class="order-number">{{ adminStore.monthlyMetrics.orders }}</p>
@@ -28,8 +30,28 @@
                     <p class="order-number">{{ adminStore.monthlyMetrics.ordersWaiting }}</p>
                     <p>waiting shipping</p>
                 </div>
+                <div class="latest-orders-cont p-4 text-center justify-around">
+                    <p>latest orders</p>
+                    <div class="flex gap-8">
+                        <div class="flex flex-col">
+                            <p>John Mango</p>
+                            <p>John Mango</p>
+                            <p>John Mango</p>
+                            <p>John Mango</p>
+                            <p>John Mango</p>
+                        </div>
+                        <div class="flex flex-col order-value">
+                            <p>5$</p>
+                            <p>5$</p>
+                            <p>5$</p>
+                            <p>5$</p>
+                            <p>5$</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="flex gap-2 ">
+
+            <div class="flex gap-2 flex-grow">
                 <div class="order-box flex flex-col">
                     <div class="order-icons"><img src="~/assets/icons/delivering.svg" alt=""></div>
                     <p class="order-number">{{ adminStore.monthlyMetrics.ordersDelivering }}</p>
@@ -41,9 +63,11 @@
                     <p>Orders delivered</p>
                 </div>
             </div>
-        </div>
 
-        <div class="charts-cont flex flex-wrap gap-2">
+
+        </section>
+
+        <section class="charts-cont flex flex-wrap gap-2 justify-center">
             <div>
                 <ClientOnly>
                     <apexchart width="500" type="line" :options="ordersChartOptions" :series="orderSeries"></apexchart>
@@ -54,9 +78,10 @@
                     <apexchart width="500" type="line" :options="usersChartOptions" :series="usersSeries"></apexchart>
                 </ClientOnly>
             </div>
-        </div>
+        </section>
     </div>
 </template>
+
 <script setup>
 const deskree = useDeskree();
 const adminStore = useAdminStore()
@@ -183,6 +208,7 @@ const usersSeries = ref([
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,500&display=swap');
 
+
 .stats-title {
     margin-block: 1rem;
     font-weight: 500;
@@ -233,16 +259,18 @@ const usersSeries = ref([
 
 
 /*nd section : orders */
+
 .order-box {
     border-radius: 0.625rem;
     box-sizing: content-box;
     border: 0.2px solid var(--light, #6D7D93);
     background: #FFF;
-    max-width: 8rem;
+
     flex: 1 1 0;
     min-width: 8rem;
     width: 0;
     padding: 1rem;
+    height: max-content;
 }
 
 .order-box .order-number {
@@ -256,5 +284,20 @@ const usersSeries = ref([
 
 .order-box p {
     text-align: center;
+}
+
+.latest-orders-cont {
+    border-radius: 0.625rem;
+    background: #F9F9F9;
+    font-family: 'DM Sans';
+    color: #000;
+    width: 18.3125rem;
+    height: 14.3125rem;
+    border: 0.2px solid #6D7D93;
+}
+
+.order-value {
+    color: #3FC500;
+    font-family: inherit;
 }
 </style>

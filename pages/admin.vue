@@ -1,19 +1,40 @@
 <template >
     <div class="admin-cont">
-        <div class="up-banner w-full"></div>
+        <div class="up-banner w-full py-2 flex gap-4 pl-4">
+            <div class="hamburger  float-left hidden" @click="toggleAsideClass"> <span></span></div>
+            <p class="text-xl md:xl-16">Dashboard</p>
+        </div>
         <div class="flex w-full">
             <aside>
-                <ul>
-                    <li class="nav-items flex gap-2"><img src="~/assets/icons/stats.svg" alt=""> stats</li>
-                    <li class="nav-items flex gap-2"><img src="~/assets/icons/user.svg" alt=""> users</li>
-                    <li class="nav-items flex gap-2"><img src="~/assets/icons/orders.svg" alt=""> orders</li>
-                    <li class="nav-items flex gap-2"><img src="~/assets/icons/star.svg" alt=""> reviews</li>
-                    <li class="nav-items flex gap-2"><img src="~/assets/icons/cart.svg" alt=""> carts</li>
+                <ul @click="changeComponent">
+                    <li class="nav-items flex gap-2" data-component="stats"
+                        :class="{ 'aside-active': componentToShow === 'stats' }"><img
+                            :class="{ 'aside-active': componentToShow === 'stats' }" src="~/assets/icons/stats.svg" alt="">
+                        stats</li>
+
+                    <li class="nav-items flex gap-2" data-component="users"
+                        :class="{ 'aside-active': componentToShow === 'users' }"><img src="~/assets/icons/user.svg" alt=""
+                            :class="{ 'aside-active': componentToShow === 'users' }"> users
+                    </li>
+                    <li class="nav-items flex gap-2" data-component="orders"
+                        :class="{ 'aside-active': componentToShow === 'orders' }"><img
+                            :class="{ 'aside-active': componentToShow === 'orders' }" src="~/assets/icons/orders.svg"
+                            alt="">
+                        orders</li>
+                    <li class="nav-items flex gap-2" data-component="reviews"
+                        :class="{ 'aside-active': componentToShow === 'reviews' }"><img src="~/assets/icons/star.svg"
+                            :class="{ 'aside-active': componentToShow === 'reviews' }" alt="">
+                        reviews</li>
+                    <li class="nav-items flex gap-2" data-component="carts"
+                        :class="{ 'aside-active': componentToShow === 'carts' }"><img src="~/assets/icons/cart.svg" alt=""
+                            :class="{ 'aside-active': componentToShow === 'carts' }"> carts
+                    </li>
                 </ul>
             </aside>
 
             <main>
-                <AdminStats />
+
+                <AdminStats v-if="componentToShow === 'stats'" />
             </main>
         </div>
     </div>
@@ -37,17 +58,56 @@ definePageMeta({
 })
 
 
+const componentToShow = ref('stats')
+const changeComponent = (e) => {
+    e = e.target
+    //check if the user clicked on img to change it to li tag
+    const target = e.tagName.toLowerCase() === 'li' ? e : e.parentNode;
+    componentToShow.value = target.dataset.component;
+
+}
+
+
+
+const toggleAsideClass = () => {
+    document.querySelector(".hamburger").classList.toggle('active')
+    document.querySelector("aside").classList.toggle('to-right')
+}
+
 </script>
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,500&display=swap');
 
+
+@media (max-width: 768px) {
+    aside {
+        position: absolute;
+        transform: translateX(-100%);
+        height: 100%;
+        transition: all 0.5s ease-out;
+    }
+
+    .to-right {
+        transform: translate(0%);
+    }
+
+    .hamburger {
+        display: block;
+    }
+
+}
+
 .up-banner {
-    height: 2rem;
+
     border-bottom: solid 1px #68299F;
 }
 
+
+
 aside>ul {
-    padding-inline: 3rem;
+    padding-inline: 2rem;
+    width: max-content;
+    height: 100%;
     padding-top: 5rem;
     display: flex;
     flex-direction: column;
@@ -58,8 +118,73 @@ aside>ul {
     color: #6D7D93;
 }
 
+.nav-items {
+    cursor: pointer;
+}
+
+.aside-active {
+    color: #43A6DD;
+    filter: invert(61%) sepia(80%) saturate(1185%) hue-rotate(172deg) brightness(91%) contrast(89%);
+}
+
 main {
     padding-left: 1rem;
     width: 100%;
+    background: #EFF3F4;
+}
+
+
+/*hamburger icon */
+.hamburger {
+    height: 32px;
+    width: 40px;
+    cursor: pointer;
+}
+
+.hamburger span,
+.hamburger span::before,
+.hamburger span::after {
+    background: #43A6DD;
+    content: '';
+    position: absolute;
+    width: 40px;
+    height: 6px;
+    margin-top: 13px;
+
+    -webkit-transform: rotate(180deg);
+    -moz-transform: rotate(180deg);
+    -o-transform: rotate(deg);
+    transform: rotate(180deg);
+
+    -webkit-transition: .5s ease-in-out;
+    -moz-transition: .5s ease-in-out;
+    -o-transition: .5s ease-in-out;
+    transition: .5s ease-in-out;
+}
+
+.hamburger span::before {
+    margin-top: -12px;
+}
+
+.hamburger span::after {
+    margin-top: 12px;
+}
+
+.hamburger.active span {
+    background: transparent;
+}
+
+.hamburger.active span::before {
+    margin-top: 0;
+
+    -webkit-transform: rotate(45deg);
+    -moz-transform: rotate(45deg);
+    -o-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+
+.hamburger.active span::after {
+    transform: rotate(-45deg);
+    margin-top: 0;
 }
 </style>
