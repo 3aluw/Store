@@ -1,20 +1,32 @@
 <template>
     <div class="flex flex-col md:flex-row my-2 gap-4">
-        <input type="text" placeholder="enter your query" class="input w-full max-w-xs" />
+        <input type="text" placeholder="enter your query" class="input w-full max-w-sm input-sm w-full "
+            v-model="queryText" />
         <div class="flex items-stretch">
-            <p class="bg-blue-500 text-white flex items-center justify-center  whitespace-nowrap"> select By</p>
-            <select class="select w-full m-l4 max-w-xs " v-model="selectedValue">
-                <option selected>{{ props.options[0] }}</option>
-                <option v-for="option in props.options.slice(1, props.options.length - 1)"> {{ option }}</option>
+            <p class="bg-blue-500 text-white flex items-center justify-center  whitespace-nowrap px-3"> select By</p>
+            <select class="select w-full m-l4 max-w-xs  select-sm w-full ml-1" v-model="selectedOption">
+
+                <option v-for="option in props.options" :key="option.value" :value="option.value"> {{ option.name }}
+                </option>
+
 
             </select>
         </div>
+
     </div>
 </template>
 <script setup>
-
+import { debouncedWatch } from "@vueuse/core"
 const props = defineProps(['options'])
-const emit = defineEmits(['select'])
-const selectedValue = ref('')
+const emit = defineEmits(['newQuery'])
+
+const queryText = ref('')
+
+const selectedOption = ref(props.options[0].name)
+
+
+debouncedWatch(queryText, () => {
+    emit("newQuery", queryText, selectedOption.value)
+}, { debounce: 300 })
 </script>
 <style></style>
