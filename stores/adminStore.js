@@ -4,7 +4,6 @@ import { defineStore, acceptHMRUpdate } from "pinia";
 export const useAdminStore = defineStore("AdminStore", () => {
   const deskree = useDeskree();
 
-
 const monthlyMetrics = ref({
   revenue : 0,
   newUsers: 0,
@@ -17,6 +16,8 @@ const monthlyMetrics = ref({
 })
 
 
+const ordersObject = ref()
+const usersObject = ref()
 
   const generateMonthBoundaries = ()=>{
     const  text = new Date().toISOString()
@@ -32,17 +33,43 @@ const monthlyMetrics = ref({
    return [{"attribute":"createdAt","operator":">","value":monthStart},{"attribute":"createdAt","operator":"<","value":monthEnd} ]
    }
    
+
+
    const generateMonthlyMetrics = async ()=>{
     //generate the query object
     const queryObj = generateMonthlyQueryObject();
 //fetch the data
-  const orders = await deskree.handleQuery("/orders",queryObj, '&limit=100');
- const newUsers = await deskree.handleQuery("/users",queryObj, '&limit=100')
- //add infos to the monthlyMetrics object
- monthlyMetrics.value.newUsers = newUsers.meta.total
- monthlyMetrics.value.orders = orders.meta.total
+const fetchOrders = deskree.handleQuery("/orders",queryObj, '&limit=100');
+const fetchUsers = deskree.handleQuery("/users",queryObj, '&limit=100');
+
+let  orders 
+let newUsers
+try{
+  orders = await fetchOrders
+  newUsers = await fetchUsers
+}
+ catch (err){
+  if(!orders){useAlertsStore().error("a problem while fetching orders")}
+  else if(!users){useAlertsStore().error("a problem while fetching orders")}
+ }
+ finally{
+  if(orders){
+    console.log(orders)
+    ordersObject.value = orders ;
+     monthlyMetrics.value.orders = orders.meta.total
  monthlyMetrics.value.revenue = orders.data.reduce(( acc,cur)=> acc + cur.attributes.price , 0)
  monthlyMetrics.value.salesUnits = orders.data.reduce(( acc,cur)=> acc + cur.attributes.count , 0)
+
+}
+if(newUsers){
+  console.log(newUsers)
+   usersObject.value = newUsers
+ //add infos to the monthlyMetrics object
+ monthlyMetrics.value.newUsers = newUsers.meta.total
+} 
+
+
+
 
   //if the total data is larger than the data fetched - I will depend on deskree to calculate using delivery query-
   if(orders.meta.total > orders.meta.limit){ fetchOrdersMonthlyMetrics(queryObj)}
@@ -52,7 +79,7 @@ const monthlyMetrics = ref({
      monthlyMetrics.value.ordersDelivering = orders.data.reduce((acc, cur) => acc + (cur.attributes.delivery_status === "delivering" ? 1 : 0 ), 0)
      monthlyMetrics.value.ordersDelivered = orders.data.reduce((acc, cur) => acc + (cur.attributes.delivery_status === "delivered" ? 1 : 0 ), 0)
 }
-
+ }
    }
 
 //called only by the main function
@@ -64,7 +91,7 @@ const fetchOrdersMonthlyMetrics = (orders,queryObj)=>{
 
 
 
-  return {generateMonthlyMetrics, monthlyMetrics
+  return {generateMonthlyMetrics, monthlyMetrics,usersObject,ordersObject
    
   };
 });

@@ -185,7 +185,7 @@ getOrdersByDateRange(queryObj, params =''){
 
 
 //query function 
-const handleQuery = ( endpoint,queryObj ,params ='&limit=10')=>{
+const handleQuery = ( endpoint,queryObj ,params ='&limit=10&sorted[param]=createdAt')=>{
   return dbRestRequest( endpoint + "?where=" + JSON.stringify(queryObj) + params)
 }
 

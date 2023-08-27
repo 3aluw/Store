@@ -1,11 +1,10 @@
 <template>
-    <div class="stats-cont">
-
+    <div class="stats-cont" v-if="adminStore.ordersObject">
         <p class="text-xl stats-title"> monthly Metrics </p>
         <section class="flex justify-evenly gap-2 flex-wrap pb-4 pt-2">
             <div class="big-cards">
                 <p class="c-title"> sales amount (units) </p>
-                <p class="card-value text-center ">{{ adminStore.monthlyMetrics.salesUnits }} DA</p>
+                <p class="card-value text-center">{{ adminStore.monthlyMetrics.salesUnits }} DA</p>
             </div>
             <div class="big-cards">
                 <p class="c-title">revenue</p>
@@ -35,18 +34,14 @@
                     <p>latest orders</p>
                     <div class="flex gap-8 justify-around">
                         <div class="flex flex-col">
-                            <p>John Mango</p>
-                            <p>John Mango</p>
-                            <p>John Mango</p>
-                            <p>John Mango</p>
-                            <p>John Mango</p>
+                            <p v-for="index in 5" :key="index">{{ adminStore.ordersObject?.data[index].attributes.buyer_name
+                            }}</p>
+
                         </div>
                         <div class="flex flex-col order-value">
-                            <p>5$</p>
-                            <p>5$</p>
-                            <p>5$</p>
-                            <p>5$</p>
-                            <p>5$</p>
+                            <p v-for="index in 5" :key="index">{{ adminStore.ordersObject?.data[index].attributes.price }}
+                                DA
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -64,7 +59,6 @@
                 </div>
             </div>
 
-
         </section>
 
         <section class="charts-cont flex flex-wrap gap-2 justify-center pt-4">
@@ -80,14 +74,20 @@
             </div>
         </section>
     </div>
+
+    <div v-else class="w-screen h-screen progress-accent items-center justify-center">
+        <progress class="progress w-56"></progress>
+    </div>
 </template>
 
 <script setup>
 const deskree = useDeskree();
 const adminStore = useAdminStore()
 
-onMounted(() => {
-    adminStore.generateMonthlyMetrics()
+const showContent = ref(false)
+
+onMounted(async () => {
+    await adminStore.generateMonthlyMetrics()
 })
 
 
