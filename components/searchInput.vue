@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col md:flex-row my-2 gap-4">
+    <div class="flex flex-col md:flex-row my-2 gap-4 justify-center">
         <input type="text" placeholder="enter your query" class="input w-full max-w-sm input-sm w-full"
             v-model="queryText" />
         <div class="flex items-stretch">
@@ -22,11 +22,11 @@ const emit = defineEmits(['newQuery'])
 
 const queryText = ref('')
 
-const selectedOption = ref(props.options[0].name)
+const selectedOption = ref(props.options[0].value)
 
 
 debouncedWatch(queryText, () => {
     emit("newQuery", queryText, selectedOption.value)
 }, { debounce: 300 })
 </script>
-<style></style>
+<style scoped></style>

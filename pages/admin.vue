@@ -36,6 +36,7 @@
 
                 <AdminStats v-if="componentToShow === 'stats'" />
                 <AdminUsers v-if="componentToShow === 'users'" />
+                <AdminOrders v-if="componentToShow === 'orders'" />
             </main>
         </div>
     </div>
@@ -59,7 +60,7 @@ definePageMeta({
 })
 
 
-const componentToShow = ref('users')
+const componentToShow = ref('orders')
 const changeComponent = (e) => {
     e = e.target
     //check if the user clicked on img to change it to li tag

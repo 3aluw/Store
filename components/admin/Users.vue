@@ -146,7 +146,7 @@ const { data: queryData } = {
 
 
 
-//modal logic
+//modal logic -- 
 const showModal = ref(false);
 const modalProperties = [
     { name: "name", value: "text" },
@@ -159,7 +159,7 @@ const modalProperties = [
 
 const modalObject = ref()
 const currentUid = ref()
-
+//it is better to change index to uid and pass it directly from the template 
 function toggleModal(index) {
     currentUid.value = queryData[index].uid
     modalObject.value = Object.assign({}, queryData[index].attributes)
