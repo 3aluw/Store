@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-col md:flex-row my-2 gap-4">
-        <input type="text" placeholder="enter your query" class="input w-full max-w-sm input-sm w-full "
+        <input type="text" placeholder="enter your query" class="input w-full max-w-sm input-sm w-full"
             v-model="queryText" />
         <div class="flex items-stretch">
             <p class="bg-blue-500 text-white flex items-center justify-center  whitespace-nowrap px-3"> select By</p>
