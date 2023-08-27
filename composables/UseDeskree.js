@@ -111,12 +111,12 @@ async function loginUserUsingLocalS(){
         "address":address,"wilaya":wilaya,"name":name,"phone_number":phone_number  })
     loggedInUser.value = { ...loggedInUser.value,  "address":address,"wilaya":wilaya,"name":name,"phone_number":phone_number  }  
     },
-
+/*
  getUsersByDateRange(queryObj){
   return dbRestRequest("/users?where=" + JSON.stringify(queryObj))
 
    },
-
+*/
 
     //cart
     async updateCart(products) {
@@ -166,7 +166,7 @@ return dbRestRequest("/orders?where=" + JSON.stringify(queryObj))
 
 
 placeOrder({count, sys, fields}){
- dbRestRequest("/orders","POST", {
+ return dbRestRequest("/orders","POST", {
  "count" : count,
  "product_id": sys.id,
   "buyer_name": loggedInUser.value.name,
@@ -174,22 +174,28 @@ placeOrder({count, sys, fields}){
   "phone_number" : loggedInUser.value.phone_number,
   "wilaya": loggedInUser.value.wilaya,
   "address": loggedInUser.value.address,
-"price" : fields.price*count ,
+  "price" : fields.price*count ,
   })
 },
+/*
 getOrdersByDateRange(queryObj, params =''){
   return dbRestRequest("/orders?where=" + JSON.stringify(queryObj) + params)
+}*/
 }
 
+
+//query function 
+const handleQuery = ( endpoint,queryObj ,params ='&limit=10')=>{
+  return dbRestRequest( endpoint + "?where=" + JSON.stringify(queryObj) + params)
 }
+
+
+
+
   // private composable functions
   function initToken(token) {
     tokenInLocalStorage.value = token;
   }
-
-
-
-
 
   async function initUser(userIdOrUser) {
     if (typeof userIdOrUser === "string") {
@@ -244,6 +250,6 @@ getOrdersByDateRange(queryObj, params =''){
     tokenInLocalStorage,
     loggedInUser,
     initUser, 
-    orders
+    orders,handleQuery
   };
 }

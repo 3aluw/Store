@@ -1,5 +1,5 @@
 <template>
-    <section class="waiting-delivery-cont">
+    <section class="waiting-delivery-cont px-4 md:px-12">
         <p class="text-xl my-4 title">orders waiting delivery</p>
         <table class="table table-compact w-full ">
             <!-- head -->
@@ -28,7 +28,7 @@
         </table>
     </section>
 
-    <section class="query-table">
+    <section class="query-table px-4 md:px-12">
         <div class="text-xl my-4 title">search orders</div>
         <SearchInput :options="searchOptions" />
         <table class="table table-compact w-full ">

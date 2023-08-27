@@ -36,8 +36,8 @@ const monthlyMetrics = ref({
     //generate the query object
     const queryObj = generateMonthlyQueryObject();
 //fetch the data
-  const orders = await deskree.orders.getOrdersByDateRange(queryObj, '&limit=100');
- const newUsers = await deskree.user.getUsersByDateRange(queryObj, '&limit=100')
+  const orders = await deskree.handleQuery("/orders",queryObj, '&limit=100');
+ const newUsers = await deskree.handleQuery("/users",queryObj, '&limit=100')
  //add infos to the monthlyMetrics object
  monthlyMetrics.value.newUsers = newUsers.meta.total
  monthlyMetrics.value.orders = orders.meta.total
