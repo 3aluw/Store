@@ -1,7 +1,8 @@
 <template>
-    <div class="stats-cont" v-if="adminStore.ordersObject">
+    <div class="stats-cont">
+        <!--section 1-->
         <p class="text-xl stats-title"> monthly Metrics </p>
-        <section class="flex justify-evenly gap-2 flex-wrap pb-4 pt-2">
+        <section class="flex justify-evenly gap-2 flex-wrap pb-4 pt-2" v-if="adminStore.ordersObject">
             <div class="big-cards">
                 <p class="c-title"> sales amount (units) </p>
                 <p class="card-value text-center">{{ adminStore.monthlyMetrics.salesUnits }} DA</p>
@@ -15,9 +16,13 @@
                 <p class="card-value text-center ">{{ adminStore.monthlyMetrics.newUsers }}</p>
             </div>
         </section>
+        <div v-else class="loader-cont">
+            <div id="loader"></div>
+        </div>
 
+        <!--section 2-->
         <p class="text-xl stats-title"> orders Metrics </p>
-        <section class="flex md:mx-2 flex-wrap  gap-4 py-4 justify-center items-center">
+        <section class="flex md:mx-2 flex-wrap  gap-4 py-4 justify-center items-center" v-if="adminStore.ordersObject">
 
             <div class="flex gap-2 items-center flex-grow">
                 <div class="order-box flex flex-col">
@@ -58,9 +63,12 @@
                     <p>Orders delivered</p>
                 </div>
             </div>
-
         </section>
+        <div v-else class="loader-cont">
+            <div id="loader"></div>
+        </div>
 
+        <!--section 3-->
         <section class="charts-cont flex flex-wrap gap-2 justify-center pt-4">
             <div>
                 <ClientOnly>
@@ -73,10 +81,6 @@
                 </ClientOnly>
             </div>
         </section>
-    </div>
-
-    <div v-else class="w-screen h-screen progress-accent items-center justify-center">
-        <progress class="progress w-56"></progress>
     </div>
 </template>
 
@@ -208,6 +212,9 @@ const usersSeries = ref([
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,500&display=swap');
 
+.section {
+    min-height: 10rem;
+}
 
 .stats-title {
     margin-block: 1rem;
@@ -218,7 +225,6 @@ const usersSeries = ref([
 .big-cards {
     padding-block: 1.5rem;
     padding-inline: 1rem;
-
     aspect-ratio: 4 / 3;
     min-height: 10.6rem;
     border-radius: 0.625rem;
@@ -265,12 +271,11 @@ const usersSeries = ref([
     box-sizing: content-box;
     border: 0.2px solid var(--light, #6D7D93);
     background: #FFF;
-
     flex: 1 1 0;
-    min-width: 8rem;
+    min-width: 5rem;
     width: 0;
-    padding: 1rem;
-    height: max-content;
+    padding: 0.5rem;
+
 }
 
 .order-box .order-number {
@@ -291,13 +296,50 @@ const usersSeries = ref([
     background: #F9F9F9;
     font-family: 'DM Sans';
     color: #000;
-    width: 18.3125rem;
-    height: 14.3125rem;
+    padding-block: 0.5rem;
+    padding-inline: 1rem;
     border: 0.2px solid #6D7D93;
 }
 
 .order-value {
     color: #3FC500;
     font-family: inherit;
+}
+
+/**loader */
+
+.loader-cont {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2rem;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-ltr);
+}
+
+
+
+#loader {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    animation: load 1s ease-in-out infinite alternate;
+}
+
+@keyframes load {
+    0% {
+        transform: translateX(-100px);
+        offset: 10px 0px;
+        background: black;
+    }
+
+    100% {
+        transform: translateX(100px);
+        background: white;
+    }
 }
 </style>

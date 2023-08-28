@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col md:flex-row my-2 gap-4 justify-center">
+    <div class="flex flex-col md:flex-row my-2 gap-4 justify-center flex-wrap">
         <input type="text" placeholder="enter your query" class="input w-full max-w-sm input-sm w-full"
             v-model="queryText" />
         <div class="flex items-stretch">
