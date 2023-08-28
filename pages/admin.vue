@@ -45,9 +45,11 @@
 <script setup>
 const Deskree = useDeskree();
 const user = computed(() => Deskree.loggedInUser.value)
+const adminStore = useAdminStore()
 
-onMounted(() => {
+onMounted(async () => {
     //console.log(user.value, user)
+    await adminStore.generateMonthlyMetrics();
 })
 
 definePageMeta({

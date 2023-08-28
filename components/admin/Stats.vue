@@ -88,9 +88,6 @@
 const deskree = useDeskree();
 const adminStore = useAdminStore()
 
-onMounted(async () => {
-    await adminStore.generateMonthlyMetrics();
-})
 
 
 

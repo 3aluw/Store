@@ -92,55 +92,13 @@
     </div>
 </template>
 <script setup>
-const columns = [{ name: "to", value: "rating" },
-{ name: "value", value: "title" },
-{ name: "order date", value: "text" }]
-const { data: waitingOrdersObj } = {
-    "meta": {
-        "total": 3,
-        "limit": 50,
-        "page": 1,
-        "includesCount": 0
-    },
-    "data": [
-        {
-            "uid": "1ylR1rxK9z1o21j2u9QP",
-            "attributes": {
-                "createdAt": "2023-01-04T16:57:19+01:00",
-                "author": "",
-                "product_id": "4tPjlVZyKcM2IVosy4E4Ly",
-                "rating": 4,
-                "text": "good product but expected more",
-                "updatedAt": "2023-01-04T16:57:19+01:00",
-                "title": "wow"
-            }
-        },
-        {
-            "uid": "KIZ6k0drd3wV3FXBKQ0c",
-            "attributes": {
-                "createdAt": "2023-01-05T09:17:28+01:00",
-                "author": "",
-                "product_id": "4tPjlVZyKcM2IVosy4E4Ly",
-                "rating": 4,
-                "text": "didn't expect to be this good",
-                "title": "Fast delivery is what i love",
-                "updatedAt": "2023-01-05T09:17:28+01:00"
-            }
-        },
-        {
-            "uid": "Mm90GGvyP6uocnROiv97",
-            "attributes": {
-                "createdAt": "2023-01-04T16:56:29+01:00",
-                "author": "",
-                "product_id": "4tPjlVZyKcM2IVosy4E4Ly",
-                "rating": 5,
-                "text": "good product",
-                "updatedAt": "2023-01-04T16:56:29+01:00",
-                "title": "wow"
-            }
-        }
-    ]
-}
+const deskree = useDeskree();
+const adminStore = useAdminStore()
+
+const columns = [{ name: "to", value: "wilaya" },
+{ name: "value (DA)", value: "price" },
+{ name: "order date", value: "createdAt" }]
+
 
 const { data: queryData } = {
     "meta": {
@@ -188,6 +146,12 @@ const { data: queryData } = {
         }
     ]
 }
+
+
+//continue from here    
+const waitingOrdersObj = computed(() => adminStore.ordersObject.data.filter((order) => order.attributes.delivery_status === "waiting"))
+
+
 
 
 //query logic
