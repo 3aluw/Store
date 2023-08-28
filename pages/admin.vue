@@ -60,7 +60,7 @@ definePageMeta({
 })
 
 
-const componentToShow = ref('orders')
+const componentToShow = ref('stats')
 const changeComponent = (e) => {
     e = e.target
     //check if the user clicked on img to change it to li tag

@@ -14,30 +14,22 @@ const monthlyMetrics = ref({
   ordersDelivering : 0,
   ordersDelivered : 0
 })
-
-
+//object of newest users and orders
 const ordersObject = ref()
 const usersObject = ref()
 
-  const generateMonthBoundaries = ()=>{
-    const  text = new Date().toISOString()
-    const reg = /\d+T/
-    const start = text.replace(reg,"01T00:00:00")
-    const end = text.replace(reg,"30T23:59:00")
-
-    return [ start, end]
-   }
-  
-   const generateMonthlyQueryObject = ()=>{
-    const [monthStart, monthEnd] = generateMonthBoundaries();
-   return [{"attribute":"createdAt","operator":">","value":monthStart},{"attribute":"createdAt","operator":"<","value":monthEnd} ]
+ //move to useDeskree
+   const generateRangeQueryObject = (start, end)=>{
+ 
+ 
+   return [{"attribute":"createdAt","operator":">","value":start},{"attribute":"createdAt","operator":"<","value":end} ]
    }
    
 
 
    const generateMonthlyMetrics = async ()=>{
-    //generate the query object
-    const queryObj = generateMonthlyQueryObject();
+    //generate the query object using timer composable to generate the start and the end of the month
+    const queryObj = generateRangeQueryObject(useTimer().generateMonthBoundaries()[0], useTimer().generateMonthBoundaries()[1]);
 //fetch the data
 const fetchOrders = deskree.handleQuery("/orders",queryObj, '&limit=100');
 const fetchUsers = deskree.handleQuery("/users",queryObj, '&limit=100');
@@ -54,7 +46,7 @@ try{
  }
  finally{
   if(orders){
-    console.log(orders)
+  
     ordersObject.value = orders ;
      monthlyMetrics.value.orders = orders.meta.total
  monthlyMetrics.value.revenue = orders.data.reduce(( acc,cur)=> acc + cur.attributes.price , 0)
@@ -62,14 +54,11 @@ try{
 
 }
 if(newUsers){
-  console.log(newUsers)
+
    usersObject.value = newUsers
  //add infos to the monthlyMetrics object
  monthlyMetrics.value.newUsers = newUsers.meta.total
 } 
-
-
-
 
   //if the total data is larger than the data fetched - I will depend on deskree to calculate using delivery query-
   if(orders.meta.total > orders.meta.limit){ fetchOrdersMonthlyMetrics(queryObj)}
@@ -91,7 +80,7 @@ const fetchOrdersMonthlyMetrics = (orders,queryObj)=>{
 
 
 
-  return {generateMonthlyMetrics, monthlyMetrics,usersObject,ordersObject
+  return {generateMonthlyMetrics, generateRangeQueryObject,monthlyMetrics,usersObject,ordersObject
    
   };
 });
