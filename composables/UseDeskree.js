@@ -163,8 +163,6 @@ const queryObj = [{"attribute":"author","operator":"=","value":userIdInLocalStor
 
 return dbRestRequest("/orders?where=" + JSON.stringify(queryObj))
 },
-
-
 placeOrder({count, sys, fields}){
  return dbRestRequest("/orders","POST", {
  "count" : count,
@@ -177,10 +175,13 @@ placeOrder({count, sys, fields}){
   "price" : fields.price*count ,
   })
 },
-/*
-getOrdersByDateRange(queryObj, params =''){
-  return dbRestRequest("/orders?where=" + JSON.stringify(queryObj) + params)
-}*/
+ editOrder(uid,reqObj){
+  const reqBody = JSON.stringify(reqObj)
+return dbRestRequest(`/orders/${uid}`,"PATCH", reqBody)
+},
+deleteOrder(uid){
+  return dbRestRequest(`/orders/${uid}`,"DELETE")
+}
 }
 
 

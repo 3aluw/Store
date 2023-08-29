@@ -44,7 +44,7 @@ try{
  }
  finally{
   if(orders){
-  console.log(orders)
+ 
     ordersObject.value = orders ;
      monthlyMetrics.value.orders = orders.meta.total
  monthlyMetrics.value.revenue = orders.data.reduce(( acc,cur)=> acc + cur.attributes.price , 0)
