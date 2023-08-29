@@ -97,7 +97,7 @@
                     </tr>
                 </tbody>
             </table>
-            {{ modalObject }}
+
             <div class="modal-action">
                 <button class="btn" @click="showModal = false">
                     close
@@ -170,6 +170,7 @@ function toggleModal(index, selectedObj) {
     currentUid.value = ObjToUse.value[index].uid
     modalObject.value = Object.assign({}, ObjToUse.value[index].attributes)
     showModal.value = !showModal.value;
+
 }
 
 
@@ -197,8 +198,14 @@ const handleDelete = async (uid) => {
     } catch (err) {
         console.log(err);
     }
-
 }
+//TASK 3
+/*
+const editUserOrders = async (userUid) => {
+    console.log("its", userUid)
+    const user = await deskree.user.getByUid(userUid)
+
+}*/
 </script>
 <style scoped>
 section {

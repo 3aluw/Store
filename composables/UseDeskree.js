@@ -111,6 +111,10 @@ async function loginUserUsingLocalS(){
         "address":address,"wilaya":wilaya,"name":name,"phone_number":phone_number  })
     loggedInUser.value = { ...loggedInUser.value,  "address":address,"wilaya":wilaya,"name":name,"phone_number":phone_number  }  
     },
+
+    getByUid(uid){
+      return dbRestRequest(`/users/${uid}`)
+    },
 /*
  getUsersByDateRange(queryObj){
   return dbRestRequest("/users?where=" + JSON.stringify(queryObj))

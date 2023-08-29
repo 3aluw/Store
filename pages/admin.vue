@@ -22,13 +22,11 @@
                             alt="">
                         orders</li>
                     <li class="nav-items flex gap-2" data-component="reviews"
-                        :class="{ 'aside-active': componentToShow === 'reviews' }"><img src="~/assets/icons/star.svg"
-                            :class="{ 'aside-active': componentToShow === 'reviews' }" alt="">
-                        reviews</li>
-                    <li class="nav-items flex gap-2" data-component="carts"
-                        :class="{ 'aside-active': componentToShow === 'carts' }"><img src="~/assets/icons/cart.svg" alt=""
-                            :class="{ 'aside-active': componentToShow === 'carts' }"> carts
-                    </li>
+                        :class="{ 'aside-active': componentToShow === 'product' }"><img
+                            src="~/assets/icons/shopping-bag.svg" :class="{ 'aside-active': componentToShow === 'product' }"
+                            alt="">
+                        products</li>
+
                 </ul>
             </aside>
 
@@ -37,6 +35,7 @@
                 <AdminStats v-if="componentToShow === 'stats'" />
                 <AdminUsers v-if="componentToShow === 'users'" />
                 <AdminOrders v-if="componentToShow === 'orders'" />
+                <AdminProducts v-if="componentToShow === 'products'" />
             </main>
         </div>
     </div>
