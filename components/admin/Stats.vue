@@ -112,7 +112,7 @@ const generateChartsObjects = async () => {
     })
     const ordersRes = await Promise.allSettled(orderPromises)
     const usersRes = await Promise.allSettled(usersPromises)
-    console.log(ordersRes, usersRes)
+
     //generate charts
     ordersChartObj.value = chartDates.map((day, index) => {
         return { x: day, y: ordersRes[index].status === "fulfilled" ? ordersRes[index].value.meta.total : 0 }

@@ -20,8 +20,6 @@ const usersObject = ref()
 
  //move to useDeskree
    const generateRangeQueryObject = (start, end)=>{
- 
- 
    return [{"attribute":"createdAt","operator":">","value":start},{"attribute":"createdAt","operator":"<","value":end} ]
    }
    
@@ -74,13 +72,16 @@ if(newUsers){
 //called only by the main function
 const fetchOrdersMonthlyMetrics = (orders,queryObj)=>{
   const delivery_statusArr = ["waiting", "delivering", "delivered"]
-  
-
 }
 
 
 
-  return {generateMonthlyMetrics, generateRangeQueryObject,monthlyMetrics,usersObject,ordersObject
+//a function that returns an object to be used in queries :  operator use :=
+const generateQueryObject = (attribute, value)=>{
+return [{"attribute":attribute,"operator":"=","value":value} ]
+}
+
+  return {generateMonthlyMetrics, generateRangeQueryObject,monthlyMetrics,usersObject,ordersObject, generateQueryObject
    
   };
 });

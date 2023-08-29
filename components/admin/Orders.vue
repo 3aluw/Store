@@ -1,21 +1,20 @@
 <template>
-    <section class="waiting-delivery-cont px-4 md:px-12">
-        <p class="text-xl my-4 title">orders waiting delivery</p>
+    <section class="waiting-delivery-cont px-4 md:px-12 ">
+        <p class="text-xl mt-4 title">orders waiting delivery</p>
         <table class="table table-compact w-full ">
             <!-- head -->
             <thead>
                 <tr>
                     <th class="w-2/6" v-for="column in columns">{{ column.name }}</th>
-                    <th class=" hidden sm:block w-2/6">move to <br> delivering</th>
+                    <th class=" hidden sm:table-cell w-2/6">move to <br> delivering</th>
                     <th class="w-2">Edit <br> order</th>
                 </tr>
             </thead>
-
-            <tbody>
+            <tbody v-if="waitingOrdersObj">
                 <tr v-for="(item, index) in waitingOrdersObj" :key="item.uid">
                     <td v-for="column in columns" class="w-2/6">{{ item.attributes[column.value] }} </td>
 
-                    <td class="hidden sm:block "><button class="btn-truck btn btn-circle btn-outline btn-sm "
+                    <td class="hidden sm:table-cell "><button class="btn-truck btn btn-circle btn-outline btn-sm "
                             @click="handlePatch(item.uid, { 'delivery_status': 'delivering' })"><img
                                 src="~/assets/icons/truck.svg" alt="">
                         </button></td>
@@ -24,13 +23,43 @@
                         </button></td>
                 </tr>
             </tbody>
-
         </table>
+        <p class="text-red-900 text-sm text-center" v-if="waitingOrdersObj?.length === 0">No items are waiting for delivery
+        </p>
+    </section>
+    <section class="waiting-delivery-cont px-4 md:px-12">
+        <p class="text-xl mt-4 title">delivering orders</p>
+        <table class="table table-compact w-full ">
+            <!-- head -->
+            <thead>
+                <tr>
+                    <th class="w-2/6" v-for="column in columns">{{ column.name }}</th>
+                    <th class=" hidden sm:table-cell w-2/6">move to <br> delivering</th>
+                    <th class="w-2">Edit <br> order</th>
+                </tr>
+            </thead>
+            <tbody v-if="deliveringOrdersObj">
+                <tr v-for="(item, index) in deliveringOrdersObj" :key="item.uid">
+                    <td v-for="column in columns" class="w-2/6">{{ item.attributes[column.value] }} </td>
+
+                    <td class="hidden sm:table-cell "><button class="btn-truck btn btn-circle btn-outline btn-sm "
+                            @click="handlePatch(item.uid, { 'delivery_status': 'delivered' })"><img
+                                src="~/assets/icons/truck.svg" alt="">
+                        </button></td>
+                    <td class="w-2"><button class="btn-cog btn btn-circle btn-outline btn-sm "
+                            @click="toggleModal(index, 'deliveringOrdersObj')"><img src="~/assets/icons/cog-full.svg"
+                                alt="">
+                        </button></td>
+                </tr>
+            </tbody>
+        </table>
+        <p class="text-red-900 text-sm text-center" v-if="deliveringOrdersObj?.length === 0">No items are currently being
+            delivered</p>
     </section>
 
     <section class="query-table px-4 md:px-12">
-        <div class="text-xl my-4 title">search orders</div>
-        <SearchInput :options="searchOptions" />
+        <div class="text-xl mt-4 title">search orders</div>
+        <SearchInput :options="searchOptions" @new-query="handleQuery" />
         <table class="table table-compact w-full ">
             <!-- head -->
             <thead>
@@ -40,7 +69,7 @@
                     <th class="w-2">Edit <br> order</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody v-if="queryData">
                 <tr v-for="(item, index) in queryData" :key="item.uid">
                     <td v-for="column in columns" class="w-2/6">{{ item.attributes[column.value] }} </td>
 
@@ -49,6 +78,7 @@
                         </button></td>
                 </tr>
             </tbody>
+
 
         </table>
     </section>
@@ -94,63 +124,12 @@
 <script setup>
 const deskree = useDeskree();
 const adminStore = useAdminStore()
-
+//tables logic
 const columns = [{ name: "to", value: "wilaya" },
 { name: "value (DA)", value: "price" },
 { name: "order date", value: "createdAt" }]
-
-
-const { data: queryData } = {
-    "meta": {
-        "total": 3,
-        "limit": 50,
-        "page": 1,
-        "includesCount": 0
-    },
-    "data": [
-        {
-            "uid": "1ylR1rxK9z1o21j2u9QP",
-            "attributes": {
-                "createdAt": "2023-01-04T16:57:19+01:00",
-                "author": "",
-                "product_id": "4tPjlVZyKcM2IVosy4E4Ly",
-                "rating": 4,
-                "text": "good product but expected more",
-                "updatedAt": "2023-01-04T16:57:19+01:00",
-                "title": "wow"
-            }
-        },
-        {
-            "uid": "KIZ6k0drd3wV3FXBKQ0c",
-            "attributes": {
-                "createdAt": "2023-01-05T09:17:28+01:00",
-                "author": "",
-                "product_id": "4tPjlVZyKcM2IVosy4E4Ly",
-                "rating": 4,
-                "text": "didn't expect to be this good",
-                "title": "Fast delivery is what i love",
-                "updatedAt": "2023-01-05T09:17:28+01:00"
-            }
-        },
-        {
-            "uid": "Mm90GGvyP6uocnROiv97",
-            "attributes": {
-                "createdAt": "2023-01-04T16:56:29+01:00",
-                "author": "",
-                "product_id": "4tPjlVZyKcM2IVosy4E4Ly",
-                "rating": 5,
-                "text": "good product",
-                "updatedAt": "2023-01-04T16:56:29+01:00",
-                "title": "wow"
-            }
-        }
-    ]
-}
-
-
-//continue from here    
-const waitingOrdersObj = computed(() => adminStore.ordersObject.data.filter((order) => order.attributes.delivery_status === "waiting"))
-
+const waitingOrdersObj = computed(() => adminStore.ordersObject?.data.filter((order) => order.attributes.delivery_status === "waiting").slice(0, 4))
+const deliveringOrdersObj = computed(() => adminStore.ordersObject?.data.filter((order) => order.attributes.delivery_status === "delivering").slice(0, 4))
 
 
 
@@ -162,6 +141,13 @@ const searchOptions = [
     { name: "order value", value: "price" },
     { name: "wilaya", value: "wilaya" }
 ]
+const queryData = ref()
+const handleQuery = async (queryText, queryParameter) => {
+    console.log('queryText, queryParameter: ', queryText, queryParameter);
+    const queryObject = adminStore.generateQueryObject(queryParameter, queryText)
+    const res = await deskree.handleQuery("/orders", queryObject)
+    queryData.value = res.data
+}
 
 
 
@@ -181,28 +167,42 @@ const modalObject = ref()
 const currentUid = ref()
 
 function toggleModal(index, selectedObj) {
-    const ObjToUse = selectedObj === 'queryData' ? queryData : waitingOrdersObj
-    currentUid.value = ObjToUse[index].uid
+    const ObjToUse = selectedObj === 'queryData' ? queryData : 'waitingOrdersObj' ? waitingOrdersObj : deliveringOrdersObj
+    currentUid.value = ObjToUse.value[index].uid
     modalObject.value = Object.assign({}, ObjToUse[index].attributes)
     showModal.value = !showModal.value;
-
 }
+
+
 const handlePatch = (uid, reqBody) => {
 
     console.log(uid, reqBody)
 }
 
-
 const handleDelete = (uid) => { console.log(uid) }
 </script>
 <style scoped>
+section {
+    margin-block: 2rem;
+}
+
 .title {
     font-family: "DM Sans;";
     font-weight: 500;
+    font-size: 1.375rem;
+    color: #228B22
+}
+
+.table {
+    font-family: "DM Sans"
 }
 
 .table-compact :where(th, td) {
     white-space: pre-line;
+}
+
+tbody {
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
 }
 
 .btn-cog {
