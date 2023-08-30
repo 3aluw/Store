@@ -9,22 +9,23 @@
                 <ul @click="changeComponent">
                     <li class="nav-items flex gap-2" data-component="stats"
                         :class="{ 'aside-active': componentToShow === 'stats' }"><img
-                            :class="{ 'aside-active': componentToShow === 'stats' }" src="~/assets/icons/stats.svg" alt="">
+                            :class="{ 'aside-active': componentToShow === 'stats' }" src="~/assets/icons/stats.svg"
+                            alt="stats">
                         stats</li>
 
                     <li class="nav-items flex gap-2" data-component="users"
-                        :class="{ 'aside-active': componentToShow === 'users' }"><img src="~/assets/icons/user.svg" alt=""
-                            :class="{ 'aside-active': componentToShow === 'users' }"> users
+                        :class="{ 'aside-active': componentToShow === 'users' }"><img src="~/assets/icons/user.svg"
+                            alt="users" :class="{ 'aside-active': componentToShow === 'users' }"> users
                     </li>
                     <li class="nav-items flex gap-2" data-component="orders"
                         :class="{ 'aside-active': componentToShow === 'orders' }"><img
                             :class="{ 'aside-active': componentToShow === 'orders' }" src="~/assets/icons/orders.svg"
                             alt="">
                         orders</li>
-                    <li class="nav-items flex gap-2" data-component="reviews"
-                        :class="{ 'aside-active': componentToShow === 'product' }"><img
-                            src="~/assets/icons/shopping-bag.svg" :class="{ 'aside-active': componentToShow === 'product' }"
-                            alt="">
+                    <li class="nav-items flex gap-2" data-component="products"
+                        :class="{ 'aside-active': componentToShow === 'products' }"><img
+                            src="~/assets/icons/shopping-bag.svg"
+                            :class="{ 'aside-active': componentToShow === 'products' }" alt="">
                         products</li>
 
                 </ul>
@@ -61,7 +62,7 @@ definePageMeta({
 })
 
 
-const componentToShow = ref('orders')
+const componentToShow = ref('users')
 const changeComponent = (e) => {
     e = e.target
     //check if the user clicked on img to change it to li tag
@@ -134,6 +135,7 @@ main {
     padding-left: 1rem;
     width: 100%;
     background: #EFF3F4;
+    min-height: 100vh;
 }
 
 

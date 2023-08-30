@@ -115,6 +115,9 @@ async function loginUserUsingLocalS(){
     getByUid(uid){
       return dbRestRequest(`/users/${uid}`)
     },
+    deleteUser(uid){
+      return dbRestRequest(`/users/${uid}`,"DELETE")
+    },
 /*
  getUsersByDateRange(queryObj){
   return dbRestRequest("/users?where=" + JSON.stringify(queryObj))

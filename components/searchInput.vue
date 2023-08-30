@@ -25,7 +25,7 @@ const selectedOption = ref(props.options[0].value)
 
 
 debouncedWatch(queryText, () => {
-    emit("newQuery", queryText.value, selectedOption.value)
+    if (queryText.value.length > 3) emit("newQuery", queryText.value, selectedOption.value)
 }, { debounce: 500 })
 </script>
 <style scoped></style>
