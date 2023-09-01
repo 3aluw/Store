@@ -1,5 +1,5 @@
 import { createClient } from "contentful";
-import contentful from 'contentful'
+import * as contentful from 'contentful'
 
 export default defineNuxtPlugin((nuxtapp)=>{
     const runtimeConfig  = useRuntimeConfig();
@@ -7,8 +7,9 @@ export default defineNuxtPlugin((nuxtapp)=>{
     const createClientFunc = process.env.NODE_ENV === 'development' ? createClient : contentful.createClient
 
     const client = createClientFunc({
-        space: runtimeConfig .contentfulSpace,
-        accessToken: runtimeConfig.contentfulPublicAccessToken,
+        space: runtimeConfig.public.contentfulSpace as string,
+        accessToken: runtimeConfig.public.contentfulPublicAccessToken as string,
+        
       });
       return{
         provide:{
