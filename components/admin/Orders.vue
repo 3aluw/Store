@@ -28,7 +28,7 @@
         <p class="text-red-900 text-sm text-center" v-if="waitingOrdersObj?.length === 0">No items are waiting for delivery
         </p>
     </section>
-    <!--2ns section/table-->
+    <!--2nd section/table-->
     <section class="delivering-cont px-4 md:px-12">
         <p class="text-xl mt-4 title">delivering orders</p>
         <table class="table table-compact w-full ">
@@ -58,12 +58,12 @@
         <p class="text-red-900 text-sm text-center" v-if="deliveringOrdersObj?.length === 0">No items are currently being
             delivered</p>
     </section>
-
+    <!--3rd section/table-->
     <section class="query-table px-4 md:px-12">
         <div class="text-xl mt-4 title">search orders</div>
         <SearchInput :options="searchOptions" @new-query="handleQuery" />
         <table class="table table-compact w-full ">
-            <!-- head -->
+
             <thead>
                 <tr>
                     <th class="w-2/6" v-for="column in columns">{{ column.name }}</th>
@@ -80,8 +80,6 @@
                         </button></td>
                 </tr>
             </tbody>
-
-
         </table>
     </section>
 
