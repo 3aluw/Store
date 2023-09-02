@@ -21,6 +21,7 @@ export default defineNuxtConfig({
     stripeSecret: process.env.STRIPE_SECRET,
     public: {
       contentfulSpace: process.env.NUXT_CONTENTFUL_SPACE,
+      contentfulCMAccessToken: process.env.NUXT_CONTENTFUL_CM_ACCESS_TOKEN,
       contentfulPublicAccessToken:
         process.env.NUXT_CONTENTFUL_PUBLIC_ACCESS_TOKEN,
       deskreeBaseUrl: process.env.NUXT_DESKREE_BASE_URL,

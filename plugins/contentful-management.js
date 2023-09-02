@@ -1,12 +1,13 @@
 import * as contentful from 'contentful-management';
 
 export default defineNuxtPlugin(() => {
-  const runtimeConfig = useRuntimeConfig()
+
+    const runtimeConfig  = useRuntimeConfig();
 
   
   const scopedPlainClient = contentful.createClient(
     {
-      accessToken: runtimeConfig.public.contentfulPublicAccessToken,
+      accessToken: runtimeConfig.public.contentfulCMAccessToken,
     },
     {
       type: 'plain',
