@@ -2,7 +2,8 @@
     <div v-if="productStore.products"
         class="gap-7 p-10 sm:grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 flex-wrap justify-items-stretch items-stretch">
         <TransitionGroup name="products">
-            <ProductCard v-for="product in productStore.products" :product="product" :key="product.sys.id" class="mb-5" />
+            <AdminProductCard v-for="product in productStore.products" :product="product" :key="product.sys.id" class="mb-5"
+                @open-modal="handleModal" />
         </TransitionGroup>
     </div>
 </template>
@@ -12,6 +13,9 @@ const { $contentfulManager } = useNuxtApp();
 const productStore = useProductStore();
 if (productStore.products.length === 0) useAsyncData("products", async () => productStore.fetchProducts());
 
+const handleModal = (id) => {
+
+}
 </script>
 <style >
 .product-card {

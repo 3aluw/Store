@@ -40,7 +40,7 @@ export const useProductStore = defineStore("ProductStore", {
     content_type : "product",
     ...this.filters
    });
-
+console.log(entries.items)
    this.products =  entries.items ; 
    return this.products
     },
