@@ -17,8 +17,8 @@ const emitProductUid = (id: string) => {
             <img class="product-img" :src="product.fields.image[0].fields?.file.url"
                 :alt="product.fields.image[0].fields?.file.description" />
         </figure>
-        <div class="card-body">
-            <h2 class="justify-between flex">
+        <div class="card-body justify-between">
+            <h2>
                 <span class="w-4/5"> {{ product.fields.name }} </span>
             </h2>
 

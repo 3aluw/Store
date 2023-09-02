@@ -7,15 +7,20 @@
                     class="mb-5" @open-modal="handleModal" />
             </TransitionGroup>
         </div>
+
         <!--modal-->
         <div class="modal" :class="{ 'modal-open': showModal }" v-if="showModal">
             <div class="modal-box">
                 <table class="table table-compact w-full">
                     <tbody>
                         <tr v-for="property in modalProperties">
-                            <td>{{ property.name }}</td> <input type="text" placeholder="Type here"
-                                class="input w-full max-w-xs input-sm"
+                            <td>{{ property.name }}</td>
+                            <input v-if="property.name !== 'description'" type="text" placeholder="Type here"
+                                class="input input-bordered w-full max-w-xs input-sm my-2"
                                 v-model="selectedProduct.fields[property.value]['en-US']" />
+                            <textarea v-else placeholder="Type here"
+                                class="textarea textarea-bordered textarea-md w-full max-w-xs"
+                                v-model="selectedProduct.fields[property.value]['en-US']"></textarea>
                             <td></td>
                         </tr>
                     </tbody>
@@ -55,6 +60,7 @@ const showModal = ref(false)
 const modalProperties = [
     { name: "name", value: "name" },
     { name: "summary", value: "summary" },
+    { name: "description", value: "description" },
     { name: "price", value: "price" },
 
 ]
