@@ -15,8 +15,9 @@
                     <tbody>
                         <tr v-for="property in modalProperties">
                             <td>{{ property.name }}</td>
-                            <input v-if="property.name !== 'description'" type="text" placeholder="Type here"
+                            <input v-if="property.name !== 'description'" placeholder="Type: here"
                                 class="input input-bordered w-full max-w-xs input-sm my-2"
+                                :type="property.name === 'price' ? 'number' : 'text'"
                                 v-model="selectedProduct.fields[property.value]['en-US']" />
                             <textarea v-else placeholder="Type here"
                                 class="textarea textarea-bordered textarea-md w-full max-w-xs"
@@ -81,23 +82,42 @@ const handleModal = async (id) => {
 
 const handlePatch = async () => {
     try {
-        console.log(selectedProduct.value.fields.price);
+        //update the entry
+        selectedProduct.value = await $contentfulManager.entry.update({
+            entryId: selectedProduct.value.sys.id
+        }, selectedProduct.value)
+        //publish it
         const res = await $contentfulManager.entry.publish({
             entryId: selectedProduct.value.sys.id
         }, selectedProduct.value)
-        console.log(res)
+
         useAlertsStore().success("Done!")
     }
-    catch {
+    catch (err) {
+        console.log(err);
         useAlertsStore().error("An error occurred, please contact teh dev team")
+    }
+    finally {
+        showModal.value = false;
+        productStore.fetchProducts()
     }
 }
 
 
-const handleDelete = () => {
-    $contentfulManager.entry.delete({
-        entryId: selectedProduct.value.sys.id
-    })
+
+const handleDelete = async () => {
+    try {
+        await $contentfulManager.entry.delete({
+            entryId: selectedProduct.value.sys.id
+        })
+    }
+    catch (err) {
+        console.log(err)
+    }
+    finally {
+        showModal.value = false;
+        productStore.fetchProducts()
+    }
 }
 </script>
 <style >
