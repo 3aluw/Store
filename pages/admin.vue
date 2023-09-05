@@ -8,24 +8,17 @@
             <aside>
                 <ul @click="changeComponent">
                     <li class="nav-items flex gap-2" data-component="stats"
-                        :class="{ 'aside-active': componentToShow === 'stats' }"><img
-                            :class="{ 'aside-active': componentToShow === 'stats' }" src="~/assets/icons/stats.svg"
-                            alt="stats">
+                        :class="{ 'aside-active': componentToShow === 'stats' }">
                         stats</li>
 
                     <li class="nav-items flex gap-2" data-component="users"
-                        :class="{ 'aside-active': componentToShow === 'users' }"><img src="~/assets/icons/user.svg"
-                            alt="users" :class="{ 'aside-active': componentToShow === 'users' }"> users
+                        :class="{ 'aside-active': componentToShow === 'users' }">users
                     </li>
                     <li class="nav-items flex gap-2" data-component="orders"
-                        :class="{ 'aside-active': componentToShow === 'orders' }"><img
-                            :class="{ 'aside-active': componentToShow === 'orders' }" src="~/assets/icons/orders.svg"
-                            alt="">
+                        :class="{ 'aside-active': componentToShow === 'orders' }">
                         orders</li>
                     <li class="nav-items flex gap-2" data-component="products"
-                        :class="{ 'aside-active': componentToShow === 'products' }"><img
-                            src="~/assets/icons/shopping-bag.svg"
-                            :class="{ 'aside-active': componentToShow === 'products' }" alt="">
+                        :class="{ 'aside-active': componentToShow === 'products' }">
                         products</li>
 
                 </ul>
@@ -43,15 +36,15 @@
 </template >
 
 <script setup>
-const Deskree = useDeskree();
-const user = computed(() => Deskree.loggedInUser.value)
+//const Deskree = useDeskree();
+//const user = computed(() => Deskree.loggedInUser.value)
 const adminStore = useAdminStore()
 
 onMounted(async () => {
     //console.log(user.value, user)
     await adminStore.generateMonthlyMetrics();
 })
-
+/*
 definePageMeta({
 
     middleware: () => {
@@ -60,7 +53,7 @@ definePageMeta({
 
     }
 })
-
+*/
 
 const componentToShow = ref('products')
 const changeComponent = (e) => {
