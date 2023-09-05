@@ -76,7 +76,7 @@ async function handleOrder() {
                       <div class="font-bold">
                         {{ product.fields.name }}
                       </div>
-                      <ProductHeat :heat-level="product.fields.heatLevel" />
+                      <!-- <ProductHeat :heat-level="product.fields.heatLevel" />-->
                     </td>
                     <td>
                       <ProductPrice :price="product.fields.price" />

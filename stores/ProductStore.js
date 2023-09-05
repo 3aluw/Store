@@ -11,14 +11,12 @@ export const useProductStore = defineStore("ProductStore", {
        * Different ways of fetching the listing of products (filters, order, search)
        */
       filters: {
-        "fields.heatLevel":useRoute().query["fields.heatLevel"] || "",
+        "fields.category":useRoute().query["fields.category"] || "",
         order: useRoute().query.order||"" ,
         query: useRoute().query.query || "",
       },
 
-      /**
-       * A single project to show all the details of
-       */
+   
       singleProduct: null,
     };
   },
