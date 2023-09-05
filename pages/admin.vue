@@ -14,7 +14,7 @@
                         stats</li>
 
                     <li class="nav-items flex gap-2" data-component="users"
-                        :class="{ 'aside-active': componentToShow === 'users' }"><img src="~/assets/icons/user.svg"
+                        :class="{ 'aside-active': componentToShow === 'users' }"><img src="~/assets/icons/User.svg"
                             alt="users" :class="{ 'aside-active': componentToShow === 'users' }"> users
                     </li>
                     <li class="nav-items flex gap-2" data-component="orders"
