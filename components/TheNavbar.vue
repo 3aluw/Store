@@ -2,7 +2,6 @@
 import { useCartStore } from '~~/stores/cartStore';
 
 
-const { siteName } = useAppConfig();
 const deskree = useDeskree();
 const loggedInUser = computed(() => deskree.loggedInUser.value);
 const cartStore = useCartStore();
@@ -11,9 +10,7 @@ const cartStore = useCartStore();
 <template>
   <div class="navbar bg-base-100 shadow-md">
     <div class="flex-1">
-      <NuxtLink class="btn btn-ghost normal-case text-xl" to="/">{{
-        siteName
-      }}</NuxtLink>
+      <NuxtLink class="btn btn-ghost normal-case text-xl" to="/">My store</NuxtLink>
     </div>
     <!-- Right Side -->
     <div class="flex-none">
