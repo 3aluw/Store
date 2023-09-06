@@ -1,11 +1,13 @@
 <script setup>
+
 const productStore = useProductStore();
 useAsyncData("products", async () => productStore.fetchProducts());
+useAsyncData("products", async () => productStore.fetchCategories());
+
 </script>
 <template>
   <div>
     <HomeHero />
-
     <div class="flex justify-end mt-10 px-10">
       <ProductFilters />
     </div>
