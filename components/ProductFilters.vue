@@ -32,10 +32,7 @@ debouncedWatch(
       </label>
       <select id="filterHeat" class="select select-bordered" v-model="filters[`fields.category`]">
         <option value="">All</option>
-        <option value="Mild">Mild</option>
-        <option value="Medium">Medium</option>
-        <option value="Hot">Hot</option>
-        <option value="Hot">kids-games</option>
+        <option v-for="category in productStore.categories" :value="category">{{ category }}</option>
       </select>
     </div>
     <div class="form-control w-full max-w-xs">
