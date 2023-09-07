@@ -38,6 +38,7 @@
                 <AdminOrders v-if="componentToShow === 'orders'" />
                 <AdminProducts v-if="componentToShow === 'products'" />
             </main>
+
         </div>
     </div>
 </template >
@@ -137,6 +138,7 @@ main {
     background: #EFF3F4;
     min-height: 100vh;
 }
+
 
 
 /*hamburger icon */
