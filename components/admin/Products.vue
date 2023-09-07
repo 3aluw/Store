@@ -52,8 +52,29 @@
             <label tabindex="0" class="btn m-1 bg-blue-100 btn-circle"><img src="~/assets/icons/cog.svg"></label>
             <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 border border-slate-300">
                 <li><a>Add a product</a></li>
-                <li><a>manage categories</a></li>
+                <li><a @click="openCategoriesModal">manage categories</a></li>
             </ul>
+        </div>
+
+        <div class="modal" :class="{ 'modal-open': showCategoriesModal }" v-if="showCategoriesModal">
+            <div class="modal-box">
+                <div class="categories flex flex-wrap gap-2">
+                    <div v-for="(category, index) in categories"
+                        class="btn btn-sm  btn-outline normal-case gap-2 cursor-default ">
+                        {{ category }}
+                        <button class="badge badge-sm badge-error" @click="categories.splice(index, 1)">X</button>
+                    </div>
+                </div>
+                <input type="text" placeholder="add a new category" class="input input-bordered max-w-xs my-4"
+                    @keyup.enter="(e) => { categories.push(e.target.value); e.target.value = '' }" />
+                <div class="modal-action">
+                    <button class="btn" @click="showCategoriesModal = false">
+                        Cancel
+                    </button>
+                    <button class="btn" @click="patchCategories"><span class="pl-2">apply changes</span></button>
+
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -129,8 +150,27 @@ const handleDelete = async () => {
 
 //categories logic
 const showCategoriesModal = ref(false);
+const categories = ref([])
+const contentType = ref()
+const openCategoriesModal = async () => {
+    contentType.value = await $contentfulManager.contentType.get({ "contentTypeId": "product" })
+    categories.value = [...contentType.value.fields.find(field => field.id === "category").items.validations[0].in]
+    showCategoriesModal.value = !showCategoriesModal.value;
+}
+const patchCategories = () => {
+    console.log(categories.value)
+    contentType.value.fields.find(field => field.id === "category").items.validations[0].in = categories.value
+    try {
+        $contentfulManager.contentType.update({ "contentTypeId": "product" }, contentType.value)
+        useAlertsStore().success("categories are updated")
+        showCategoriesModal.value = false
+    }
+    catch (err) {
+        console.log(err);
+        useAlertsStore().error("categories didn't get updated")
+    }
 
-
+}
 
 </script>
 <style >
