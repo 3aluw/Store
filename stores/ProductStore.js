@@ -52,8 +52,7 @@ export const useProductStore = defineStore("ProductStore", {
     async fetchCategories(){
       const { $contentful} = useNuxtApp();
       const contentType = await $contentful.getContentType("product")
-      //the 5th field is category on contentful...it needs to bee changed if its order had been changed in contentful
-     this.categories = contentType.fields[5].items.validations[0].in 
+     this.categories = contentType.fields.find(field => field.id === "category").items.validations[0].in
     }
   },
 });
