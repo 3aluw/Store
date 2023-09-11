@@ -165,14 +165,16 @@ const handlePatch = async () => {
 const createProduct = async () => {
 
     //upload picture > create asset & process it fot all locales
-    const picture = document.getElementById("product-pic-input").files[0]
+    const picture = document.getElementById("product-pic-input").files[0];
+
     //check if all fields are written then upload then create the entry and upload the image  
     if (picture && validateProductForm(selectedProduct.value.fields)) {
-        const uploadId = await uploadPicture(picture)
-        const asset = await createAsset(uploadId, selectedProduct.value.fields.name['en-US'])
-        console.log('asset: ', asset.sys.id);
 
-        createEntry(asset.sys.id)
+
+        const uploadId = await uploadPicture(picture)
+        const asset = await createAsset(uploadId, picture)
+        const entry = await createEntry(asset.sys.id);
+        publishAssetEntry(asset.sys.id, entry.sys.id)
 
     } else {
         useAlertsStore().warning("All fields are required")
@@ -189,16 +191,16 @@ const uploadPicture = async (picture) => {
     })
     return upload.sys.id
 }
-const createAsset = async (uploadId, pictureName) => {
+const createAsset = async (uploadId, picture) => {
     const asset = await $contentfulManager.asset.create({ environmentId: "master" }, {
         "fields": {
             "title": {
-                "en-US": pictureName
+                "en-US": picture.name
             },
             "file": {
                 "en-US": {
-                    "contentType": "image/png",
-                    "fileName": "Capture.PNG",
+                    "contentType": picture.type,
+                    "fileName": picture.name,
                     "uploadFrom": {
                         "sys": {
                             "type": "Link",
@@ -211,7 +213,7 @@ const createAsset = async (uploadId, pictureName) => {
         }
 
     })
-    $contentfulManager.asset.processForAllLocales({ environmentId: "master" }, asset)
+    await $contentfulManager.asset.processForAllLocales({ environmentId: "master" }, asset)
     return asset
 }
 const createEntry = async (assetId) => {
@@ -227,7 +229,21 @@ const createEntry = async (assetId) => {
     }
 
     const entry = await $contentfulManager.entry.create({ contentTypeId: "product" }, selectedProduct.value)
+    return entry
 }
+const publishAssetEntry = async (assetId, entryId) => {
+    const asset = await $contentfulManager.asset.get({ assetId })
+    console.log('asset: ', asset);
+    const entry = await $contentfulManager.entry.get({ entryId })
+
+    $contentfulManager.asset.publish({ assetId: asset.sys.id }, asset)
+    $contentfulManager.entry.publish({ entryId: entry.sys.id }, entry)
+
+
+}
+
+
+
 
 const handleDelete = async () => {
     try {
