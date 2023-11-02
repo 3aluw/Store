@@ -1,11 +1,11 @@
-import { defineNuxtConfig } from "nuxt";
 
-requireEnvVars();
+//requireEnvVars();
+
 
 // https://v3.nuxtjs.org/api/configuration/nuxt.config
 export default defineNuxtConfig({
-  css: ["@/assets/main.css", "@formkit/themes/genesis"],
-  autoImports: {
+  css: ["~/assets/main.css", "@formkit/themes/genesis"],
+  imports: {
     dirs: ["stores"],
   },
   modules: [
@@ -21,27 +21,24 @@ export default defineNuxtConfig({
     stripeSecret: process.env.STRIPE_SECRET,
     public: {
       contentfulSpace: process.env.NUXT_CONTENTFUL_SPACE,
+      contentfulCMAccessToken: process.env.NUXT_CONTENTFUL_CM_ACCESS_TOKEN,
       contentfulPublicAccessToken:
         process.env.NUXT_CONTENTFUL_PUBLIC_ACCESS_TOKEN,
       deskreeBaseUrl: process.env.NUXT_DESKREE_BASE_URL,
     },
   },
   build: {
-    transpile:
-      process.env.npm_lifecycle_script === "nuxt generate"
-        ? ["contentful"]
-        : [],
-    postcss: {
-      postcssOptions: {
+
+  },  postcss: {
         plugins: {
           tailwindcss: {},
           autoprefixer: {},
         },
       },
-    },
-  },
+
 });
 
+/*
 function requireEnvVars() {
   const map = {
     "Deskree Project URL": process.env.NUXT_DESKREE_BASE_URL,
@@ -59,3 +56,4 @@ function requireEnvVars() {
 
   if (!ready) process.exit();
 }
+*/

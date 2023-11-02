@@ -1,0 +1,14 @@
+
+add recursive function to this in case of total > limit (100). increase to page 2 - 3... 
+deskree.orders.getOrdersByDateRange
+deskree.users.getUsersByDateRange
+
+task 2
+in case of all orders in the past week had been retrieved handle them locally to generate a chart in stats component instead of relying on deskree
+How ? make useTimer().getPastWeekDays generate a date without time (8/27/2023) using the function : new Intl.DateTimeFormat('en-US').format(//pass date)
+then use the same function with the orders object(createdAt attribute) then check for equality to create an object of days with the number of orders
+OR 
+Use the retrieved data in the monthly metrics to generate the charts and change the title of the charts to : the distribution of latest orders - users 
+
+TASK 3
+add orders_number and total_spent columns to users table on deskree and modify it on every order delivered on admin>orders>editUserOrders function passing to it currentOrder.value.author as user uid

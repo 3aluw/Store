@@ -13,14 +13,15 @@ function handleBuyClick() {
   if (user.value.email && user.value.address && user.value.wilaya && user.value.phone_number) { showConfirmation.value = !showConfirmation.value }
   else { useAlertsStore().warning("please complete your profile infos") }
 }
-function handleOrder() {
-  cartStore.products.forEach((product) => Deskree.orders.placeOrder(product))
+async function handleOrder() {
+  cartStore.products.forEach((product) => Deskree.orders.placeOrder(product));
+  cartStore.products = [];
+  await navigateTo('/')
 }
 
 
 </script>
 <template>
-
   <div>
 
     <div class="m-10" v-if="cartStore.count">
@@ -75,7 +76,7 @@ function handleOrder() {
                       <div class="font-bold">
                         {{ product.fields.name }}
                       </div>
-                      <ProductHeat :heat-level="product.fields.heatLevel" />
+                      <!-- <ProductHeat :heat-level="product.fields.heatLevel" />-->
                     </td>
                     <td>
                       <ProductPrice :price="product.fields.price" />
@@ -96,8 +97,8 @@ function handleOrder() {
                 </tbody>
               </table>
               <button v-if="selected.length" class="text-sm text-red-500" @click="
-  cartStore.removeProducts(selected);
-selected = [];
+                cartStore.removeProducts(selected);
+              selected = [];
               ">
                 Remove Selected
               </button>
@@ -126,7 +127,7 @@ selected = [];
                 <p> Name : {{ Deskree.loggedInUser.value.email ? Deskree.loggedInUser.value.name : "not set" }}</p>
                 <p> phone number : <strong> {{
                   Deskree.loggedInUser.value.phone_number.length > 5 ?
-                    Deskree.loggedInUser.value.phone_number : "not set"
+                  Deskree.loggedInUser.value.phone_number : "not set"
                 }}</strong></p>
                 <p> wilaya : <strong> {{
                   Deskree.loggedInUser.value.wilaya ? Deskree.loggedInUser.value.wilaya : "not set"

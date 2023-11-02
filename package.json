@@ -7,24 +7,28 @@
     "preview": "nuxt preview"
   },
   "devDependencies": {
-    "@tailwindcss/typography": "^0.5.4",
-    "autoprefixer": "^10.4.8",
-    "nuxt": "3.0.0-rc.6",
-    "postcss": "^8.4.16",
-    "tailwindcss": "^3.1.8"
+    "@tailwindcss/typography": "^0.5.9",
+    "autoprefixer": "^10.4.15",
+    "nuxt": "^3.7.0",
+    "postcss": "^8.4.29",
+    "tailwindcss": "^3.3.3"
   },
   "dependencies": {
-    "@formkit/nuxt": "^1.0.0-beta.10",
+    "@formkit/nuxt": "^1.0.0",
     "@formkit/themes": "^1.0.0-beta.10",
     "@formkit/vue": "^1.0.0-beta.10",
-    "@pinia/nuxt": "^0.3.1",
-    "@vueuse/core": "^9.1.0",
-    "contentful": "^9.1.33",
-    "daisyui": "^2.22.0",
-    "marked": "^4.0.18",
-    "pinia": "^2.0.18",
-    "stripe": "^10.3.0",
+    "@pinia/nuxt": "^0.4.11",
+    "@vueuse/core": "^9.13.0",
+    "apexcharts": "^3.42.0",
+    "contentful": "^9.3.5",
+    "contentful-management": "^10.42.0",
+    "daisyui": "^2.52.0",
+    "marked": "^4.3.0",
+    "npm-check-updates": "^16.13.2",
+    "pinia": "^2.1.6",
+    "stripe": "^10.17.0",
     "uuid": "^8.3.2",
-    "vue": "^3.2.37"
+    "vue": "^3.2.37",
+    "vue3-apexcharts": "^1.4.4"
   }
 }

@@ -2,17 +2,15 @@
 import { useCartStore } from '~~/stores/cartStore';
 
 
-const { siteName } = useAppConfig();
 const deskree = useDeskree();
 const loggedInUser = computed(() => deskree.loggedInUser.value);
 const cartStore = useCartStore();
+
 </script>
 <template>
   <div class="navbar bg-base-100 shadow-md">
     <div class="flex-1">
-      <NuxtLink class="btn btn-ghost normal-case text-xl" to="/">{{
-        siteName
-      }}</NuxtLink>
+      <NuxtLink class="btn btn-ghost normal-case text-xl" to="/">My store</NuxtLink>
     </div>
     <!-- Right Side -->
     <div class="flex-none">
@@ -46,12 +44,10 @@ const cartStore = useCartStore();
         </label>
         <ul tabindex="0" class="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52">
           <li>
-            <a class="justify-between">
+            <NuxtLink to="user/profile" class="justify-between">
               Profile
-              <span class="badge">New</span>
-            </a>
+            </NuxtLink>
           </li>
-          <li><a>Settings</a></li>
           <li>
             <NuxtLink to="/logout">Logout</NuxtLink>
           </li>

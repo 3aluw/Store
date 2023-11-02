@@ -30,16 +30,13 @@ function handleAddToCart(product) {
   <div class="mt-10 max-w-6xl mx-auto">
     <div v-if="product">
       <div class="sm:flex">
-        <img
-          class="mr-10 h-80 object-contain sm:w-1/3"
-          :src="product?.fields.image[0].fields?.file.url"
-          :alt="product?.fields.image[0].fields?.file.description"
-        />
+        <img class="mr-10 h-80 object-contain sm:w-1/3" :src="product?.fields.image[0].fields?.file.url"
+          :alt="product?.fields.image[0].fields?.file.description" />
         <div class="px-10 sm:pl-0 sm:w-2/3">
           <h1 class="text-2xl">{{ product?.fields.name }}</h1>
           <h2>
             <ProductPrice :price="product.fields.price" />
-            <ProductHeat :heatLevel="product.fields.heatLevel" />
+            <!--    <ProductHeat :heatLevel="product.fields.heatLevel" />-->
           </h2>
           <div class="prose prose-sm">
             <p>{{ product.fields.summary }}</p>

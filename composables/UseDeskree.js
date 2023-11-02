@@ -29,7 +29,7 @@ async function loginUserUsingLocalS(){
     ) {
     await  initUser(userIdInLocalStorage.value);
       loggedInUserInit.value = true;
-     //  console.log(tokenInLocalStorage.value)
+    
     }
   };
   
@@ -102,22 +102,28 @@ async function loginUserUsingLocalS(){
     logout() {
       return auth.logout();
     },
-     get () {
-      
-      return  loggedInUser;
+     get () { 
+      return  loggedInUser.value;
     },
 
    async updateUser({name, phone_number, wilaya,address}){
-    //using uid from cart obj can cause errors
-      //console.log(loggedInUser.value.cart.author)
-     await dbRestRequest(`/users/${loggedInUser.value.cart.author}`,"PATCH",{
-        "address":address,"wilaya":wilaya,"name":name,"phone_number":phone_number 
-
-      })
-     loggedInUser.value = { ...loggedInUser.value,  "address":address,"wilaya":wilaya,"name":name,"phone_number":phone_number  }
-     
-      // await loginUserUsingLocalS();
+      dbRestRequest(`/users/${userIdInLocalStorage.value }`,"PATCH",{
+        "address":address,"wilaya":wilaya,"name":name,"phone_number":phone_number  })
+    loggedInUser.value = { ...loggedInUser.value,  "address":address,"wilaya":wilaya,"name":name,"phone_number":phone_number  }  
     },
+
+    getByUid(uid){
+      return dbRestRequest(`/users/${uid}`)
+    },
+    deleteUser(uid){
+      return dbRestRequest(`/users/${uid}`,"DELETE")
+    },
+/*
+ getUsersByDateRange(queryObj){
+  return dbRestRequest("/users?where=" + JSON.stringify(queryObj))
+
+   },
+*/
 
     //cart
     async updateCart(products) {
@@ -160,37 +166,44 @@ return dbRestRequest("/reviews?where=" + JSON.stringify(querryParams))
 const orders ={
 
  getOreders(){
-const querryObj = [{"attribute":"author","operator":"=","value":userIdInLocalStorage.value}]
+const queryObj = [{"attribute":"author","operator":"=","value":userIdInLocalStorage.value}]
 
-return dbRestRequest("/orders?where=" + JSON.stringify(querryObj))
+return dbRestRequest("/orders?where=" + JSON.stringify(queryObj))
 },
-
-
 placeOrder({count, sys, fields}){
- dbRestRequest("/orders","POST", {
+ return dbRestRequest("/orders","POST", {
  "count" : count,
  "product_id": sys.id,
   "buyer_name": loggedInUser.value.name,
-  "is_delivered" : false,
+  "delivery_status" : "waiting",
   "phone_number" : loggedInUser.value.phone_number,
   "wilaya": loggedInUser.value.wilaya,
   "address": loggedInUser.value.address,
-"price" : fields.price*count ,
+  "price" : fields.price*count ,
   })
-
-  
-
+},
+ editOrder(uid,reqObj){
+  const reqBody = JSON.stringify(reqObj)
+return dbRestRequest(`/orders/${uid}`,"PATCH", reqBody)
+},
+deleteOrder(uid){
+  return dbRestRequest(`/orders/${uid}`,"DELETE")
+}
 }
 
+
+//query function 
+const handleQuery = ( endpoint,queryObj ,params ='&limit=10')=>{
+  return dbRestRequest( endpoint + "?where=" + JSON.stringify(queryObj) + params)
 }
+
+
+
+
   // private composable functions
   function initToken(token) {
     tokenInLocalStorage.value = token;
   }
-
-
-
-
 
   async function initUser(userIdOrUser) {
     if (typeof userIdOrUser === "string") {
@@ -203,8 +216,7 @@ placeOrder({count, sys, fields}){
         if (!err.body) return;
         const tokenHasExpired = err.body.errors.find(
           (e) =>
-            e.code === "403" && e.detail.startsWith("Auth token has expired")
-        );
+            e.code === "403" && e.detail.startsWith("Auth token has expired"));
         if (tokenHasExpired) {
           router.push("/logout");
         }
@@ -246,6 +258,6 @@ placeOrder({count, sys, fields}){
     tokenInLocalStorage,
     loggedInUser,
     initUser, 
-    orders
+    orders,handleQuery
   };
 }

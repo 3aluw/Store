@@ -18,7 +18,6 @@ debouncedWatch(
 );
 </script>
 <template>
-
   <div class="filters-wrapper flex gap-2 items-center">
     <AppSpinner style="transform: translateY(15px)" v-if="loadingDebounced" />
     <div class="form-control">
@@ -31,11 +30,9 @@ debouncedWatch(
       <label class="label" for="filterHeat">
         <span class="label-text">Filter By Heat</span>
       </label>
-      <select id="filterHeat" class="select select-bordered" v-model="filters[`fields.heatLevel`]">
+      <select id="filterHeat" class="select select-bordered" v-model="filters[`fields.category`]">
         <option value="">All</option>
-        <option value="Mild">Mild</option>
-        <option value="Medium">Medium</option>
-        <option value="Hot">Hot</option>
+        <option v-for="category in productStore.categories" :value="category">{{ category }}</option>
       </select>
     </div>
     <div class="form-control w-full max-w-xs">
@@ -44,8 +41,9 @@ debouncedWatch(
       </label>
       <select class="select select-bordered" v-model="filters.order" id="orderBy">
         <option value="">None</option>
-        <option value="-fields.heatLevel">Heat (Mild First)</option>
-        <option value="fields.heatLevel">Heat (Hot First)</option>
+
+        <option value="-sys.createdAt">date (newest)</option>
+        <option value="sys.createdAt">date (oldest)</option>
         <option value="fields.price">Price (Low to High)</option>
         <option value="-fields.price">Price (High to Low)</option>
       </select>

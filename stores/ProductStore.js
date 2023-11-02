@@ -2,24 +2,24 @@ import { defineStore, acceptHMRUpdate } from "pinia";
 export const useProductStore = defineStore("ProductStore", {
   state: () => {
     return {
-      /**
+      /*
        * The listing of all the products
        */
       products: [],
 
-      /**
+      /*
        * Different ways of fetching the listing of products (filters, order, search)
        */
       filters: {
-        "fields.heatLevel":useRoute().query["fields.heatLevel"] || "",
+        "fields.category":useRoute().query["fields.category"] || "",
         order: useRoute().query.order||"" ,
         query: useRoute().query.query || "",
       },
 
-      /**
-       * A single project to show all the details of
-       */
       singleProduct: null,
+
+      //Product categories
+     categories : []
     };
   },
   getters: {
@@ -33,22 +33,27 @@ export const useProductStore = defineStore("ProductStore", {
   },
   actions: {
     async fetchProducts() {
-      
+
    const { $contentful} = useNuxtApp();
    const activeFilters = this.activeFilters
    const entries = await $contentful.getEntries({
     content_type : "product",
     ...this.filters
    });
-
    this.products =  entries.items ; 
    return this.products
     },
+
     async fetchProduct(id) {
       const { $contentful } = useNuxtApp();
       this.singleProduct = await $contentful.getEntry(id);
       return this.singleProduct;
     },
+    async fetchCategories(){
+      const { $contentful} = useNuxtApp();
+      const contentType = await $contentful.getContentType("product")
+     this.categories = contentType.fields.find(field => field.id === "category").items.validations[0].in
+    }
   },
 });
 
