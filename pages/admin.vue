@@ -56,9 +56,10 @@ onMounted(async () => {
 definePageMeta({
 
     middleware: () => {
-        const Deskree = useDeskree();
-        const res = computed(() => Deskree.loggedInUser.value)
-
+        const deskree = useDeskree();
+        const loggedInUser = computed(() => deskree.loggedInUser.value)
+        const isModOrAdmin = computed(() => loggedInUser.value.roles.some((role) => deskree.roles.includes(role)))
+        if (!isModOrAdmin) return abortNavigation()
     }
 })
 
