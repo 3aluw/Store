@@ -1,6 +1,9 @@
 import { useLocalStorage } from "@vueuse/core";
 import { useRouter } from "vue-router";
 
+//roles
+//admin, moderator
+const roles = ["n1p7bliRJvTk3bwilZLh","ysQAF8GKCCAGR9hWVgVY"]
 // user data persisted to local storage
 const tokenInLocalStorage = useLocalStorage("deskree_token", null);
 const refreshTokenInLocalStorage = useLocalStorage("deskree_refresh_token", null);
@@ -276,7 +279,7 @@ catch(err){
     return $fetch(endpoint, options);
   }
 
-  return {
+  return {roles,
     loginUserUsingLocalS,
     auth,
     user,

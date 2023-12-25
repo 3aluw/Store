@@ -10,7 +10,7 @@ const cartStore = useCartStore();
 <template>
   <div class="navbar bg-base-100 shadow-md">
     <div class="flex-1">
-      <NuxtLink class="btn btn-ghost normal-case text-xl" to="/">My store</NuxtLink>
+      <NuxtLink class="btn btn-ghost normal-case text-xl" to="/">FALAFEL</NuxtLink>
     </div>
     <!-- Right Side -->
     <div class="flex-none">
@@ -46,6 +46,12 @@ const cartStore = useCartStore();
           <li>
             <NuxtLink to="user/profile" class="justify-between">
               Profile
+            </NuxtLink>
+          </li>
+          <li>
+            <NuxtLink to="/admin" v-if="loggedInUser.roles.some((role) => deskree.roles.includes(role))"
+              class="justify-between">
+              admin panel
             </NuxtLink>
           </li>
           <li>
