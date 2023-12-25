@@ -314,10 +314,6 @@ const patchCategories = () => {
     z-index: -1;
 }
 
-.dropdown {
-    bottom: 2rem;
-    right: 0.5rem;
-}
 
 label.btn:hover {
     background: white;
