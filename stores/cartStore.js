@@ -70,7 +70,7 @@ export const useCartStore = defineStore("CartStore", () => {
   "In Guezzam"
 ];
   // getters
-  const count = computed(() => products.value.length);
+  const count = computed(() => products.value.reduce((prev,current)=>{return prev += current.count},0));
   const isEmpty = computed(() => count.value === 0);
   const subtotal = computed((state) => {
     return products.value.reduce((p, product) => {
