@@ -13,9 +13,9 @@ defineProps<{
       <figure>
         <img :src="product.fields.image[0].fields?.file.url" :alt="product.fields.image[0].fields?.file.description" />
       </figure>
-      <div class="card-body">
+      <div class="card-body justify-between">
         <h2 class="justify-between flex">
-          <span class="w-3/5"> {{ product.fields.name }} </span>
+          <span class="w-3/5 font-bold pb-4"> {{ product.fields.name }} </span>
           <small class="w-2/5 p-1 badge badge-outline">
             <ProductPrice :price="product.fields.price" />
           </small>

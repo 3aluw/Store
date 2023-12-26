@@ -36,4 +36,8 @@ onMounted(async () => {
     font-size: 14px;
   }
 }
+
+html {
+  scroll-behavior: smooth;
+}
 </style>

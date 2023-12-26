@@ -12,7 +12,7 @@ useAsyncData("products", async () => productStore.fetchCategories());
       <ProductFilters />
     </div>
 
-    <div v-if="productStore.products"
+    <div id="products" v-if="productStore.products"
       class="gap-7 p-10 sm:grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 flex-wrap justify-items-stretch items-stretch">
       <TransitionGroup name="products">
         <ProductCard v-for="product in productStore.products" :product="product" :key="product.sys.id" class="mb-5" />
