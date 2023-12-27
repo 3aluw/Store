@@ -5,6 +5,11 @@
 // https://v3.nuxtjs.org/api/configuration/nuxt.config
 export default defineNuxtConfig({
   css: ["~/assets/main.css", "@formkit/themes/genesis"],
+  routeRules: {
+    "/admin": { ssr: false },
+    "/cart": { ssr: false },
+    "/profile": { ssr: false },
+  },
   imports: {
     dirs: ["stores"],
   },

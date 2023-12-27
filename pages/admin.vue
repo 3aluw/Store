@@ -48,27 +48,12 @@
 const adminStore = useAdminStore()
 const Deskree = useDeskree();
 onMounted(async () => {
-    console.log('admin mounted');
     await adminStore.generateMonthlyMetrics();
 })
 
 definePageMeta({
-
-    middleware: [
-        /*() => {
-        if (process.server) return;
-
-        const Deskree = useDeskree();
-        const loggedInUser = computed(() => Deskree.loggedInUser.value)
-        const isModOrAdmin = computed(() => loggedInUser.value?.roles.some((role) => Deskree.roles.includes(role)))
-        console.log(Deskree.user.get(), isModOrAdmin.value);
-        if (!isModOrAdmin.value) {
-
-            // return navigateTo("/")
-        }
-    }*/ "admin"]
+    middleware: ["auth", "admin"]
 })
-
 
 const componentToShow = ref('products')
 const changeComponent = (e) => {
