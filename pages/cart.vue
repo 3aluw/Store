@@ -1,26 +1,4 @@
-<script setup>
-const cartStore = useCartStore();
-const Deskree = useDeskree();
-const selected = ref([]);
-const checkAll = ref();
-const showConfirmation = ref(false)
 
-
-const user = ref(Deskree.loggedInUser);
-
-function handleBuyClick() {
-
-  if (user.value.email && user.value.address && user.value.wilaya && user.value.phone_number) { showConfirmation.value = !showConfirmation.value }
-  else { useAlertsStore().warning("please complete your profile infos") }
-}
-async function handleOrder() {
-  cartStore.products.forEach((product) => Deskree.orders.placeOrder(product));
-  cartStore.products = [];
-  await navigateTo('/')
-}
-
-
-</script>
 <template>
   <div>
 
@@ -153,6 +131,29 @@ async function handleOrder() {
     </div>
   </div>
 </template>
+<script setup>
+const cartStore = useCartStore();
+const Deskree = useDeskree();
+const selected = ref([]);
+const checkAll = ref();
+const showConfirmation = ref(false)
+
+
+const user = ref(Deskree.loggedInUser);
+
+function handleBuyClick() {
+
+  if (user.value.email && user.value.address && user.value.wilaya && user.value.phone_number) { showConfirmation.value = !showConfirmation.value }
+  else { useAlertsStore().warning("please complete your profile infos") }
+}
+async function handleOrder() {
+  cartStore.products.forEach((product) => Deskree.orders.placeOrder(product));
+  cartStore.products = [];
+  await navigateTo('/')
+}
+
+
+</script>
 <style scoped>
 .fade-enter-active,
 .fade-leave-active {

@@ -44,23 +44,29 @@
 </template >
 
 <script setup>
-const Deskree = useDeskree();
-const user = computed(() => Deskree.loggedInUser.value)
-const adminStore = useAdminStore()
 
+const adminStore = useAdminStore()
+const Deskree = useDeskree();
 onMounted(async () => {
-    //console.log(user.value, user)
+    console.log('admin mounted');
     await adminStore.generateMonthlyMetrics();
 })
 
 definePageMeta({
 
-    middleware: () => {
-        const deskree = useDeskree();
-        const loggedInUser = computed(() => deskree.loggedInUser.value)
-        const isModOrAdmin = computed(() => loggedInUser.value.roles.some((role) => deskree.roles.includes(role)))
-        if (!isModOrAdmin) return abortNavigation()
-    }
+    middleware: [
+        /*() => {
+        if (process.server) return;
+
+        const Deskree = useDeskree();
+        const loggedInUser = computed(() => Deskree.loggedInUser.value)
+        const isModOrAdmin = computed(() => loggedInUser.value?.roles.some((role) => Deskree.roles.includes(role)))
+        console.log(Deskree.user.get(), isModOrAdmin.value);
+        if (!isModOrAdmin.value) {
+
+            // return navigateTo("/")
+        }
+    }*/ "admin"]
 })
 
 
