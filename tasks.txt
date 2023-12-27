@@ -12,3 +12,10 @@ Use the retrieved data in the monthly metrics to generate the charts and change 
 
 TASK 3
 add orders_number and total_spent columns to users table on deskree and modify it on every order delivered on admin>orders>editUserOrders function passing to it currentOrder.value.author as user uid
+
+Task4
+allow guest users
+
+TASK5
+prevent the loginUsingLocalStorage from runing on every mount...instead store the login infos and use them if the login was not that old (if the user logged in a day before use the stored credentials in the local storage without a re-login)
+

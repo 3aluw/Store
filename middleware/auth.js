@@ -16,7 +16,7 @@ if(!user){
     if (!user) {
       useAlertsStore().warning("please login first")
 
-      return navigateTo('/')
+      return navigateTo('/login')
       } 
 
 }
