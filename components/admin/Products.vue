@@ -294,7 +294,7 @@ const patchCategories = () => {
 }
 
 </script>
-<style >
+<style scoped>
 .product-card {
     transition: all 0.5s ease-in-out;
 }
@@ -320,6 +320,6 @@ const patchCategories = () => {
 }
 
 label.btn:hover {
-    background: white;
+    background: rgba(255, 255, 255, 0.623);
 }
 </style>

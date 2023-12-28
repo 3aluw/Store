@@ -1,8 +1,12 @@
 import { useLocalStorage } from "@vueuse/core";
 import { useRouter } from "vue-router";
 
+//roles
+//admin, moderator
+const roles = ["n1p7bliRJvTk3bwilZLh","ysQAF8GKCCAGR9hWVgVY"]
 // user data persisted to local storage
 const tokenInLocalStorage = useLocalStorage("deskree_token", null);
+const refreshTokenInLocalStorage = useLocalStorage("deskree_refresh_token", null);
 const userIdInLocalStorage = useLocalStorage("deskree_user_uid", null);
 const loggedInUser = ref(null);
 const loggedInUserInit = ref(false);
@@ -52,7 +56,7 @@ async function loginUserUsingLocalS(){
 
       // store the token locally
       userIdInLocalStorage.value = user.uid;
-      initToken(user.idToken);
+      initToken(user.idToken, user.refreshToken);
 
       // create the users one and only cart
       const cart = await dbRestRequest("/carts", "POST", {
@@ -79,7 +83,7 @@ async function loginUserUsingLocalS(){
 
       // save user id and token to local storage
       userIdInLocalStorage.value = res.data.uid;
-      initToken(res.data.idToken);
+      initToken(res.data.idToken, res.data.refreshToken);
 
       // initialize the user with cart data
       await initUser(res.data.uid);
@@ -201,8 +205,9 @@ const handleQuery = ( endpoint,queryObj ,params ='&limit=10')=>{
 
 
   // private composable functions
-  function initToken(token) {
-    tokenInLocalStorage.value = token;
+  function initToken(token, refreshToken) {
+   if(token) tokenInLocalStorage.value = token;
+   if(refreshToken) refreshTokenInLocalStorage.value = refreshToken;
   }
 
   async function initUser(userIdOrUser) {
@@ -214,11 +219,14 @@ const handleQuery = ( endpoint,queryObj ,params ='&limit=10')=>{
        
       } catch (err) {
         if (!err.body) return;
-        const tokenHasExpired = err.body.errors.find(
-          (e) =>
-            e.code === "403" && e.detail.startsWith("Auth token has expired"));
+
+        const tokenHasExpired = err.body.errors.find((e) => e.code === "403" && e.detail.startsWith("Auth token has expired"));
         if (tokenHasExpired) {
-          router.push("/logout");
+          console.log('tokenHasExpired: ', tokenHasExpired);
+          
+          const getNewAccess = await useRefreshToken()
+          getNewAccess ?   loginUserUsingLocalS() :   router.push("/logout"); useAlertsStore.notify("please login again")
+         ;
         }
       } 
     } else {
@@ -226,6 +234,27 @@ const handleQuery = ( endpoint,queryObj ,params ='&limit=10')=>{
     }
     
   }
+   //a function that return true if the access token had been renewed using the refresh token, false if it is not renewed
+ async function useRefreshToken(){
+  console.log("trying refresh token");
+  try{
+const res = await $fetch("/auth/accounts/token/refresh", {
+  baseURL,
+  method: "POST",
+  body: { "refresh_token": refreshTokenInLocalStorage.value },
+});
+const newAccessToken = res.data.access_token
+console.log('newAccessToken: ', newAccessToken);
+
+initToken(newAccessToken)
+return true
+}
+catch(err){
+  console.log(err);
+  return false
+}
+  }
+  
 
   function integrationsRestRequest(endpoint, method = "GET", body) {
     endpoint = endpoint.replace(/^\//, "");
@@ -250,7 +279,7 @@ const handleQuery = ( endpoint,queryObj ,params ='&limit=10')=>{
     return $fetch(endpoint, options);
   }
 
-  return {
+  return {roles,
     loginUserUsingLocalS,
     auth,
     user,

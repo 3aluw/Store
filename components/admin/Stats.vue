@@ -39,12 +39,13 @@
                     <p>latest orders</p>
                     <div class="flex gap-8 justify-around">
                         <div class="flex flex-col">
-                            <p v-for="index in 5" :key="index">{{ adminStore.ordersObject?.data[index].attributes.buyer_name
+                            <p v-for="index in 5" :key="index">{{
+                                adminStore.ordersObject?.data[index]?.attributes.buyer_name
                             }}</p>
 
                         </div>
                         <div class="flex flex-col order-value">
-                            <p v-for="index in 5" :key="index">{{ adminStore.ordersObject?.data[index].attributes.price }}
+                            <p v-for="index in 5" :key="index">{{ adminStore.ordersObject?.data[index]?.attributes.price }}
                                 DA
                             </p>
                         </div>

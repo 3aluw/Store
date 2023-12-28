@@ -44,24 +44,16 @@
 </template >
 
 <script setup>
-const Deskree = useDeskree();
-const user = computed(() => Deskree.loggedInUser.value)
-const adminStore = useAdminStore()
 
+const adminStore = useAdminStore()
+const Deskree = useDeskree();
 onMounted(async () => {
-    //console.log(user.value, user)
     await adminStore.generateMonthlyMetrics();
 })
 
 definePageMeta({
-
-    middleware: () => {
-        const Deskree = useDeskree();
-        const res = computed(() => Deskree.loggedInUser.value)
-
-    }
+    middleware: ["auth", "admin"]
 })
-
 
 const componentToShow = ref('products')
 const changeComponent = (e) => {

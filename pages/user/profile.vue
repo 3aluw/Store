@@ -27,10 +27,12 @@
 </template>
 
 <script setup>
-
+definePageMeta({
+  middleware: ["auth"]
+})
 
 const Deskree = useDeskree();
-//const userGet = () => Deskree.user.get();
+
 const CartStore = useCartStore();
 const wilayas = CartStore.wilayas;
 
@@ -40,10 +42,10 @@ let loading = ref(false)
 
 
 onMounted(() => {
-  //update the user object if teh user signed up
+  //update the user object if the user signed up
   if (Deskree.user.get()) { user.value = Object.assign({}, Deskree.user.get()); }
   //if there is no user redirect to login page
-  if (user.value === null) { return navigateTo("/login") }
+  else if (user.value === null) { return navigateTo("/login") }
 
 })
 
