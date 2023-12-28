@@ -137,9 +137,7 @@ const Deskree = useDeskree();
 const selected = ref([]);
 const checkAll = ref();
 const showConfirmation = ref(false)
-definePageMeta({
-  middleware: ["auth"]
-})
+
 
 const user = ref(Deskree.loggedInUser);
 

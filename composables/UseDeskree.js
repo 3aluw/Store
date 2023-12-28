@@ -10,6 +10,8 @@ const refreshTokenInLocalStorage = useLocalStorage("deskree_refresh_token", null
 const userIdInLocalStorage = useLocalStorage("deskree_user_uid", null);
 const loggedInUser = ref(null);
 const loggedInUserInit = ref(false);
+
+//a function that re-evaluate some data ie:cart on every auth change  (loggedInUser variable change)
 const onAuthStateChangeCallbacks = ref([]);
 watch(loggedInUser, () => {
   onAuthStateChangeCallbacks.value.forEach((callback) => {
@@ -160,7 +162,7 @@ value: productId,
 return dbRestRequest("/reviews?where=" + JSON.stringify(querryParams))
     },
     submit({ text, rating, title, product_id }) {
-      //console.log( text, rating, title, product_id)
+      
       
       dbRestRequest("/reviews","POST", {
         "text":text,"title":title,"rating":rating,"product_id":product_id
