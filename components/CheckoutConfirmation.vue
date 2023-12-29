@@ -1,18 +1,14 @@
-<script setup>
-const cartStore = useCartStore();
-const Deskree = useDeskree();
-
-const emit = defineEmits(['placeOrder', 'toggleConformation'])
-
-function emitToggleConfirmation() { emit('toggleConformation') }
-function emitPlaceOrder() {
-    emit('placeOrder')
-}
-</script>
 <template>
-
     <div class="cont flex justify-center items-center ">
         <div class="card bg-white max-w-3xl text-center p-10">
+            <div class="card-actions justify-end mb-8">
+                <button class="btn btn-square btn-sm" @click="emitToggleConfirmation">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
             <p class="text-lg">Please read the following infos carefully before placing your order:</p>
 
             <p class="my-5">
@@ -25,7 +21,7 @@ function emitPlaceOrder() {
                 <p> Name : {{ Deskree.loggedInUser.value.email ? Deskree.loggedInUser.value.name : "not set" }}</p>
                 <p> phone number : <strong> {{
                     Deskree.loggedInUser.value.phone_number.length > 5 ?
-                        Deskree.loggedInUser.value.phone_number : "not set"
+                    Deskree.loggedInUser.value.phone_number : "not set"
                 }}</strong></p>
                 <p> wilaya : <strong> {{
                     Deskree.loggedInUser.value.wilaya ? Deskree.loggedInUser.value.wilaya : "not set"
@@ -34,17 +30,54 @@ function emitPlaceOrder() {
                     Deskree.loggedInUser.value.address ? Deskree.loggedInUser.value.address : "not set"
                 }}</strong></p>
 
+            </div>
+            <!--if guest buy-->
+            <div v-else>
+                <FormKit type="form" :config="{ validationVisibility: 'submit' }" @submit="handleSubmit" :actions="false">
+                    <FormKit type="text" label="full name" name="name" v-model="user.name" placeholder="enter your name"
+                        validation="required" />
+                    <FormKit type="number" label="Your phone number" name="phone" v-model="user.phone_number" required
+                        validation="number|length:10,10" placeholder="enter your phone number" />
+                    <FormKit type="select" label="city name" name="city" v-model="user.wilaya" placeholder="wilaya" required
+                        :options="cartStore.wilayas" />
+                    <FormKit type="text" label="Your address" name="address" v-model="user.address" placeholder="address"
+                        required />
+
+
+                    <AppButton class="mx-5 mt-8" @click="handleOrder">place my order</AppButton>
+                </FormKit>
 
             </div>
-            <div class="btns">
-                <AppButton class="mx-5" @click="emitPlaceOrder">place my order</AppButton>
-                <AppButton class="mx-5" @click="emitToggleConfirmation">back</AppButton>
-            </div>
+
 
         </div>
 
     </div>
 </template>
+<script setup>
+const cartStore = useCartStore();
+const Deskree = useDeskree();
+
+const emit = defineEmits(['toggleConformation'])
+function emitToggleConfirmation() { emit('toggleConformation') }
+
+const user = ref({
+    name: '',
+    phone_number: '',
+    wilaya: '',
+    address: '',
+});
+async function handleOrder() {
+    try {
+        cartStore.products.forEach(async (product) => await Deskree.orders.placeOrder(product));
+        useAlertsStore().success("orders placed successfully")
+        cartStore.products = [];
+        await navigateTo('/')
+    } catch {
+        useAlertsStore().error("an error occurred. please try again or re-login")
+    }
+}
+</script>
 
 <style scoped>
 .cont {

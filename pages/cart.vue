@@ -4,8 +4,7 @@
 
     <div class="m-10" v-if="cartStore.count">
       <Transition name="fade">
-        <CheckoutConfirmation v-if="showConfirmation" @toggleConformation="showConfirmation = !showConfirmation"
-          @placeOrder="handleOrder" />
+        <CheckoutConfirmation v-if="showConfirmation" @toggleConformation="showConfirmation = !showConfirmation" />
       </Transition>
 
       <h1 class="text-3xl mb-5 font-bold">Your Cart</h1>
@@ -101,6 +100,7 @@
                   <ProductPrice :price="cartStore.total" />
                 </li>
               </ul>
+
               <div class="card-actions justify-end w-full flex-col my-10" v-if="Deskree.loggedInUser.value">
                 <p> Name : {{ Deskree.loggedInUser.value.email ? Deskree.loggedInUser.value.name : "not set" }}</p>
                 <p> phone number : <strong> {{
@@ -121,8 +121,17 @@
                     Edit my infos
                   </button></NuxtLink>
               </div>
+              <div v-else class="card-actions justify-end w-full flex-col my-10">
+                <NuxtLink to="" class="btn btn-primary w-full" @click="handleGuestOrder"> <button>
+                    Buy as a guest
+                  </button></NuxtLink>
+                <NuxtLink to="login" class="btn  w-full"> <button>
+                    login
+                  </button></NuxtLink>
+              </div>
             </div>
           </div>
+
         </div>
       </div>
     </div>
@@ -146,12 +155,22 @@ function handleBuyClick() {
   if (user.value.email && user.value.address && user.value.wilaya && user.value.phone_number) { showConfirmation.value = !showConfirmation.value }
   else { useAlertsStore().warning("please complete your profile infos") }
 }
+/* To delete
 async function handleOrder() {
-  cartStore.products.forEach((product) => Deskree.orders.placeOrder(product));
-  cartStore.products = [];
-  await navigateTo('/')
-}
+  try {
+    cartStore.products.forEach(async (product) => await Deskree.orders.placeOrder(product));
+    useAlertsStore().success("orders placed successfully")
+    cartStore.products = [];
+    await navigateTo('/')
+  } catch {
+    useAlertsStore().error("an error occurred. please try again or re-login")
+  }
 
+}
+*/
+function handleGuestOrder() {
+  showConfirmation.value = true
+}
 
 </script>
 <style scoped>
