@@ -1,6 +1,6 @@
 import { useLocalStorage } from "@vueuse/core";
 import { useRouter } from "vue-router";
-
+import {ref, watch} from "vue"
 //roles
 //admin, moderator
 const roles = ["n1p7bliRJvTk3bwilZLh","ysQAF8GKCCAGR9hWVgVY"]
@@ -39,7 +39,6 @@ async function loginUserUsingLocalS(){
     }
   };
   
-
   /**
    * Auth functions exposed from composable
    */
@@ -83,7 +82,7 @@ async function loginUserUsingLocalS(){
         body: { email, password },
       });
 
-      // save user id and token to local storage
+      // save user id and tokens to local storage
       userIdInLocalStorage.value = res.data.uid;
       initToken(res.data.idToken, res.data.refreshToken);
 
@@ -194,16 +193,17 @@ return dbRestRequest(`/orders/${uid}`,"PATCH", reqBody)
 },
 deleteOrder(uid){
   return dbRestRequest(`/orders/${uid}`,"DELETE")
+},
 }
-}
-
 
 //query function 
 const handleQuery = ( endpoint,queryObj ,params ='&limit=10')=>{
   return dbRestRequest( endpoint + "?where=" + JSON.stringify(queryObj) + params)
 }
 
-
+/**
+   * guest user function exposed from the composable
+   */
 
 
   // private composable functions
@@ -258,10 +258,6 @@ catch(err){
   }
   
 
-  function integrationsRestRequest(endpoint, method = "GET", body) {
-    endpoint = endpoint.replace(/^\//, "");
-    return authorizedRestRequest(`/integrations/${endpoint}`, method, body);
-  }
 
   function dbRestRequest(endpoint, method = "GET", body) {
     endpoint = endpoint.replace(/^\//, "");
@@ -292,3 +288,67 @@ catch(err){
     orders,handleQuery
   };
 }
+
+
+export const useDeskreeForGuest =()=>{
+  const guestUserAuth = {
+    async authUsingMail ({ email, password }){
+    // call login endpoint
+    try{
+    const res = await $fetch("/auth/accounts/sign-in/email", {
+      baseURL,
+      method: "POST",
+      body: { email, password },
+    });
+    return { 
+    "accessToken": res.data.idToken,
+    "refreshToken": res.data.refreshToken}}
+    catch{
+      return false
+    }
+   },
+  async authUsingRefreshToken (RefreshToken){
+    try{
+      const res = await $fetch("/auth/accounts/token/refresh", {
+        baseURL,
+        method: "POST",
+        body: { "refresh_token": refreshTokenInLocalStorage.value },
+      });
+      const newAccessToken = res.data.access_token
+      return newAccessToken
+      }
+      catch(err){
+        console.log(err);
+        return false
+      }
+   }, 
+   }
+   const placeOrder =({count, sys, fields},user)=>{
+      return authorizedRestRequest("/orders","POST",user.accessToken ,{
+      "count" : count,
+      "product_id": sys.id,
+       "buyer_name": user.name,
+       "delivery_status" : "waiting",
+       "phone_number" : user.phone_number,
+       "wilaya": user.wilaya,
+       "address": user.address,
+       "price" : fields.price*count ,
+       })
+     
+   }
+   function authorizedRestRequest(endpoint, method = "GET", accessToken,body) {
+    endpoint = endpoint.replace(/^\//, "");
+    const options = {
+      baseURL,
+      method,
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    };
+    if (body && method !== "GET") options.body = body;
+    return $fetch(endpoint, options);
+  }
+  return{
+    guestUserAuth, placeOrder
+  }
+} 
