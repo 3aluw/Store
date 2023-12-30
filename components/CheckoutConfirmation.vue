@@ -29,22 +29,21 @@
                 <p> address : <strong> {{
                     Deskree.loggedInUser.value.address ? Deskree.loggedInUser.value.address : "not set"
                 }}</strong></p>
-
+                <AppButton class="mx-5 mt-8" @click="handleOrder">place my order</AppButton>
             </div>
             <!--if guest buy-->
             <div v-else>
-                <FormKit type="form" :config="{ validationVisibility: 'submit' }" @submit="handleSubmit" :actions="false">
-                    <FormKit type="text" label="full name" name="name" v-model="user.name" placeholder="enter your name"
-                        validation="required" />
-                    <FormKit type="number" label="Your phone number" name="phone" v-model="user.phone_number" required
+                <FormKit type="form" :config="{ validationVisibility: 'submit' }" :actions="false"
+                    @submit="handleGuestOrder">
+                    <FormKit type="text" label="full name" name="name" v-model="guestUser.name"
+                        placeholder="enter your name" validation="required" />
+                    <FormKit type="number" label="Your phone number" name="phone" v-model="guestUser.phone_number" required
                         validation="number|length:10,10" placeholder="enter your phone number" />
-                    <FormKit type="select" label="city name" name="city" v-model="user.wilaya" placeholder="wilaya" required
-                        :options="cartStore.wilayas" />
-                    <FormKit type="text" label="Your address" name="address" v-model="user.address" placeholder="address"
-                        required />
-
-
-                    <AppButton class="mx-5 mt-8" @click="handleOrder">place my order</AppButton>
+                    <FormKit type="select" label="city name" name="city" v-model="guestUser.wilaya" placeholder="wilaya"
+                        required :options="cartStore.wilayas" />
+                    <FormKit type="text" label="Your address" name="address" v-model="guestUser.address"
+                        placeholder="address" required />
+                    <AppButton class="mx-5 mt-8">place my order</AppButton>
                 </FormKit>
 
             </div>
@@ -61,12 +60,8 @@ const Deskree = useDeskree();
 const emit = defineEmits(['toggleConformation'])
 function emitToggleConfirmation() { emit('toggleConformation') }
 
-const user = ref({
-    name: '',
-    phone_number: '',
-    wilaya: '',
-    address: '',
-});
+
+//logged-in user logic
 async function handleOrder() {
     try {
         cartStore.products.forEach(async (product) => await Deskree.orders.placeOrder(product));
@@ -76,6 +71,22 @@ async function handleOrder() {
     } catch {
         useAlertsStore().error("an error occurred. please try again or re-login")
     }
+}
+
+//Guest user logic
+const guestUser = ref({
+    name: '',
+    phone_number: '',
+    wilaya: '',
+    address: '',
+});
+async function handleGuestOrder() {
+    const res = await $fetch('/api/guestOrder', {
+        method: 'post',
+        body: { requestType: "getAccessToken" }
+    })
+
+
 }
 </script>
 
