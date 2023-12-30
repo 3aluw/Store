@@ -1,28 +1,44 @@
 import {useDeskreeForGuest} from "~/composables/UseDeskree.js"
+const Deskree = useDeskreeForGuest();
 
+let accessTokenTime;
+let accessToken ;
+let refreshToken;
 
-let lastLoginTime = undefined
-let accessToken = 0;
-let refreshToken = '';
-
-function authUsingMail (){
-
+async function loginUsingMail (){
+  console.log("login called");
+  const res = await  Deskree.guestUserAuth.authUsingMail({email:"moussa@gmail.com",password:"0123456"})
+  accessToken = res.accessToken
+  refreshToken = res.refreshToken
+  accessTokenTime = new Date().getTime()
 }
-function authUsingRefreshToken (){
 
+async function authUsingRefreshToken (){
+   const newAccessToken = await Deskree.guestUserAuth.authUsingRefreshToken(refreshToken)
+   accessToken = newAccessToken;
 }
+export default defineEventHandler( async(event) => {  
 
-export default defineEventHandler( async(event) => {
-    const Deskree = useDeskreeForGuest();
-    console.log('Deskree: ', Deskree);
+ console.log("accessToken",accessToken);
 
+    if(!accessToken) {
+    await  loginUsingMail()
+    }
+
+    if(new Date().getTime() - accessTokenTime < 3000000){
+      await authUsingRefreshToken()
+    } 
+    return;
+
+    //handle the request from the client
     const request = await readBody(event)
-    const requestType = request.requestType
-    console.log('requestType: ', requestType);
-    
-    if(requestType === "getAccessToken"){return accessToken}
-   else if(requestType === "updateAccessToken"){return accessToken};
+    request.user.accessToken = accessToken ;
+    return await Deskree.placeOrders(request)
 
-    
-    
+
   })
+
+  /*
+  check if the accessToken is persisted
+  find a way to get orders value from allSettled
+  */ 

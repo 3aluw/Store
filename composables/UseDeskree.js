@@ -291,6 +291,7 @@ catch(err){
 
 
 export const useDeskreeForGuest =()=>{
+  const baseURL = useRuntimeConfig().public.deskreeBaseUrl;
   const guestUserAuth = {
     async authUsingMail ({ email, password }){
     // call login endpoint
@@ -303,8 +304,8 @@ export const useDeskreeForGuest =()=>{
     return { 
     "accessToken": res.data.idToken,
     "refreshToken": res.data.refreshToken}}
-    catch{
-      return false
+    catch(err){
+      return err
     }
    },
   async authUsingRefreshToken (RefreshToken){
@@ -312,7 +313,7 @@ export const useDeskreeForGuest =()=>{
       const res = await $fetch("/auth/accounts/token/refresh", {
         baseURL,
         method: "POST",
-        body: { "refresh_token": refreshTokenInLocalStorage.value },
+        body: { "refresh_token": RefreshToken },
       });
       const newAccessToken = res.data.access_token
       return newAccessToken
@@ -323,18 +324,24 @@ export const useDeskreeForGuest =()=>{
       }
    }, 
    }
-   const placeOrder =({count, sys, fields},user)=>{
-      return authorizedRestRequest("/orders","POST",user.accessToken ,{
-      "count" : count,
-      "product_id": sys.id,
-       "buyer_name": user.name,
-       "delivery_status" : "waiting",
-       "phone_number" : user.phone_number,
-       "wilaya": user.wilaya,
-       "address": user.address,
-       "price" : fields.price*count ,
-       })
-     
+   const placeOrders = async ({products,user})=>{
+
+
+const orderPromises = products.map((product)=>{
+
+  authorizedRestRequest("/rest/collections/orders","POST",user.accessToken ,{
+    "count" : product.count,
+    "product_id": product.productId,
+     "buyer_name": user.name,
+     "delivery_status" : "waiting",
+     "phone_number" : user.phone_number,
+     "wilaya": user.wilaya,
+     "address": user.address,
+     "price" : product.price*product.count ,
+     });
+})
+    const results = await Promise.allSettled(orderPromises);
+    return results;   
    }
    function authorizedRestRequest(endpoint, method = "GET", accessToken,body) {
     endpoint = endpoint.replace(/^\//, "");
@@ -349,6 +356,6 @@ export const useDeskreeForGuest =()=>{
     return $fetch(endpoint, options);
   }
   return{
-    guestUserAuth, placeOrder
+    guestUserAuth, placeOrders
   }
 } 

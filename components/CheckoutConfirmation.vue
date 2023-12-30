@@ -81,7 +81,7 @@ const guestUser = ref({
     address: '',
 });
 async function handleGuestOrder() {
-    const productsArray = cartStore.products.map((product) => { return { productId: product.sys.id, price: product.fields.price * product.count, count: product.count } })
+    const productsArray = cartStore.products.map((product) => { return { productId: product.sys.id, price: product.fields.price, count: product.count } })
 
     const res = await $fetch('/api/guestOrder', {
         method: 'post',
