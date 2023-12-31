@@ -71,6 +71,7 @@ async function handleOrder() {
     } catch {
         useAlertsStore().error("an error occurred. please try again or re-login")
     }
+    emitToggleConfirmation()
 }
 
 //Guest user logic
@@ -87,6 +88,16 @@ async function handleGuestOrder() {
         method: 'post',
         body: { user: guestUser.value, products: productsArray }
     })
+    emitToggleConfirmation()
+    res.forEach((response) => {
+        const productName = cartStore.products.find((product) => product.sys.id === response.value.data.product_id).fields.name
+        response.status === "fulfilled" ?
+            useAlertsStore().success(`your ${productName} order is placed`)
+            : useAlertsStore().error(`an order didn't got placed`)
+    })
+
+
+
 }
 </script>
 
