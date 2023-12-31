@@ -1,44 +1,67 @@
 import {useDeskreeForGuest} from "~/composables/UseDeskree.js"
 const Deskree = useDeskreeForGuest();
-
+let loginTime;
 let accessTokenTime;
 let accessToken ;
 let refreshToken;
 
 async function loginUsingMail (){
-  console.log("login called");
+  //if the login isn't old (less than 15 mins) don't login : it is expected to be a backend error
+  if(new Date().getTime() - loginTime < 900000) return false;
+  
+  loginTime = new Date().getTime();
+  try{
   const res = await  Deskree.guestUserAuth.authUsingMail({email:"moussa@gmail.com",password:"0123456"})
   accessToken = res.accessToken
   refreshToken = res.refreshToken
-  accessTokenTime = new Date().getTime()
+  accessTokenTime = new Date().getTime()}
+  catch{
+    return false
+  }
+
 }
 
 async function authUsingRefreshToken (){
-   const newAccessToken = await Deskree.guestUserAuth.authUsingRefreshToken(refreshToken)
+  if(!refreshToken) return false
+  try{
+     const newAccessToken = await Deskree.guestUserAuth.authUsingRefreshToken(refreshToken)
    accessToken = newAccessToken;
+   accessTokenTime = new Date().getTime();
+  }
+   catch(err){
+    return false
+   }
+}
+
+const obtainNewAccessToken = async()=>{
+      //try refreshToken
+      const res = await authUsingRefreshToken()
+      if(!res) {
+       //if refreshToken failed try mail login
+     const loginRes =  loginUsingMail();
+     //if failed return false
+        if(!loginRes) return false
+     }
+     return true
 }
 export default defineEventHandler( async(event) => {  
 
- console.log("accessToken",accessToken);
+    if(new Date().getTime() - accessTokenTime < 3000000 || !accessToken) await obtainNewAccessToken()
 
-    if(!accessToken) {
-    await  loginUsingMail()
+    
+
+     //handle the request from the client
+     const request = await readBody(event)
+     request.user.accessToken = accessToken ;
+    
+     let placeOrdersRes = await Deskree.placeOrders(request)
+     const isPlacingOrdersRejected  = placeOrdersRes.every((response)=>response.status === "rejected")  
+
+    //if all orders got rejected try re-login and placing them again
+    if(isPlacingOrdersRejected){
+      const newAccessTokenRes = await obtainNewAccessToken()
+     if(newAccessTokenRes) placeOrdersRes = await Deskree.placeOrders(request)
     }
-
-    if(new Date().getTime() - accessTokenTime < 3000000){
-      await authUsingRefreshToken()
-    } 
-    return;
-
-    //handle the request from the client
-    const request = await readBody(event)
-    request.user.accessToken = accessToken ;
-    return await Deskree.placeOrders(request)
-
-
+    return placeOrdersRes
   })
 
-  /*
-  check if the accessToken is persisted
-  find a way to get orders value from allSettled
-  */ 

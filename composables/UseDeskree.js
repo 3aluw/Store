@@ -319,7 +319,6 @@ export const useDeskreeForGuest =()=>{
       return newAccessToken
       }
       catch(err){
-        console.log(err);
         return false
       }
    }, 
@@ -328,8 +327,7 @@ export const useDeskreeForGuest =()=>{
 
 
 const orderPromises = products.map((product)=>{
-
-  authorizedRestRequest("/rest/collections/orders","POST",user.accessToken ,{
+ return  authorizedRestRequest("/rest/collections/orders","POST",user.accessToken ,{
     "count" : product.count,
     "product_id": product.productId,
      "buyer_name": user.name,
