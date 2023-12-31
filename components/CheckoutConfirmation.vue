@@ -47,7 +47,7 @@
                 </FormKit>
 
             </div>
-
+            <InvoiceGenerator :orders="registeredOrders" v-if="showInvoice" />
 
         </div>
 
@@ -59,6 +59,7 @@ const Deskree = useDeskree();
 
 const emit = defineEmits(['toggleConformation'])
 function emitToggleConfirmation() { emit('toggleConformation') }
+
 
 
 //logged-in user logic
@@ -88,16 +89,34 @@ async function handleGuestOrder() {
         method: 'post',
         body: { user: guestUser.value, products: productsArray }
     })
-    emitToggleConfirmation()
-    res.forEach((response) => {
-        const productName = cartStore.products.find((product) => product.sys.id === response.value.data.product_id).fields.name
-        response.status === "fulfilled" ?
-            useAlertsStore().success(`your ${productName} order is placed`)
-            : useAlertsStore().error(`an order didn't got placed`)
+    // emitToggleConfirmation()
+    toggleInvoice(res)
+}
+
+
+//generate the invoice and print it
+const showInvoice = ref(false)
+let registeredOrders = [];
+const toggleInvoice = (responseArray) => {
+    responseArray.forEach((response) => {
+        if (response.status === "fulfilled") {
+            //look for the product details in the cart store
+            const productDetails = cartStore.products.find((product) => product.sys.id === response.value.data.product_id)
+            const orderObj = {
+                "product_id": response.value.data.product_id,
+                "price": response.value.data.price,
+                "count": response.value.data.count,
+                "product_name": productDetails.fields.name,
+                "picture": productDetails.fields.image[0].fields.file.url
+            }
+            registeredOrders.push(orderObj)
+            response.status === "fulfilled" ?
+                useAlertsStore().success(`your ${productDetails.fields.name}'s order is placed`)
+                : useAlertsStore().error(`an order didn't got placed`)
+        }
     })
-
-
-
+    showInvoice.value = true
+    console.log(registeredOrders);
 }
 </script>
 
