@@ -16,6 +16,8 @@ add orders_number and total_spent columns to users table on deskree and modify i
 Task4
 allow guest users
 
-TASK5
-prevent the loginUsingLocalStorage from runing on every mount...instead store the login infos and use them if the login was not that old (if the user logged in a day before use the stored credentials in the local storage without a re-login)
+TASK 5 (dropped as the access token lasts only for 1hr, i can be implemented by checking if the last login was't more than one hour before but it is not worth it that much)
+prevent the loginUsingLocalStorage from running on every mount...instead store the login infos and use them if the login was not that old (if the user logged in a day before use the stored credentials in the local storage without a re-login)
 
+TASK 6 
+improve placing orders on handleOrder function on cart component by using PromiseALl or an other better method

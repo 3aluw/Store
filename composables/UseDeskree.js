@@ -1,6 +1,6 @@
 import { useLocalStorage } from "@vueuse/core";
 import { useRouter } from "vue-router";
-
+import {ref, watch} from "vue"
 //roles
 //admin, moderator
 const roles = ["n1p7bliRJvTk3bwilZLh","ysQAF8GKCCAGR9hWVgVY"]
@@ -10,6 +10,8 @@ const refreshTokenInLocalStorage = useLocalStorage("deskree_refresh_token", null
 const userIdInLocalStorage = useLocalStorage("deskree_user_uid", null);
 const loggedInUser = ref(null);
 const loggedInUserInit = ref(false);
+
+//a function that re-evaluate some data ie:cart on every auth change  (loggedInUser variable change)
 const onAuthStateChangeCallbacks = ref([]);
 watch(loggedInUser, () => {
   onAuthStateChangeCallbacks.value.forEach((callback) => {
@@ -37,7 +39,6 @@ async function loginUserUsingLocalS(){
     }
   };
   
-
   /**
    * Auth functions exposed from composable
    */
@@ -81,7 +82,7 @@ async function loginUserUsingLocalS(){
         body: { email, password },
       });
 
-      // save user id and token to local storage
+      // save user id and tokens to local storage
       userIdInLocalStorage.value = res.data.uid;
       initToken(res.data.idToken, res.data.refreshToken);
 
@@ -160,7 +161,7 @@ value: productId,
 return dbRestRequest("/reviews?where=" + JSON.stringify(querryParams))
     },
     submit({ text, rating, title, product_id }) {
-      //console.log( text, rating, title, product_id)
+      
       
       dbRestRequest("/reviews","POST", {
         "text":text,"title":title,"rating":rating,"product_id":product_id
@@ -192,16 +193,17 @@ return dbRestRequest(`/orders/${uid}`,"PATCH", reqBody)
 },
 deleteOrder(uid){
   return dbRestRequest(`/orders/${uid}`,"DELETE")
+},
 }
-}
-
 
 //query function 
 const handleQuery = ( endpoint,queryObj ,params ='&limit=10')=>{
   return dbRestRequest( endpoint + "?where=" + JSON.stringify(queryObj) + params)
 }
 
-
+/**
+   * guest user function exposed from the composable
+   */
 
 
   // private composable functions
@@ -256,10 +258,6 @@ catch(err){
   }
   
 
-  function integrationsRestRequest(endpoint, method = "GET", body) {
-    endpoint = endpoint.replace(/^\//, "");
-    return authorizedRestRequest(`/integrations/${endpoint}`, method, body);
-  }
 
   function dbRestRequest(endpoint, method = "GET", body) {
     endpoint = endpoint.replace(/^\//, "");
@@ -290,3 +288,72 @@ catch(err){
     orders,handleQuery
   };
 }
+
+
+export const useDeskreeForGuest =()=>{
+  const baseURL = useRuntimeConfig().public.deskreeBaseUrl;
+  const guestUserAuth = {
+    async authUsingMail ({ email, password }){
+    // call login endpoint
+    try{
+    const res = await $fetch("/auth/accounts/sign-in/email", {
+      baseURL,
+      method: "POST",
+      body: { email, password },
+    });
+    return { 
+    "accessToken": res.data.idToken,
+    "refreshToken": res.data.refreshToken}}
+    catch(err){
+      return err
+    }
+   },
+  async authUsingRefreshToken (RefreshToken){
+    try{
+      const res = await $fetch("/auth/accounts/token/refresh", {
+        baseURL,
+        method: "POST",
+        body: { "refresh_token": RefreshToken },
+      });
+      const newAccessToken = res.data.access_token
+      return newAccessToken
+      }
+      catch(err){
+        return false
+      }
+   }, 
+   }
+   const placeOrders = async ({products,user})=>{
+
+
+const orderPromises = products.map((product)=>{
+ return  authorizedRestRequest("/rest/collections/orders","POST",user.accessToken ,{
+    "count" : product.count,
+    "product_id": product.productId,
+     "buyer_name": user.name,
+     "delivery_status" : "waiting",
+     "phone_number" : user.phone_number,
+     "wilaya": user.wilaya,
+     "address": user.address,
+     "price" : product.price*product.count ,
+     });
+})
+    const results = await Promise.allSettled(orderPromises);
+    return results;   
+   }
+   function authorizedRestRequest(endpoint, method = "GET", accessToken,body) {
+    endpoint = endpoint.replace(/^\//, "");
+    const options = {
+      baseURL,
+      method,
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    };
+    if (body && method !== "GET") options.body = body;
+    return $fetch(endpoint, options);
+  }
+  return{
+    guestUserAuth, placeOrders
+  }
+} 
