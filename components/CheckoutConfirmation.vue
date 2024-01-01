@@ -2,7 +2,7 @@
     <div class="cont flex justify-center items-center ">
         <div class="card bg-white max-w-3xl text-center p-10">
             <div class="card-actions justify-end mb-8">
-                <button class="btn btn-square btn-sm" @click="emitToggleConfirmation">
+                <button class="btn btn-square btn-sm" @click="emitHideConfirmation">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -47,7 +47,7 @@
                 </FormKit>
 
             </div>
-            <Invoice :orders="registeredOrders" v-if="showInvoice" @hideInvoiceComp="showInvoice = false" />
+            <Invoice :orders="registeredOrders" v-if="showInvoice" @hideInvoiceComp="hideInvoiceAndConfirmation" />
 
         </div>
 
@@ -58,7 +58,7 @@ const cartStore = useCartStore();
 const Deskree = useDeskree();
 
 const emit = defineEmits(['toggleConformation'])
-function emitToggleConfirmation() { emit('toggleConformation') }
+function emitHideConfirmation() { emit('toggleConformation') }
 
 
 
@@ -88,7 +88,7 @@ async function handleGuestOrder() {
         method: 'post',
         body: { user: guestUser.value, products: productsArray }
     })
-    // emitToggleConfirmation()
+
     toggleInvoice(res)
 }
 
@@ -97,26 +97,40 @@ async function handleGuestOrder() {
 const showInvoice = ref(false)
 let registeredOrders = [];
 const toggleInvoice = (responseArray) => {
-    responseArray.forEach((response) => {
-        if (response.status === "fulfilled") {
-            //look for the product details in the cart store
-            const productDetails = cartStore.products.find((product) => product.sys.id === response.value.data.product_id)
-            const orderObj = {
-                "product_id": response.value.data.product_id,
-                "count": response.value.data.count,
-                "price": productDetails.fields.price,
-                "product_name": productDetails.fields.name,
-                "picture": productDetails.fields.image[0].fields.file.url
+
+    const isAnOrderPlaced = responseArray.some((response) => response.status === "fulfilled")
+
+
+    if (isAnOrderPlaced) {
+        responseArray.forEach((response) => {
+            if (response.status === "fulfilled") {
+                //look for the product details in the cart store
+                const productDetails = cartStore.products.find((product) => product.sys.id === response.value.data.product_id)
+                const orderObj = {
+                    "product_id": response.value.data.product_id,
+                    "count": response.value.data.count,
+                    "price": productDetails.fields.price,
+                    "product_name": productDetails.fields.name,
+                    "picture": productDetails.fields.image[0].fields.file.url
+                }
+                registeredOrders.push(orderObj)
+                response.status === "fulfilled" ?
+                    useAlertsStore().success(`your ${productDetails.fields.name}'s order is placed`)
+                    : useAlertsStore().error(`an order didn't got placed`)
             }
-            registeredOrders.push(orderObj)
-            response.status === "fulfilled" ?
-                useAlertsStore().success(`your ${productDetails.fields.name}'s order is placed`)
-                : useAlertsStore().error(`an order didn't got placed`)
-        }
-    })
-    showInvoice.value = true
-    console.log(registeredOrders);
+        })
+        showInvoice.value = true
+    }
+    else { useAlertsStore().error("An error occurred...please try again later") }
+
+
 }
+//a function to hide the confirmation and invoice comps
+const hideInvoiceAndConfirmation = () => {
+    showInvoice.value = false
+    emitHideConfirmation()
+}
+
 </script>
 
 <style scoped>

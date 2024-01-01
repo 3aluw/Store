@@ -76,11 +76,11 @@ const { $html2pdf } = useNuxtApp()
 
 const props = defineProps(["user", "orders"])
 const emit = defineEmits(['hideInvoiceComp'])
-function emitToggleConfirmation() { emit('hideInvoiceComp') }
+function emitHideInvoiceComp() { emit('hideInvoiceComp') }
 
-const total = ref(0)
+const total = computed(() => props.orders.reduce((prev, curr) => { return curr.price * curr.count + prev }, 0))
 onMounted(() => {
-    total.value = props.orders.reduce((prev, curr) => { return curr.price * curr.count + prev }, 0)
+
 
     downloadPDF();
 })
@@ -104,6 +104,7 @@ function downloadPDF() {
             enableLinks: true
         })
         clonedElement.remove()
+        emitHideInvoiceComp()
     }
 }
 
@@ -112,9 +113,25 @@ function downloadPDF() {
 </script>
 
 <template>
-    <div class="invoice-cont" id="invoice-cont">
-        <div class="logo-container">
-            <img style="height: 18px" src="https://app.useanvil.com/img/email-logo-black.png">
+    <div class="invoice-cont hidden" id="invoice-cont">
+        <div class="logo-container flex">
+            <svg version="1.1" width="20px" height="20px" xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 32 32" xml:space="preserve" fill="#ff0000"
+                stroke="#ff0000">
+                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                <g id="SVGRepo_iconCarrier">
+                    <g>
+                        <path
+                            d="M14.1,14.7L14.1,14.7c0,4.8-2.1,9.3-5.8,12.2l-1.7,1.3c-0.4,0.3-0.5,0.8-0.2,1.3C6.6,29.8,6.9,30,7.3,30 c0.1,0,0.2,0,0.3-0.1l4.1-1.5c5.9-2.2,10.1-7.5,11.1-13.8C19.9,13.8,17,13.8,14.1,14.7z">
+                        </path>
+                        <path
+                            d="M20,7.7c0.1-1.5,1-2.9,2.3-3.9c0.4-0.3,0.5-1,0.2-1.4c-0.3-0.4-1-0.5-1.4-0.2c-1.8,1.3-3,3.2-3.1,5.3c-2.2,0.3-4,2.2-4,4.5 v0.6c2.9-0.8,6-0.8,8.9,0c0-0.2,0-0.4,0-0.6C23,10,21.8,8.3,20,7.7z">
+                        </path>
+                    </g>
+                </g>
+            </svg>
+            <p class="bold">falafel</p>
         </div>
 
         <table class="invoice-info-container">
