@@ -139,7 +139,6 @@ const searchOptions = [
 ]
 const queryData = ref()
 const handleQuery = async (queryText, queryParameter) => {
-    console.log('queryText, queryParameter: ', queryText, queryParameter);
     const queryObject = adminStore.generateQueryObject(queryParameter, queryText)
     const res = await deskree.handleQuery("/orders", queryObject)
     queryData.value = res.data

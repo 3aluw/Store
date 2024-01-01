@@ -1,117 +1,3 @@
-<!--
-<template>
-    <div class="invoice-cont flex flex-col justify-center px-4 " id="invoice-cont">
-        <div class="userInfos self-start py-6">
-            <p> Name : </p>
-            <p> phone number : <strong> </strong></p>
-            <p> wilaya :<strong></strong> </p>
-            <p> address : <strong> </strong></p>
-        </div>
-        <div class="orders py-6">
-            <div class="auto w-full">
-                <table class="table w-full">
-            
-                    <thead>
-                        <tr>
-                            <th>name</th>
-                            <th>picture</th>
-                            <th>id</th>
-                            <th>count</th>
-                            <th>price</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-
-                        <tr v-for="order in props.orders">
-
-                            <td>
-                                <div class="flex items-center space-x-3"> {{ order.product_name }}<div>
-
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="flex items-center space-x-3">
-                                    <div class="avatar">
-                                        <div class="mask mask-squircle w-12 h-12">
-                                            <img :src="order.picture" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="text-sm opacity-50">{{ order.product_id }}</div>
-                            </td>
-                            <td>
-                                <div class="font-bold">{{ order.count }}</div>
-                            </td>
-                            <td>
-                                <div class="font-bold">{{ order.price }}</div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        <div class="contact">
-            <p class="thank-text"> We are working on your order, Thank you for your trust !</p>
-            <p>If you needed any support please contact us on :</p>
-            <p>phone : 0557923990</p>
-            <p>facebook : Falafel</p>
-        </div>
-    </div>
-</template>
-
-
-<style scoped>
-.invoice-cont {
-    background-color: rgb(252, 249, 249);
-}
-</style>
-
--->
-<script setup>
-
-const { $html2pdf } = useNuxtApp()
-
-const props = defineProps(["user", "orders"])
-const emit = defineEmits(['hideInvoiceComp'])
-function emitHideInvoiceComp() { emit('hideInvoiceComp') }
-
-const total = computed(() => props.orders.reduce((prev, curr) => { return curr.price * curr.count + prev }, 0))
-onMounted(() => {
-
-
-    downloadPDF();
-})
-
-
-function downloadPDF() {
-    if (document) {
-        const element = document.getElementById('invoice-cont')
-
-        // clone the element: https://stackoverflow.com/questions/60557116/html2pdf-wont-print-hidden-div-after-unhiding-it/60558415#60558415
-        const clonedElement = element.cloneNode(true)
-        clonedElement.classList.remove('hidden')
-        // need to append to the document, otherwise the downloading doesn't start
-        document.body.appendChild(clonedElement)
-
-        // https://www.npmjs.com/package/html2pdf.js/v/0.9.0#options
-        $html2pdf(clonedElement, {
-            margin: 20,
-            filename: 'invoice.pdf',
-            image: { type: 'png' },
-            enableLinks: true
-        })
-        clonedElement.remove()
-        emitHideInvoiceComp()
-    }
-}
-
-
-
-</script>
-
 <template>
     <div class="invoice-cont hidden" id="invoice-cont">
         <div class="logo-container flex">
@@ -237,6 +123,46 @@ function downloadPDF() {
         <div>.</div>
     </div>
 </template>
+<script setup>
+
+const { $html2pdf } = useNuxtApp()
+
+const props = defineProps(["user", "orders"])
+const emit = defineEmits(['hideInvoiceComp'])
+function emitHideInvoiceComp() { emit('hideInvoiceComp') }
+
+const total = computed(() => props.orders.reduce((prev, curr) => { return curr.price * curr.count + prev }, 0))
+onMounted(() => {
+
+
+    downloadPDF();
+})
+
+
+function downloadPDF() {
+    if (document) {
+        const element = document.getElementById('invoice-cont')
+
+        // clone the element: https://stackoverflow.com/questions/60557116/html2pdf-wont-print-hidden-div-after-unhiding-it/60558415#60558415
+        const clonedElement = element.cloneNode(true)
+        clonedElement.classList.remove('hidden')
+        // need to append to the document, otherwise the downloading doesn't start
+        document.body.appendChild(clonedElement)
+
+        // https://www.npmjs.com/package/html2pdf.js/v/0.9.0#options
+        $html2pdf(clonedElement, {
+            margin: 20,
+            filename: 'invoice.pdf',
+            image: { type: 'png' },
+            enableLinks: true
+        })
+        clonedElement.remove()
+        emitHideInvoiceComp()
+    }
+}
+
+</script>
+
 <style scoped>
 table {
     width: 100%;

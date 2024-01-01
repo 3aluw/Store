@@ -1,5 +1,4 @@
 <template>
-
   <div>
 
 
@@ -75,7 +74,6 @@
     </div>
 
   </div>
-
 </template>
 <script setup>
 import { useAsyncState } from '@vueuse/core';
@@ -107,7 +105,7 @@ const starsGrouped = computed(() => {
   })
 
   if (!res.value) return obj.value;
-  console.log(obj.value)
+
   for (let starsNumber in obj.value) {
 
     let result = res.value.data.reduce((past, current) => {
