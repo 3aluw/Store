@@ -155,19 +155,6 @@ function handleBuyClick() {
   if (user.value.email && user.value.address && user.value.wilaya && user.value.phone_number) { showConfirmation.value = !showConfirmation.value }
   else { useAlertsStore().warning("please complete your profile infos") }
 }
-/* To delete
-async function handleOrder() {
-  try {
-    cartStore.products.forEach(async (product) => await Deskree.orders.placeOrder(product));
-    useAlertsStore().success("orders placed successfully")
-    cartStore.products = [];
-    await navigateTo('/')
-  } catch {
-    useAlertsStore().error("an error occurred. please try again or re-login")
-  }
-
-}
-*/
 function handleGuestOrder() {
   showConfirmation.value = true
 }
