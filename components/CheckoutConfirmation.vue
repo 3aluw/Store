@@ -47,7 +47,7 @@
                 </FormKit>
 
             </div>
-            <InvoiceGenerator :orders="registeredOrders" v-if="showInvoice" />
+            <Invoice :orders="registeredOrders" v-if="showInvoice" @hideInvoiceComp="showInvoice = false" />
 
         </div>
 
@@ -72,7 +72,6 @@ async function handleOrder() {
     } catch {
         useAlertsStore().error("an error occurred. please try again or re-login")
     }
-    emitToggleConfirmation()
 }
 
 //Guest user logic
@@ -104,8 +103,8 @@ const toggleInvoice = (responseArray) => {
             const productDetails = cartStore.products.find((product) => product.sys.id === response.value.data.product_id)
             const orderObj = {
                 "product_id": response.value.data.product_id,
-                "price": response.value.data.price,
                 "count": response.value.data.count,
+                "price": productDetails.fields.price,
                 "product_name": productDetails.fields.name,
                 "picture": productDetails.fields.image[0].fields.file.url
             }
