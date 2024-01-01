@@ -159,7 +159,7 @@ function downloadPDF() {
             </tr>
             <tr>
                 <td class="text-left">
-                    city: <strong>{{ props.user?.city }}</strong>
+                    city: <strong>{{ props.user?.wilaya }}</strong>
                 </td>
                 <td class="text-right">
                     falafel@gmail.com

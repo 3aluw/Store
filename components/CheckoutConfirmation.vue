@@ -47,7 +47,8 @@
                 </FormKit>
 
             </div>
-            <Invoice :orders="registeredOrders" v-if="showInvoice" @hideInvoiceComp="hideInvoiceAndConfirmation" />
+            <Invoice :orders="registeredOrders" :user="guestUser" v-if="showInvoice"
+                @hideInvoiceComp="hideInvoiceAndConfirmation" />
 
         </div>
 
