@@ -94,21 +94,25 @@ const showInvoice = ref(false)
 let registeredOrders = [];
 
 const handleOrdersResponse = (responseArray) => {
-
     //check if at least an order is placed
     const isAnOrderPlaced = responseArray.some((response) => response.status === "fulfilled")
 
     if (isAnOrderPlaced) {
-        createRegisteredOrdersObj(responseArray)
-        showInvoice.value = true
-        polishCart(registeredOrders)
+        createRegisteredOrdersObj(responseArray);
+        showInvoice.value = true;
+        //delete successful orders from the cart
+        polishCart(registeredOrders);
+        //if the cart is empty = all orders are successful
+        if (!cartStore.products.length) useAlertsStore().success("your orders are placed")
+        else {
+            registeredOrders.forEach((product) => showOrderAlert(product.product_name, true))
+            cartStore.products.forEach((product) => showOrderAlert(product.fields.name, false))
 
+        }
     }
     else {
         useAlertsStore().error("An error occurred...please try again later");
-
     }
-
 }
 
 //create registeredORders object
@@ -124,11 +128,6 @@ const createRegisteredOrdersObj = (responseArray) => {
                 "product_name": productDetails.fields.name,
             }
             registeredOrders.push(orderObj)
-            /*
-            response.status === "fulfilled" ?
-                useAlertsStore().success(`your ${productDetails.fields.name}'s order is placed`)
-                : useAlertsStore().error(`an order didn't got placed`)
-        */
         }
     })
 }
@@ -142,6 +141,8 @@ const polishCart = (registeredOrders) => {
     cartStore.products = failedOrders
 }
 const showOrderAlert = (productName, isSuccess) => {
+    isSuccess ? useAlertsStore().success(`your order for ${productName} is placed successfully`)
+        : useAlertsStore().error(`An error ocurred while ordering ${productName}. please try later`)
 
 }
 //a function to hide the confirmation and invoice comps
