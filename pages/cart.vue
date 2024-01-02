@@ -1,11 +1,11 @@
 
 <template>
   <div>
-
+    <Transition name="fade">
+      <CheckoutConfirmation v-if="showConfirmation" @toggleConformation="showConfirmation = !showConfirmation" />
+    </Transition>
     <div class="m-10" v-if="cartStore.count">
-      <Transition name="fade">
-        <CheckoutConfirmation v-if="showConfirmation" @toggleConformation="showConfirmation = !showConfirmation" />
-      </Transition>
+
 
       <h1 class="text-3xl mb-5 font-bold">Your Cart</h1>
 

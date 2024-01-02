@@ -66,7 +66,7 @@ function emitHideConfirmation() { emit('toggleConformation') }
 //logged-in user logic
 async function handleOrder() {
     const res = await Deskree.orders.placeOrder(cartStore.products)
-    toggleInvoice(res)
+    handleOrdersResponse(res)
 }
 
 
@@ -85,7 +85,7 @@ async function handleGuestOrder() {
         body: { user: guestUser.value, products: productsArray }
     })
 
-    toggleInvoice(res)
+    handleOrdersResponse(res)
 }
 
 
@@ -93,40 +93,60 @@ async function handleGuestOrder() {
 const showInvoice = ref(false)
 let registeredOrders = [];
 
-const toggleInvoice = (responseArray) => {
+const handleOrdersResponse = (responseArray) => {
 
+    //check if at least an order is placed
     const isAnOrderPlaced = responseArray.some((response) => response.status === "fulfilled")
 
     if (isAnOrderPlaced) {
-        responseArray.forEach((response) => {
-            if (response.status === "fulfilled") {
-                //look for the product details in the cart store
-                const productDetails = cartStore.products.find((product) => product.sys.id === response.value.data.product_id)
-                const orderObj = {
-                    "product_id": response.value.data.product_id,
-                    "count": response.value.data.count,
-                    "price": productDetails.fields.price,
-                    "product_name": productDetails.fields.name,
-                    "picture": productDetails.fields.image[0].fields.file.url
-                }
-                registeredOrders.push(orderObj)
-                response.status === "fulfilled" ?
-                    useAlertsStore().success(`your ${productDetails.fields.name}'s order is placed`)
-                    : useAlertsStore().error(`an order didn't got placed`)
-            }
-        })
+        createRegisteredOrdersObj(responseArray)
         showInvoice.value = true
+        polishCart(registeredOrders)
+
     }
-    else { useAlertsStore().error("An error occurred...please try again later") }
+    else {
+        useAlertsStore().error("An error occurred...please try again later");
+
+    }
 
 }
 
+//create registeredORders object
+const createRegisteredOrdersObj = (responseArray) => {
+    responseArray.forEach((response) => {
+        if (response.status === "fulfilled") {
+            //look for the product details in the cart store
+            const productDetails = cartStore.products.find((product) => product.sys.id === response.value.data.product_id)
+            const orderObj = {
+                "product_id": response.value.data.product_id,
+                "count": response.value.data.count,
+                "price": productDetails.fields.price,
+                "product_name": productDetails.fields.name,
+            }
+            registeredOrders.push(orderObj)
+            /*
+            response.status === "fulfilled" ?
+                useAlertsStore().success(`your ${productDetails.fields.name}'s order is placed`)
+                : useAlertsStore().error(`an order didn't got placed`)
+        */
+        }
+    })
+}
+
 //remove placed order from cart + navigate to the suitable route
-const polishCart = () => {
+const polishCart = (registeredOrders) => {
+    const failedOrders = cartStore.products.filter((product) => {
+        const isOrderFailed = registeredOrders.every((order) => order.product_id !== product.sys.id)
+        return isOrderFailed
+    })
+    cartStore.products = failedOrders
+}
+const showOrderAlert = (productName, isSuccess) => {
 
 }
 //a function to hide the confirmation and invoice comps
 const hideInvoiceAndConfirmation = () => {
+    console.log("invoice hidden");
     showInvoice.value = false
     emitHideConfirmation()
 }
