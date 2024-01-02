@@ -47,7 +47,7 @@
                 </FormKit>
 
             </div>
-            <Invoice :orders="registeredOrders" :user="guestUser" v-if="showInvoice"
+            <Invoice :orders="registeredOrders" :user="Deskree.loggedInUser.value ?? guestUser" v-if="showInvoice"
                 @hideInvoiceComp="hideInvoiceAndConfirmation" />
 
         </div>
@@ -65,15 +65,11 @@ function emitHideConfirmation() { emit('toggleConformation') }
 
 //logged-in user logic
 async function handleOrder() {
-    try {
-        cartStore.products.forEach(async (product) => await Deskree.orders.placeOrder(product));
-        useAlertsStore().success("orders placed successfully")
-        cartStore.products = [];
-        await navigateTo('/')
-    } catch {
-        useAlertsStore().error("an error occurred. please try again or re-login")
-    }
+    const res = await Deskree.orders.placeOrder(cartStore.products)
+    console.log(res);
+
 }
+
 
 //Guest user logic
 const guestUser = ref({
@@ -97,10 +93,10 @@ async function handleGuestOrder() {
 //generate the invoice and print it
 const showInvoice = ref(false)
 let registeredOrders = [];
+
 const toggleInvoice = (responseArray) => {
 
     const isAnOrderPlaced = responseArray.some((response) => response.status === "fulfilled")
-
 
     if (isAnOrderPlaced) {
         responseArray.forEach((response) => {
@@ -124,6 +120,10 @@ const toggleInvoice = (responseArray) => {
     }
     else { useAlertsStore().error("An error occurred...please try again later") }
 
+}
+
+//remove placed order from cart + navigate to the suitable route
+const polishCart = () => {
 
 }
 //a function to hide the confirmation and invoice comps
