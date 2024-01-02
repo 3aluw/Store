@@ -175,17 +175,22 @@ const queryObj = [{"attribute":"author","operator":"=","value":userIdInLocalStor
 
 return dbRestRequest("/orders?where=" + JSON.stringify(queryObj))
 },
-placeOrder({count, sys, fields}){
- return dbRestRequest("/orders","POST", {
- "count" : count,
- "product_id": sys.id,
-  "buyer_name": loggedInUser.value.name,
-  "delivery_status" : "waiting",
-  "phone_number" : loggedInUser.value.phone_number,
-  "wilaya": loggedInUser.value.wilaya,
-  "address": loggedInUser.value.address,
-  "price" : fields.price*count ,
-  })
+async placeOrder(products){
+const orderPromises = products.map((product)=>{
+   let {count, sys, fields} = product;
+   return dbRestRequest("/orders","POST", {
+    "count" : count,
+    "product_id": sys.id,
+     "buyer_name": loggedInUser.value.name,
+     "delivery_status" : "waiting",
+     "phone_number" : loggedInUser.value.phone_number,
+     "wilaya": loggedInUser.value.wilaya,
+     "address": loggedInUser.value.address,
+     "price" : fields.price*count ,
+     })})
+
+const results = await Promise.allSettled(orderPromises);
+return results
 },
  editOrder(uid,reqObj){
   const reqBody = JSON.stringify(reqObj)
@@ -324,7 +329,6 @@ export const useDeskreeForGuest =()=>{
    }, 
    }
    const placeOrders = async ({products,user})=>{
-
 
 const orderPromises = products.map((product)=>{
  return  authorizedRestRequest("/rest/collections/orders","POST",user.accessToken ,{
