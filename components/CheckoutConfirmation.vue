@@ -66,8 +66,7 @@ function emitHideConfirmation() { emit('toggleConformation') }
 //logged-in user logic
 async function handleOrder() {
     const res = await Deskree.orders.placeOrder(cartStore.products)
-    console.log(res);
-
+    toggleInvoice(res)
 }
 
 
