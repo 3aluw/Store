@@ -12,13 +12,17 @@
             <p class="text-lg">Please read the following infos carefully before placing your order:</p>
 
             <p class="my-5">
-                <strong>Total price: </strong>
-                <ProductPrice :price="cartStore.total" />
+                Total price:
+                <strong>
+                    <ProductPrice :price="cartStore.total" />
+                </strong>
             </p>
 
 
-            <div class="card-actions justify-end w-full flex-col my-10" v-if="Deskree.loggedInUser.value">
-                <p> Name : {{ Deskree.loggedInUser.value.email ? Deskree.loggedInUser.value.name : "not set" }}</p>
+            <div class="card-actions gap-4 justify-end items-center w-full flex-col my-10"
+                v-if="Deskree.loggedInUser.value">
+                <p> Name : <strong> {{ Deskree.loggedInUser.value.email ? Deskree.loggedInUser.value.name : "not set"
+                }}</strong></p>
                 <p> phone number : <strong> {{
                     Deskree.loggedInUser.value.phone_number.length > 5 ?
                     Deskree.loggedInUser.value.phone_number : "not set"
