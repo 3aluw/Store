@@ -93,7 +93,7 @@ async function handleGuestOrder() {
 const showInvoice = ref(false)
 let registeredOrders = [];
 
-const handleOrdersResponse = (responseArray) => {
+const handleOrdersResponse = async (responseArray) => {
     //check if at least an order is placed
     const isAnOrderPlaced = responseArray.some((response) => response.status === "fulfilled")
 
@@ -103,7 +103,10 @@ const handleOrdersResponse = (responseArray) => {
         //delete successful orders from the cart
         polishCart(registeredOrders);
         //if the cart is empty = all orders are successful
-        if (!cartStore.products.length) useAlertsStore().success("your orders are placed")
+        if (!cartStore.products.length) {
+            useAlertsStore().success("your orders are placed");
+            await navigateTo('/')
+        }
         else {
             registeredOrders.forEach((product) => showOrderAlert(product.product_name, true))
             cartStore.products.forEach((product) => showOrderAlert(product.fields.name, false))
