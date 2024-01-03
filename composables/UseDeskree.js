@@ -33,6 +33,7 @@ async function loginUserUsingLocalS(){
       !loggedInUser.value &&
       !loggedInUserInit.value
     ) {
+      
     await  initUser(userIdInLocalStorage.value);
       loggedInUserInit.value = true;
     
@@ -206,11 +207,6 @@ const handleQuery = ( endpoint,queryObj ,params ='&limit=10')=>{
   return dbRestRequest( endpoint + "?where=" + JSON.stringify(queryObj) + params)
 }
 
-/**
-   * guest user function exposed from the composable
-   */
-
-
   // private composable functions
   function initToken(token, refreshToken) {
    if(token) tokenInLocalStorage.value = token;
@@ -219,8 +215,8 @@ const handleQuery = ( endpoint,queryObj ,params ='&limit=10')=>{
 
   async function initUser(userIdOrUser) {
     if (typeof userIdOrUser === "string") {
-      try {
-        const res = await dbRestRequest(`/users/${userIdOrUser}`);
+      try { 
+        const res = await dbRestRequest(`/users/${userIdOrUser}`);       
         res.data.cart = await user.getCart();
         loggedInUser.value = await  res.data;
        
