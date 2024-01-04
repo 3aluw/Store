@@ -40,7 +40,7 @@ const cartStore = useCartStore();
       <!--UI for logged In Users-->
       <div v-else class="dropdown dropdown-end">
         <label tabindex="0" class="btn btn-sm ml-5">
-          <button>{{ loggedInUser.name }}</button>
+          <button>{{ loggedInUser.name ?? loggedInUser.email }}</button>
         </label>
         <ul tabindex="0" class="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52">
           <li>

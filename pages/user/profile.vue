@@ -57,7 +57,7 @@ async function handleSubmit() {
   try {
     await Deskree.user.updateUser(user.value)
     useAlertsStore().success("your infos has been updated")
-    useRouter().push("/")
+    await navigateTo("/")
   }
   catch {
     useAlertsStore().error("changes didn't take effect")
