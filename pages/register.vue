@@ -18,7 +18,9 @@ async function handleRegistration(e) {
   loading.value = true;
   try {
     await deskree.auth.signUp(form);
+    router.push("/");
     router.push("/user/profile");
+    useAlertsStore().info("PLease fill your profile information")
   } catch (err) {
     alerts.error("Error registering, please contact support");
   } finally {
