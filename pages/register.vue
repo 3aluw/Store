@@ -1,6 +1,27 @@
+<template>
+  <div>
+    <div>
+      <h2 class="card-title mb-5">Register</h2>
+      <FormKit type="form" :config="{ validationVisibility: 'submit' }" @submit="handleRegistration" :actions="false"
+        v-model="form">
+        <FormKit type="text" label="Email" name="email" validation="required|email" />
+
+        <FormKit type="password" name="password" label="Password" validation="required" />
+        <FormKit type="password" name="password_confirm" label="Confirm password" validation="required|confirm"
+          validation-label="Password" />
+        <AppButton class="btn-primary block mx-auto" :loading="loading">Register</AppButton>
+      </FormKit>
+    </div>
+    <button class="btn-primary login-with-google-btn block mx-auto" type="button" @click="OauthRegister">
+      sign-up with Google
+    </button>
+  </div>
+</template>
 <script setup>
 const router = useRouter();
 const alerts = useAlertsStore();
+const userOauthData = useCookie("userOauthData")
+
 definePageMeta({
   layout: "form-focus",
 });
@@ -27,27 +48,14 @@ async function handleRegistration(e) {
     loading.value = false;
   }
 }
+
+const OauthRegister = async () => {
+  const res = await deskree.Oauth.createOauthUrl();
+  userOauthData.value = res
+  console.log(res);
+  //await navigateTo(res.data.authUri, { external: true })
+}
 </script>
-<template>
-  <div>
-    <div>
-      <h2 class="card-title mb-5">Register</h2>
-      <FormKit type="form" :config="{ validationVisibility: 'submit' }" @submit="handleRegistration" :actions="false"
-        v-model="form">
-        <FormKit type="text" label="Email" name="email" validation="required|email" />
-
-        <FormKit type="password" name="password" label="Password" validation="required" />
-        <FormKit type="password" name="password_confirm" label="Confirm password" validation="required|confirm"
-          validation-label="Password" />
-        <AppButton class="btn-primary block mx-auto" :loading="loading">Register</AppButton>
-      </FormKit>
-    </div>
-    <button class="btn-primary login-with-google-btn block mx-auto " type="button">
-      login with Google
-    </button>
-  </div>
-</template>
-
 <style scoped>
 .signin {
   display: flex;

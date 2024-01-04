@@ -4,6 +4,8 @@ import {ref, watch} from "vue"
 //roles
 //admin, moderator
 const roles = ["n1p7bliRJvTk3bwilZLh","ysQAF8GKCCAGR9hWVgVY"]
+//callback uri for google authentication + cookie to use to store session id 
+const callBackUri ="http://localhost/3000"
 // user data persisted to local storage
 const tokenInLocalStorage = useLocalStorage("deskree_token", null);
 const refreshTokenInLocalStorage = useLocalStorage("deskree_refresh_token", null);
@@ -100,7 +102,18 @@ async function loginUserUsingLocalS(){
     /**
    * Google Oauth functions exposed from composable
    */
-const authWithGoogle = {
+const Oauth = { 
+   
+   createOauthUrl : async(providerId ="google.com")=>{
+     const res = await $fetch("/auth/accounts/sign-in/auth-url", {
+  baseURL,
+  method: "POST",
+  body: {"providerId":providerId ,"callBackUri":callBackUri},
+});
+
+   return res
+  }
+
 
 }
 
@@ -244,7 +257,6 @@ const handleQuery = ( endpoint,queryObj ,params ='&limit=10')=>{
   }
    //a function that return true if the access token had been renewed using the refresh token, false if it is not renewed
  async function useRefreshToken(){
-  console.log("trying refresh token");
   try{
 const res = await $fetch("/auth/accounts/token/refresh", {
   baseURL,
@@ -252,7 +264,6 @@ const res = await $fetch("/auth/accounts/token/refresh", {
   body: { "refresh_token": refreshTokenInLocalStorage.value },
 });
 const newAccessToken = res.data.access_token
-console.log('newAccessToken: ', newAccessToken);
 
 initToken(newAccessToken)
 return true
@@ -285,7 +296,7 @@ catch(err){
 
   return {roles,
     loginUserUsingLocalS,
-    auth,
+    auth,Oauth,
     user,
     reviews,
     tokenInLocalStorage,
