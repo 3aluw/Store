@@ -48,12 +48,25 @@ async function handleRegistration(e) {
     loading.value = false;
   }
 }
+let ver = 0;
+//Oauth logic
+onMounted(() => {
+  //get url
+  const url = new URL(window.location.href)
+  const params = new URLSearchParams(url.hash?.slice(1));
+  const token = params.get("id_token");
+  if (token && userOauthData.value) {
+    userOauthData.value.callBackUri = "http://localhost:3000/register"
+    userOauthData.value.token = token
+    deskree.Oauth.signInOauth(userOauthData.value)
+  }
+})
 
 const OauthRegister = async () => {
-  const res = await deskree.Oauth.createOauthUrl();
+  ver = 5
+  const res = await deskree.Oauth.createOauthUrl("google.com", "http://localhost:3000/register");
   userOauthData.value = res
-  console.log(res);
-  //await navigateTo(res.data.authUri, { external: true })
+  await navigateTo(res.data.authUri, { external: true })
 }
 </script>
 <style scoped>

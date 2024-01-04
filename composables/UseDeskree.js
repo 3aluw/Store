@@ -4,8 +4,6 @@ import {ref, watch} from "vue"
 //roles
 //admin, moderator
 const roles = ["n1p7bliRJvTk3bwilZLh","ysQAF8GKCCAGR9hWVgVY"]
-//callback uri for google authentication + cookie to use to store session id 
-const callBackUri ="http://localhost/3000"
 // user data persisted to local storage
 const tokenInLocalStorage = useLocalStorage("deskree_token", null);
 const refreshTokenInLocalStorage = useLocalStorage("deskree_refresh_token", null);
@@ -104,7 +102,7 @@ async function loginUserUsingLocalS(){
    */
 const Oauth = { 
    
-   createOauthUrl : async(providerId ="google.com")=>{
+   createOauthUrl : async(providerId ="google.com",callBackUri)=>{
      const res = await $fetch("/auth/accounts/sign-in/auth-url", {
   baseURL,
   method: "POST",
@@ -112,9 +110,19 @@ const Oauth = {
 });
 
    return res
-  }
-
-
+  },
+signInOauth : async(requestParams)=>{
+  console.log('requestParams: ', requestParams);
+  const {callBackUri,data,token} = requestParams
+  const {sessionId,providerId} = data
+  const res = await $fetch("/auth/accounts/sign-in/idp", {
+    baseURL,
+    method: "POST",
+    body: {sessionId, providerId ,callBackUri,token},
+  })
+  console.log(res)
+  return res
+}
 }
 
   /**
