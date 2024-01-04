@@ -97,6 +97,12 @@ async function loginUserUsingLocalS(){
       loggedInUser.value = null;
     },
   };
+    /**
+   * Google Oauth functions exposed from composable
+   */
+const authWithGoogle = {
+
+}
 
   /**
    * User function exposed from the composable
@@ -221,14 +227,13 @@ const handleQuery = ( endpoint,queryObj ,params ='&limit=10')=>{
         loggedInUser.value = await  res.data;
        
       } catch (err) {
-        if (!err.body) return;
+        if (!err.response._data) return;
 
-        const tokenHasExpired = err.body.errors.find((e) => e.code === "403" && e.detail.startsWith("Auth token has expired"));
+        const tokenHasExpired = err.response._data.errors.find((e) => e.code === "403" && e.detail.startsWith("Auth token has expired"));
         if (tokenHasExpired) {
-          console.log('tokenHasExpired: ', tokenHasExpired);
-          
           const getNewAccess = await useRefreshToken()
-          getNewAccess ?   loginUserUsingLocalS() :   router.push("/logout"); useAlertsStore.notify("please login again")
+          if(getNewAccess)    loginUserUsingLocalS() 
+          else{ router.push("/logout"); useAlertsStore().notify("please login again")}
          ;
         }
       } 
