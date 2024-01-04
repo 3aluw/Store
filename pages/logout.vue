@@ -1,8 +1,8 @@
 <script setup>
 const { auth } = useDeskree();
 const router = useRouter();
-await auth.logout();
+auth.logout();
 onMounted(() => {
-  window.location = "/login";
+  window.location = "/";
 });
 </script>
