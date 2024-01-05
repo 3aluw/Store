@@ -48,7 +48,7 @@ async function handleRegistration(e) {
     loading.value = false;
   }
 }
-let ver = 0;
+
 //Oauth logic
 onMounted(() => {
   //get url
@@ -63,7 +63,6 @@ onMounted(() => {
 })
 
 const OauthRegister = async () => {
-  ver = 5
   const res = await deskree.Oauth.createOauthUrl("google.com", "http://localhost:3000/register");
   userOauthData.value = res
   await navigateTo(res.data.authUri, { external: true })

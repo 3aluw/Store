@@ -56,23 +56,7 @@ async function loginUserUsingLocalS(){
       });
       const user = res.data;
 
-      // store the token locally
-      userIdInLocalStorage.value = user.uid;
-      initToken(user.idToken, user.refreshToken);
-
-      // create the users one and only cart
-      const cart = await dbRestRequest("/carts", "POST", {
-        products: JSON.stringify([]),
-      });
-
-      // connect that cart to the user
-      dbRestRequest(`/users/${user.uid}`, "PATCH", {
-        cartId: cart.data.uid,
-      });
-
-      user.cart = cart.data;
-      user.cartId = cart.data.uid;
-      initUser(user);
+      processUser(user,true)
     },
 
     async login({ email, password }) {
@@ -82,13 +66,9 @@ async function loginUserUsingLocalS(){
         method: "POST",
         body: { email, password },
       });
-
-      // save user id and tokens to local storage
-      userIdInLocalStorage.value = res.data.uid;
-      initToken(res.data.idToken, res.data.refreshToken);
-
-      // initialize the user with cart data
-      await initUser(res.data.uid);
+const user = res.data
+processUser(user,false)
+  
     },
 
     logout() {
@@ -100,15 +80,13 @@ async function loginUserUsingLocalS(){
     /**
    * Google Oauth functions exposed from composable
    */
-const Oauth = { 
-   
+const Oauth = {   
    createOauthUrl : async(providerId ="google.com",callBackUri)=>{
      const res = await $fetch("/auth/accounts/sign-in/auth-url", {
   baseURL,
   method: "POST",
   body: {"providerId":providerId ,"callBackUri":callBackUri},
 });
-
    return res
   },
 signInOauth : async(requestParams)=>{
@@ -122,6 +100,9 @@ signInOauth : async(requestParams)=>{
   })
   console.log(res)
   return res
+}, 
+IsNewUser: async()=>{
+
 }
 }
 
@@ -239,6 +220,36 @@ const handleQuery = ( endpoint,queryObj ,params ='&limit=10')=>{
    if(token) tokenInLocalStorage.value = token;
    if(refreshToken) refreshTokenInLocalStorage.value = refreshToken;
   }
+
+  //save tokens locally and create a cart for the new user  
+ async function processUser(user, isNew){   
+     // store the token locally
+    userIdInLocalStorage.value = user.uid;
+    initToken(user.idToken, user.refreshToken);
+
+    if(isNew){
+    // create the users one and only cart
+    const cart = await dbRestRequest("/carts", "POST", {
+      products: JSON.stringify([]),
+    });
+
+    // connect that cart to the user
+    dbRestRequest(`/users/${user.uid}`, "PATCH", {
+      cartId: cart.data.uid,
+    });
+
+    user.cart = cart.data;
+    user.cartId = cart.data.uid; 
+      await initUser(user);
+  }
+else{  
+       // initialize the loggedIn user with cart data
+       await initUser(user.uid);
+      }
+
+  }
+
+
 
   async function initUser(userIdOrUser) {
     if (typeof userIdOrUser === "string") {
