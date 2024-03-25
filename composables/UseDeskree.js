@@ -103,7 +103,7 @@ export function useDeskree() {
       res.data.uid = res.data.localId
       const isUserNew = res.data.isNewUser
       processUser(res.data, isUserNew)
-      return res
+      return isUserNew
     },
   }
 
@@ -254,7 +254,7 @@ export function useDeskree() {
   }
 
 
-
+  //set up the user object (name,city...) using his Id or using a user object
   async function initUser(userIdOrUser) {
     if (typeof userIdOrUser === "string") {
       try {

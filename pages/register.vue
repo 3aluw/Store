@@ -50,7 +50,7 @@ async function handleRegistration(e) {
 }
 
 //Oauth logic
-onMounted(() => {
+onMounted(async () => {
   //get url
   const url = new URL(window.location.href)
   const params = new URLSearchParams(url.hash?.slice(1));
@@ -58,8 +58,11 @@ onMounted(() => {
   if (token && userOauthData.value) {
     userOauthData.value.callBackUri = "http://localhost:3000/register"
     userOauthData.value.token = token
-    deskree.Oauth.signInOauth(userOauthData.value)
+    const isUserNew = await deskree.Oauth.signInOauth(userOauthData.value)
+    if (isUserNew) await navigateTo('user/profile')
+    alerts.info("please fill your informations")
   }
+
 })
 
 const OauthRegister = async () => {
