@@ -39,9 +39,7 @@ async function handleRegistration(e) {
   loading.value = true;
   try {
     await deskree.auth.signUp(form);
-    router.push("/");
-    router.push("/user/profile");
-    useAlertsStore().info("PLease fill your profile information")
+    askUserToFillInfos()
   } catch (err) {
     alerts.error("Error registering, please contact support");
   } finally {
@@ -59,8 +57,7 @@ onMounted(async () => {
     userOauthData.value.callBackUri = "http://localhost:3000/register"
     userOauthData.value.token = token
     const isUserNew = await deskree.Oauth.signInOauth(userOauthData.value)
-    if (isUserNew) await navigateTo('user/profile')
-    alerts.info("please fill your informations")
+    if (isUserNew) askUserToFillInfos()
   }
 
 })
@@ -69,6 +66,13 @@ const OauthRegister = async () => {
   const res = await deskree.Oauth.createOauthUrl("google.com", "http://localhost:3000/register");
   userOauthData.value = res
   await navigateTo(res.data.authUri, { external: true })
+}
+
+//ask the user to fill his infos : name, address ...
+const askUserToFillInfos = () => {
+  router.push("/");
+  router.push("/user/profile");
+  useAlertsStore().info("PLease fill your profile information")
 }
 </script>
 <style scoped>
