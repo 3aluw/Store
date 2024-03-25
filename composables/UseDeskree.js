@@ -1,9 +1,9 @@
 import { useLocalStorage } from "@vueuse/core";
 import { useRouter } from "vue-router";
-import {ref, watch} from "vue"
+import { ref, watch } from "vue"
 //roles
 //admin, moderator
-const roles = ["n1p7bliRJvTk3bwilZLh","ysQAF8GKCCAGR9hWVgVY"]
+const roles = ["n1p7bliRJvTk3bwilZLh", "ysQAF8GKCCAGR9hWVgVY"]
 // user data persisted to local storage
 const tokenInLocalStorage = useLocalStorage("deskree_token", null);
 const refreshTokenInLocalStorage = useLocalStorage("deskree_refresh_token", null);
@@ -26,20 +26,20 @@ export function useDeskree() {
   const baseURL = useRuntimeConfig().public.deskreeBaseUrl;
 
   // login the user saved in local storage when page loads
-async function loginUserUsingLocalS(){
+  async function loginUserUsingLocalS() {
     if (
       tokenInLocalStorage.value &&
       userIdInLocalStorage.value &&
       !loggedInUser.value &&
       !loggedInUserInit.value
     ) {
-      
-    await  initUser(userIdInLocalStorage.value);
+
+      await initUser(userIdInLocalStorage.value);
       loggedInUserInit.value = true;
-    
+
     }
   };
-  
+
   /**
    * Auth functions exposed from composable
    */
@@ -56,7 +56,7 @@ async function loginUserUsingLocalS(){
       });
       const user = res.data;
 
-      processUser(user,true)
+      processUser(user, true)
     },
 
     async login({ email, password }) {
@@ -66,9 +66,9 @@ async function loginUserUsingLocalS(){
         method: "POST",
         body: { email, password },
       });
-const user = res.data
-processUser(user,false)
-  
+      const user = res.data
+      processUser(user, false)
+
     },
 
     logout() {
@@ -77,34 +77,35 @@ processUser(user,false)
       loggedInUser.value = null;
     },
   };
-    /**
-   * Google Oauth functions exposed from composable
-   */
-const Oauth = {   
-   createOauthUrl : async(providerId ="google.com",callBackUri)=>{
-     const res = await $fetch("/auth/accounts/sign-in/auth-url", {
-  baseURL,
-  method: "POST",
-  body: {"providerId":providerId ,"callBackUri":callBackUri},
-});
-   return res
-  },
-signInOauth : async(requestParams)=>{
-  console.log('requestParams: ', requestParams);
-  const {callBackUri,data,token} = requestParams
-  const {sessionId,providerId} = data
-  const res = await $fetch("/auth/accounts/sign-in/idp", {
-    baseURL,
-    method: "POST",
-    body: {sessionId, providerId ,callBackUri,token},
-  })
-  console.log(res)
-  return res
-}, 
-IsNewUser: async()=>{
-
-}
-}
+  /**
+ * Google Oauth functions exposed from composable
+ */
+  const Oauth = {
+    createOauthUrl: async (providerId = "google.com", callBackUri) => {
+      const res = await $fetch("/auth/accounts/sign-in/auth-url", {
+        baseURL,
+        method: "POST",
+        body: { "providerId": providerId, "callBackUri": callBackUri },
+      });
+      return res
+    },
+    signInOauth: async (requestParams) => {
+      console.log('requestParams: ', requestParams);
+      const { callBackUri, data, token } = requestParams
+      const { sessionId, providerId } = data
+      //Get user IdToken - Id from deskree
+      const res = await $fetch("/auth/accounts/sign-in/idp", {
+        baseURL,
+        method: "POST",
+        body: { sessionId, providerId, callBackUri, token },
+      })
+      //rename id property + check if he's a new user
+      res.data.uid = res.data.localId
+      const isUserNew = res.data.isNewUser
+      processUser(res.data, isUserNew)
+      return res
+    },
+  }
 
   /**
    * User function exposed from the composable
@@ -116,28 +117,29 @@ IsNewUser: async()=>{
     logout() {
       return auth.logout();
     },
-     get () { 
-      return  loggedInUser.value;
+    get() {
+      return loggedInUser.value;
     },
 
-   async updateUser({name, phone_number, wilaya,address}){
-      dbRestRequest(`/users/${userIdInLocalStorage.value }`,"PATCH",{
-        "address":address,"wilaya":wilaya,"name":name,"phone_number":phone_number  })
-    loggedInUser.value = { ...loggedInUser.value,  "address":address,"wilaya":wilaya,"name":name,"phone_number":phone_number  }  
+    async updateUser({ name, phone_number, wilaya, address }) {
+      dbRestRequest(`/users/${userIdInLocalStorage.value}`, "PATCH", {
+        "address": address, "wilaya": wilaya, "name": name, "phone_number": phone_number
+      })
+      loggedInUser.value = { ...loggedInUser.value, "address": address, "wilaya": wilaya, "name": name, "phone_number": phone_number }
     },
 
-    getByUid(uid){
+    getByUid(uid) {
       return dbRestRequest(`/users/${uid}`)
     },
-    deleteUser(uid){
-      return dbRestRequest(`/users/${uid}`,"DELETE")
+    deleteUser(uid) {
+      return dbRestRequest(`/users/${uid}`, "DELETE")
     },
-/*
- getUsersByDateRange(queryObj){
-  return dbRestRequest("/users?where=" + JSON.stringify(queryObj))
-
-   },
-*/
+    /*
+     getUsersByDateRange(queryObj){
+      return dbRestRequest("/users?where=" + JSON.stringify(queryObj))
+    
+       },
+    */
 
     //cart
     async updateCart(products) {
@@ -153,7 +155,7 @@ IsNewUser: async()=>{
       res.data.products = JSON.parse(res.data.products);
       return res.data;
     },
-    
+
   };
 
   /**
@@ -162,90 +164,92 @@ IsNewUser: async()=>{
   const reviews = {
     get(productId) {
       // make request to get reviews for a product here
-       const querryParams =[{
-attribute :"product_id",
-operator : "=",
-value: productId,
-       }]
-return dbRestRequest("/reviews?where=" + JSON.stringify(querryParams))
+      const querryParams = [{
+        attribute: "product_id",
+        operator: "=",
+        value: productId,
+      }]
+      return dbRestRequest("/reviews?where=" + JSON.stringify(querryParams))
     },
     submit({ text, rating, title, product_id }) {
-      
-      
-      dbRestRequest("/reviews","POST", {
-        "text":text,"title":title,"rating":rating,"product_id":product_id
+
+
+      dbRestRequest("/reviews", "POST", {
+        "text": text, "title": title, "rating": rating, "product_id": product_id
       })
     },
   };
-const orders ={
+  const orders = {
 
- getOreders(){
-const queryObj = [{"attribute":"author","operator":"=","value":userIdInLocalStorage.value}]
+    getOreders() {
+      const queryObj = [{ "attribute": "author", "operator": "=", "value": userIdInLocalStorage.value }]
 
-return dbRestRequest("/orders?where=" + JSON.stringify(queryObj))
-},
-async placeOrder(products){
-const orderPromises = products.map((product)=>{
-   let {count, sys, fields} = product;
-   return dbRestRequest("/orders","POST", {
-    "count" : count,
-    "product_id": sys.id,
-     "buyer_name": loggedInUser.value.name,
-     "delivery_status" : "waiting",
-     "phone_number" : loggedInUser.value.phone_number,
-     "wilaya": loggedInUser.value.wilaya,
-     "address": loggedInUser.value.address,
-     "price" : fields.price*count ,
-     })})
+      return dbRestRequest("/orders?where=" + JSON.stringify(queryObj))
+    },
+    async placeOrder(products) {
+      const orderPromises = products.map((product) => {
+        let { count, sys, fields } = product;
+        return dbRestRequest("/orders", "POST", {
+          "count": count,
+          "product_id": sys.id,
+          "buyer_name": loggedInUser.value.name,
+          "delivery_status": "waiting",
+          "phone_number": loggedInUser.value.phone_number,
+          "wilaya": loggedInUser.value.wilaya,
+          "address": loggedInUser.value.address,
+          "price": fields.price * count,
+        })
+      })
 
-const results = await Promise.allSettled(orderPromises);
-return results
-},
- editOrder(uid,reqObj){
-  const reqBody = JSON.stringify(reqObj)
-return dbRestRequest(`/orders/${uid}`,"PATCH", reqBody)
-},
-deleteOrder(uid){
-  return dbRestRequest(`/orders/${uid}`,"DELETE")
-},
-}
+      const results = await Promise.allSettled(orderPromises);
+      return results
+    },
+    editOrder(uid, reqObj) {
+      const reqBody = JSON.stringify(reqObj)
+      return dbRestRequest(`/orders/${uid}`, "PATCH", reqBody)
+    },
+    deleteOrder(uid) {
+      return dbRestRequest(`/orders/${uid}`, "DELETE")
+    },
+  }
 
-//query function 
-const handleQuery = ( endpoint,queryObj ,params ='&limit=10')=>{
-  return dbRestRequest( endpoint + "?where=" + JSON.stringify(queryObj) + params)
-}
+  //query function 
+  const handleQuery = (endpoint, queryObj, params = '&limit=10') => {
+    return dbRestRequest(endpoint + "?where=" + JSON.stringify(queryObj) + params)
+  }
 
   // private composable functions
   function initToken(token, refreshToken) {
-   if(token) tokenInLocalStorage.value = token;
-   if(refreshToken) refreshTokenInLocalStorage.value = refreshToken;
+    if (token) tokenInLocalStorage.value = token;
+    if (refreshToken) refreshTokenInLocalStorage.value = refreshToken;
   }
 
   //save tokens locally and create a cart for the new user  
- async function processUser(user, isNew){   
-     // store the token locally
-    userIdInLocalStorage.value = user.uid;
+  async function processUser(user, isNew) {
+
+    userIdInLocalStorage.value = user.uid
     initToken(user.idToken, user.refreshToken);
 
-    if(isNew){
-    // create the users one and only cart
-    const cart = await dbRestRequest("/carts", "POST", {
-      products: JSON.stringify([]),
-    });
+    if (isNew) {
+      // create the users one and only cart
+      const cart = await dbRestRequest("/carts", "POST", {
+        products: JSON.stringify([]),
+      });
 
-    // connect that cart to the user
-    dbRestRequest(`/users/${user.uid}`, "PATCH", {
-      cartId: cart.data.uid,
-    });
+      // connect that cart to the user
+      dbRestRequest(`/users/${user.uid}`, "PATCH", {
+        cartId: cart.data.uid,
+      });
 
-    user.cart = cart.data;
-    user.cartId = cart.data.uid; 
+      user.cart = cart.data;
+      user.cartId = cart.data.uid;
+      console.log('cartId: ', user.cartId);
       await initUser(user);
-  }
-else{  
-       // initialize the loggedIn user with cart data
-       await initUser(user.uid);
-      }
+    }
+    else {
+      // initialize the loggedIn user with cart data
+      await initUser(user.uid);
+    }
 
   }
 
@@ -253,46 +257,46 @@ else{
 
   async function initUser(userIdOrUser) {
     if (typeof userIdOrUser === "string") {
-      try { 
-        const res = await dbRestRequest(`/users/${userIdOrUser}`);       
+      try {
+        const res = await dbRestRequest(`/users/${userIdOrUser}`);
         res.data.cart = await user.getCart();
-        loggedInUser.value = await  res.data;
-       
+        loggedInUser.value = await res.data;
+
       } catch (err) {
         if (!err.response._data) return;
 
         const tokenHasExpired = err.response._data.errors.find((e) => e.code === "403" && e.detail.startsWith("Auth token has expired"));
         if (tokenHasExpired) {
           const getNewAccess = await useRefreshToken()
-          if(getNewAccess)    loginUserUsingLocalS() 
-          else{ router.push("/logout"); useAlertsStore().notify("please login again")}
-         ;
+          if (getNewAccess) loginUserUsingLocalS()
+          else { router.push("/logout"); useAlertsStore().notify("please login again") }
+          ;
         }
-      } 
+      }
     } else {
       loggedInUser.value = userIdOrUser;
     }
-    
-  }
-   //a function that return true if the access token had been renewed using the refresh token, false if it is not renewed
- async function useRefreshToken(){
-  try{
-const res = await $fetch("/auth/accounts/token/refresh", {
-  baseURL,
-  method: "POST",
-  body: { "refresh_token": refreshTokenInLocalStorage.value },
-});
-const newAccessToken = res.data.access_token
 
-initToken(newAccessToken)
-return true
-}
-catch(err){
-  console.log(err);
-  return false
-}
   }
-  
+  //a function that return true if the access token had been renewed using the refresh token, false if it is not renewed
+  async function useRefreshToken() {
+    try {
+      const res = await $fetch("/auth/accounts/token/refresh", {
+        baseURL,
+        method: "POST",
+        body: { "refresh_token": refreshTokenInLocalStorage.value },
+      });
+      const newAccessToken = res.data.access_token
+
+      initToken(newAccessToken)
+      return true
+    }
+    catch (err) {
+      console.log(err);
+      return false
+    }
+  }
+
 
 
   function dbRestRequest(endpoint, method = "GET", body) {
@@ -313,70 +317,73 @@ catch(err){
     return $fetch(endpoint, options);
   }
 
-  return {roles,
+  return {
+    roles,
     loginUserUsingLocalS,
-    auth,Oauth,
+    auth, Oauth,
     user,
     reviews,
     tokenInLocalStorage,
     loggedInUser,
-    initUser, 
-    orders,handleQuery
+    initUser,
+    orders, handleQuery
   };
 }
 
 
-export const useDeskreeForGuest =()=>{
+export const useDeskreeForGuest = () => {
   const baseURL = useRuntimeConfig().public.deskreeBaseUrl;
   const guestUserAuth = {
-    async authUsingMail ({ email, password }){
-    // call login endpoint
-    try{
-    const res = await $fetch("/auth/accounts/sign-in/email", {
-      baseURL,
-      method: "POST",
-      body: { email, password },
-    });
-    return { 
-    "accessToken": res.data.idToken,
-    "refreshToken": res.data.refreshToken}}
-    catch(err){
-      return err
-    }
-   },
-  async authUsingRefreshToken (RefreshToken){
-    try{
-      const res = await $fetch("/auth/accounts/token/refresh", {
-        baseURL,
-        method: "POST",
-        body: { "refresh_token": RefreshToken },
-      });
-      const newAccessToken = res.data.access_token
-      return newAccessToken
+    async authUsingMail({ email, password }) {
+      // call login endpoint
+      try {
+        const res = await $fetch("/auth/accounts/sign-in/email", {
+          baseURL,
+          method: "POST",
+          body: { email, password },
+        });
+        return {
+          "accessToken": res.data.idToken,
+          "refreshToken": res.data.refreshToken
+        }
       }
-      catch(err){
+      catch (err) {
+        return err
+      }
+    },
+    async authUsingRefreshToken(RefreshToken) {
+      try {
+        const res = await $fetch("/auth/accounts/token/refresh", {
+          baseURL,
+          method: "POST",
+          body: { "refresh_token": RefreshToken },
+        });
+        const newAccessToken = res.data.access_token
+        return newAccessToken
+      }
+      catch (err) {
         return false
       }
-   }, 
-   }
-   const placeOrders = async ({products,user})=>{
+    },
+  }
+  const placeOrders = async ({ products, user }) => {
 
-const orderPromises = products.map((product)=>{
- return  authorizedRestRequest("/rest/collections/orders","POST",user.accessToken ,{
-    "count" : product.count,
-    "product_id": product.productId,
-     "buyer_name": user.name,
-     "delivery_status" : "waiting",
-     "phone_number" : user.phone_number,
-     "wilaya": user.wilaya,
-     "address": user.address,
-     "price" : product.price*product.count ,
-     });
-})
+    const orderPromises = products.map((product) => {
+      return authorizedRestRequest("/rest/collections/orders", "POST", user.accessToken, {
+        "count": product.count,
+        "product_id": product.productId,
+        "buyer_name": user.name,
+        "delivery_status": "waiting",
+        "phone_number": user.phone_number,
+        "wilaya": user.wilaya,
+        "address": user.address,
+        "price": product.price * product.count,
+      });
+    })
     const results = await Promise.allSettled(orderPromises);
-    return results;   
-   }
-   function authorizedRestRequest(endpoint, method = "GET", accessToken,body) {
+    return results;
+  }
+  function authorizedRestRequest(endpoint, method = "GET", accessToken, body) {
     endpoint = endpoint.replace(/^\//, "");
     const options = {
       baseURL,
@@ -388,7 +395,7 @@ const orderPromises = products.map((product)=>{
     if (body && method !== "GET") options.body = body;
     return $fetch(endpoint, options);
   }
-  return{
+  return {
     guestUserAuth, placeOrders
   }
 } 
