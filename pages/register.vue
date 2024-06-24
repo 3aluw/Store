@@ -63,7 +63,8 @@ onMounted(async () => {
 })
 
 const OauthRegister = async () => {
-  const res = await deskree.Oauth.createOauthUrl("google.com", "http://localhost:3000/register");
+  const res = await deskree.Oauth.createOauthUrl();
+  console.log('res: ', res);
   userOauthData.value = res
   await navigateTo(res.data.authUri, { external: true })
 }
