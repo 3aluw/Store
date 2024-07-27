@@ -9,7 +9,17 @@ export default {
         logout: "تسجيل الخروج",
         profile: "الحساب",
         adminPanel: "لوحة المدير"
-
-
+    },
+    ProductFilters: {
+        search: "بحث",
+        FilterByCategory: "فرز حسب النوع",
+        orderBy: "الترتيب حسب",
+        orderByProps: {
+            none: "",
+            dateNewest: 'الأحدث أولا',
+            dateOldest: 'الأقدم أولا',
+            priceLowToHigh: 'الأرخص أولا',
+            priceHighToLow: 'الأغلى أولا'
+        }
     }
 }

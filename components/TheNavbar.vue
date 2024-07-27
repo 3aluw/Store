@@ -87,7 +87,7 @@ watch(isLanguageEnglish, () => {
         <div tabindex="0" class="mt-3 card card-compact dropdown-content w-52 bg-base-100 shadow">
           <div class="card-body">
             <span class="font-bold text-lg"> {{ $t('TheNavbar.numberOfItems') }} : {{ cartStore.count }} </span>
-            <span class="text-info">Subtotal:
+            <span class="text-info">{{ $t('TheNavbar.subtotal') }}:
               <ProductPrice :price="cartStore.subtotal" />
             </span>
             <div class="card-actions">

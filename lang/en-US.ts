@@ -1,3 +1,4 @@
+
 export default {
     welcome: 'welcomew',
     TheNavbar: {
@@ -9,5 +10,18 @@ export default {
         logout: "Logout",
         profile: "Profile",
         adminPanel: "admin panel"
+    },
+    ProductFilters: {
+        Search: "search",
+        FilterByCategory: "Filter By category",
+        orderBy: "Order by",
+        orderByProps: {
+            none: "none",
+            dateNewest: 'date (newest)',
+            dateOldest: 'date (oldest)',
+            priceLowToHigh: 'Price (Low to High)',
+            priceHighToLow: 'Price (High to Low)'
+        }
     }
+
 }
