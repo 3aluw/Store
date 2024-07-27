@@ -6,7 +6,6 @@ const deskree = useDeskree();
 const loggedInUser = computed(() => deskree.loggedInUser.value);
 const cartStore = useCartStore();
 
-
 const isLanguageEnglish = ref(true)
 watch(isLanguageEnglish, () => {
   isLanguageEnglish.value === false ? setLocale('ar') : setLocale('en')
@@ -87,13 +86,13 @@ watch(isLanguageEnglish, () => {
         <CartIcon :loading="cartStore.loading" :count="cartStore.count" />
         <div tabindex="0" class="mt-3 card card-compact dropdown-content w-52 bg-base-100 shadow">
           <div class="card-body">
-            <span class="font-bold text-lg"> N of items : {{ cartStore.count }} </span>
+            <span class="font-bold text-lg"> {{ $t('TheNavbar.numberOfItems') }} : {{ cartStore.count }} </span>
             <span class="text-info">Subtotal:
               <ProductPrice :price="cartStore.subtotal" />
             </span>
             <div class="card-actions">
               <NuxtLink :to="{ name: 'cart' }">
-                <button class="btn btn-primary btn-block">View cart</button>
+                <button class="btn btn-primary btn-block">{{ $t('TheNavbar.viewCart') }}</button>
               </NuxtLink>
             </div>
           </div>
@@ -102,8 +101,9 @@ watch(isLanguageEnglish, () => {
 
       <!--Buttons for UN-logged In Users-->
       <div v-if="!loggedInUser">
-        <NuxtLink to="/login" class="btn btn-ghost border-2 border-gray-100 btn-sm ml-5">Login</NuxtLink>
-        <NuxtLink to="/register" class="btn btn-primary btn-sm ml-2">Register</NuxtLink>
+        <NuxtLink to="/login" class="btn btn-ghost border-2 border-gray-100 btn-sm ml-5">{{ $t('TheNavbar.login') }}
+        </NuxtLink>
+        <NuxtLink to="/register" class="btn btn-primary btn-sm ml-2">{{ $t('TheNavbar.register') }}</NuxtLink>
       </div>
 
       <!--UI for logged In Users-->
@@ -114,17 +114,17 @@ watch(isLanguageEnglish, () => {
         <ul tabindex="0" class="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52">
           <li>
             <NuxtLink to="user/profile" class="justify-between">
-              Profile
+              {{ $t('TheNavbar.profile') }}
             </NuxtLink>
           </li>
           <li>
             <NuxtLink to="/admin" v-if="loggedInUser.roles.some((role) => deskree.roles.includes(role))"
               class="justify-between">
-              admin panel
+              {{ $t('TheNavbar.adminPanel') }}
             </NuxtLink>
           </li>
           <li>
-            <NuxtLink to="/logout">Logout</NuxtLink>
+            <NuxtLink to="/logout">{{ $t('TheNavbar.logout') }}</NuxtLink>
           </li>
         </ul>
       </div>
