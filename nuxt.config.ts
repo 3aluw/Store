@@ -1,4 +1,3 @@
-
 //requireEnvVars();
 
 
@@ -16,12 +15,20 @@ export default defineNuxtConfig({
   modules: [
     "@formkit/nuxt",
     [
+      '@nuxtjs/i18n',
+      {
+        vueI18n: './i18n.config.ts',
+
+      }
+    ],
+    [
       "@pinia/nuxt",
       {
         autoImports: ["defineStore", "acceptHMRUpdate"],
       },
     ],
   ],
+
   runtimeConfig: {
     stripeSecret: process.env.STRIPE_SECRET,
     public: {
@@ -32,8 +39,8 @@ export default defineNuxtConfig({
     },
   },
   build: {
-
-  }, postcss: {
+  },
+  postcss: {
     plugins: {
       tailwindcss: {},
       autoprefixer: {},
