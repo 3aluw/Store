@@ -14,13 +14,9 @@ export default defineNuxtConfig({
   },
   modules: [
     "@formkit/nuxt",
-    [
-      '@nuxtjs/i18n',
-      {
-        vueI18n: './i18n.config.ts',
+    '@nuxtjs/i18n',
 
-      }
-    ],
+
     [
       "@pinia/nuxt",
       {
@@ -28,7 +24,21 @@ export default defineNuxtConfig({
       },
     ],
   ],
-
+  i18n: {
+    strategy: 'no_prefix',
+    locales: [
+      {
+        code: 'en',
+        file: 'en-US.ts'
+      },
+      {
+        code: 'ar',
+        file: 'ar.ts'
+      }
+    ],
+    lazy: true,
+    langDir: 'lang',
+  },
   runtimeConfig: {
     stripeSecret: process.env.STRIPE_SECRET,
     public: {

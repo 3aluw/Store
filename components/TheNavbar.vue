@@ -9,7 +9,7 @@ const cartStore = useCartStore();
 
 const isLanguageEnglish = ref(true)
 watch(isLanguageEnglish, () => {
-  isLanguageEnglish.value === true ? setLocale('ar') : setLocale('en')
+  isLanguageEnglish.value === false ? setLocale('ar') : setLocale('en')
 })
 </script>
 
