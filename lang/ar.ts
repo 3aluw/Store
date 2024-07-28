@@ -1,6 +1,14 @@
 export default {
     welcome: 'مرحبا',
-    Buttons: { submit: "إرسال" },
+    Buttons: {
+        submit: "إرسال",
+        details: "تفاصيل",
+        removeSelected: "إزالة العناصر المختارة",
+        buy: "شراء!",
+        editMyInfos: "تعديل معلوماتي",
+        buyAsAGuest: "شراء كضيف",
+        login: "تسجيل الدخول"
+    },
     TheNavbar: {
         viewCart: "رؤية السلة",
         numberOfItems: "عدد العناصر",
@@ -47,13 +55,25 @@ export default {
     },
 
 
+    //PAGES:
     AdminPage: {
         dashboard: "لوحة التحكم",
         stats: "إحصائيات",
         users: "المستخدمين",
         orders: "الطلبات",
         products: "المنتجات"
+    },
+    CartPage: {
+        "yourCart": "سلتك",
+        product: "المنتج",
+        price: "السعر",
+        numberOfItems: "عدد العناصر",
+        subtotal: "المجموع الفرعي",
+        shippingCost: "تكاليف التوصيل",
+        total: "السعر الإجمالي",
+        cartIsEmpty: "سلتك فارغة..."
     }
+
 
 
 }

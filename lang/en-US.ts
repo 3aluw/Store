@@ -1,7 +1,15 @@
 
 export default {
     welcome: 'welcome',
-    Buttons: { submit: "Submit" },
+    Buttons: {
+        submit: "Submit",
+        details: "details",
+        removeSelected: "Remove Selected",
+        buy: "BUY!",
+        editMyInfos: "Edit my infos",
+        buyAsAGuest: "Buy as a guest",
+        login: "login",
+    },
 
     TheNavbar: {
         viewCart: "View cart",
@@ -55,6 +63,16 @@ export default {
         users: "users",
         orders: "orders",
         products: "products",
+    },
+    CartPage: {
+        yourCart: "Your Cart",
+        product: "Product",
+        price: "Price",
+        numberOfItems: "Number of Items",
+        subtotal: "Subtotal",
+        shippingCost: "shipping cost",
+        total: "Total",
+        cartIsEmpty: "Cart is empty...",
     }
 
 }
