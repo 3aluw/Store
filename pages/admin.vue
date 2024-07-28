@@ -1,8 +1,8 @@
-<template >
+<template>
     <div class="admin-cont">
         <div class="up-banner w-full py-2 flex gap-4 pl-4">
             <div class="hamburger  float-left hidden" @click="toggleAsideClass"> <span></span></div>
-            <p class="text-xl md:xl-16">Dashboard</p>
+            <p class="text-xl md:xl-16">{{ $t('AdminPage.dashboard') }}</p>
         </div>
         <div class="flex w-full">
             <aside>
@@ -11,22 +11,23 @@
                         :class="{ 'aside-active': componentToShow === 'stats' }"><img
                             :class="{ 'aside-active': componentToShow === 'stats' }" src="~/assets/icons/stats.svg"
                             alt="stats">
-                        stats</li>
+                        {{ $t('AdminPage.stats') }}</li>
 
                     <li class="nav-items flex gap-2" data-component="users"
                         :class="{ 'aside-active': componentToShow === 'users' }"><img src="~/assets/icons/User.svg"
-                            alt="users" :class="{ 'aside-active': componentToShow === 'users' }"> users
+                            alt="users" :class="{ 'aside-active': componentToShow === 'users' }"> {{
+                $t('AdminPage.users') }}
                     </li>
                     <li class="nav-items flex gap-2" data-component="orders"
                         :class="{ 'aside-active': componentToShow === 'orders' }"><img
                             :class="{ 'aside-active': componentToShow === 'orders' }" src="~/assets/icons/orders.svg"
                             alt="">
-                        orders</li>
+                        {{ $t('AdminPage.orders') }}</li>
                     <li class="nav-items flex gap-2" data-component="products"
                         :class="{ 'aside-active': componentToShow === 'products' }"><img
                             src="~/assets/icons/shopping-bag.svg"
                             :class="{ 'aside-active': componentToShow === 'products' }" alt="">
-                        products</li>
+                        {{ $t('AdminPage.products') }}</li>
 
                 </ul>
             </aside>
@@ -41,7 +42,7 @@
 
         </div>
     </div>
-</template >
+</template>
 
 <script setup>
 

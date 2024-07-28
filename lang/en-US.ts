@@ -46,6 +46,15 @@ export default {
         ThankYou: "Thank you for the review",
         reviews: "reviews",
         outOf: "out of"
+    },
+
+
+    AdminPage: {
+        dashboard: "Dashboard",
+        stats: "stats",
+        users: "users",
+        orders: "orders",
+        products: "products",
     }
 
 }

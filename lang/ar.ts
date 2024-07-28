@@ -44,6 +44,15 @@ export default {
         writeAReview: "تقييم المنتج ",
         reviews: "تقييم",
         outOf: "من"
+    },
+
+
+    AdminPage: {
+        dashboard: "لوحة التحكم",
+        stats: "إحصائيات",
+        users: "المستخدمين",
+        orders: "الطلبات",
+        products: "المنتجات"
     }
 
 
