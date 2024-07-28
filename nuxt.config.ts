@@ -29,15 +29,23 @@ export default defineNuxtConfig({
     locales: [
       {
         code: 'en',
-        file: 'en-US.ts'
+        name: 'Arabic',
+        iso: 'en-US',
+        file: 'en-US.ts',
+        dir: "ltr"
       },
       {
         code: 'ar',
-        file: 'ar.ts'
+        name: 'English',
+        iso: 'ar-SA',
+        file: 'ar.ts',
+        dir: "rtl",
+
       }
     ],
     lazy: true,
     langDir: 'lang',
+
 
   },
   runtimeConfig: {
