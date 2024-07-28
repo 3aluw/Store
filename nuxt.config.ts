@@ -38,6 +38,7 @@ export default defineNuxtConfig({
     ],
     lazy: true,
     langDir: 'lang',
+
   },
   runtimeConfig: {
     stripeSecret: process.env.STRIPE_SECRET,

@@ -24,7 +24,7 @@ defineProps<{
           {{ product.fields.summary }}
         </p>
         <div class="card-actions justify-center mt-3">
-          <button class="btn btn-primary">View Item</button>
+          <button class="btn btn-primary">{{ $t('ProductCard.viewItem') }}</button>
         </div>
       </div>
     </div>

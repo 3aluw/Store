@@ -1,6 +1,8 @@
 
 export default {
-    welcome: 'welcomew',
+    welcome: 'welcome',
+    Buttons: { submit: "Submit" },
+
     TheNavbar: {
         viewCart: "View cart",
         numberOfItems: "Number of items ",
@@ -12,7 +14,7 @@ export default {
         adminPanel: "admin panel"
     },
     ProductFilters: {
-        Search: "search",
+        search: "search",
         FilterByCategory: "Filter By category",
         orderBy: "Order by",
         orderByProps: {
@@ -28,11 +30,22 @@ export default {
         totalPrice: "total price",
         placeMyOrder: 'place my order',
     },
-    userIno: {
+    UserInfo: {
         name: "Name",
         phoneNumber: "Phone number",
         state: "state",
         address: "address",
+    },
+    ProductCard: {
+        viewItem: "View item"
+    },
+    ProductReviews: {
+        productReviews: "Product reviews",
+        costumersReviews: "Other costumers' reviews",
+        writeAReview: "write a review",
+        ThankYou: "Thank you for the review",
+        reviews: "reviews",
+        outOf: "out of"
     }
 
 }

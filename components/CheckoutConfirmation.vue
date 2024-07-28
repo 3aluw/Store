@@ -22,17 +22,17 @@
 
             <div class="card-actions gap-4 justify-end items-center w-full flex-col my-10"
                 v-if="Deskree.loggedInUser.value">
-                <p> {{ $t('userInfo.name') }} :<strong> {{ Deskree.loggedInUser.value.email ?
+                <p> {{ $t('UserInfo.name') }} :<strong> {{ Deskree.loggedInUser.value.email ?
                     Deskree.loggedInUser.value.name : "not set"
                         }}</strong></p>
-                <p> {{ $t('userInfo.phoneNumber') }} : <strong> {{
+                <p> {{ $t('UserInfo.phoneNumber') }} : <strong> {{
                     Deskree.loggedInUser.value.phone_number.length > 5 ?
                         Deskree.loggedInUser.value.phone_number : "not set"
                 }}</strong></p>
-                <p> {{ $t('userInfo.state') }} : <strong> {{
+                <p> {{ $t('UserInfo.state') }} : <strong> {{
                     Deskree.loggedInUser.value.wilaya ? Deskree.loggedInUser.value.wilaya : "not set"
                 }}</strong></p>
-                <p> {{ $t('userInfo.address') }} : <strong> {{
+                <p> {{ $t('UserInfo.address') }} : <strong> {{
                     Deskree.loggedInUser.value.address ? Deskree.loggedInUser.value.address : "not set"
                 }}</strong></p>
                 <AppButton class="mx-5 mt-8" @click="handleOrder">{{ $t('CheckoutConfirmation.placeMyOrder') }}

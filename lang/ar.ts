@@ -1,5 +1,6 @@
 export default {
     welcome: 'مرحبا',
+    Buttons: { submit: "إرسال" },
     TheNavbar: {
         viewCart: "رؤية السلة",
         numberOfItems: "عدد العناصر",
@@ -27,11 +28,23 @@ export default {
         TotalPrice: "السعر الكلي",
         placeMyOrder: 'تأكيد الطلب',
     },
-    userIno: {
+    UserIno: {
         name: "الاسم الكامل",
         phoneNumber: "رقم الهاتف",
         state: "الولاية",
         address: "العنوان",
+    },
+    ProductCard: {
+        viewItem: "رؤية المنتج"
+    },
+    ProductReviews: {
+        productReviews: "تقييمات المنتج",
+        costumersReviews: "تقييمات الزبائن",
+        ThankYou: "نشكرك على التقييم",
+        writeAReview: "تقييم المنتج ",
+        reviews: "تقييم",
+        outOf: "من"
     }
+
 
 }
