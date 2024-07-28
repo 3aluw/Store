@@ -22,6 +22,17 @@ export default {
             priceLowToHigh: 'Price (Low to High)',
             priceHighToLow: 'Price (High to Low)'
         }
+    },
+    CheckoutConfirmation: {
+        disclaimer: "Please read the following infos carefully before placing your order",
+        totalPrice: "total price",
+        placeMyOrder: 'place my order',
+    },
+    userIno: {
+        name: "Name",
+        phoneNumber: "Phone number",
+        state: "state",
+        address: "address",
     }
 
 }

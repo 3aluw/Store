@@ -5,14 +5,15 @@
                 <button class="btn btn-square btn-sm" @click="emitHideConfirmation">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
-            <p class="text-lg">Please read the following infos carefully before placing your order:</p>
+            <p class="text-lg">{{ $t('CheckoutConfirmation.disclaimer') }}</p>
 
             <p class="my-5">
-                Total price:
+                {{ $t('CheckoutConfirmation.totalPrice') }}
                 <strong>
                     <ProductPrice :price="cartStore.total" />
                 </strong>
@@ -21,19 +22,21 @@
 
             <div class="card-actions gap-4 justify-end items-center w-full flex-col my-10"
                 v-if="Deskree.loggedInUser.value">
-                <p> Name : <strong> {{ Deskree.loggedInUser.value.email ? Deskree.loggedInUser.value.name : "not set"
-                }}</strong></p>
-                <p> phone number : <strong> {{
+                <p> {{ $t('userInfo.name') }} :<strong> {{ Deskree.loggedInUser.value.email ?
+                    Deskree.loggedInUser.value.name : "not set"
+                        }}</strong></p>
+                <p> {{ $t('userInfo.phoneNumber') }} : <strong> {{
                     Deskree.loggedInUser.value.phone_number.length > 5 ?
-                    Deskree.loggedInUser.value.phone_number : "not set"
+                        Deskree.loggedInUser.value.phone_number : "not set"
                 }}</strong></p>
-                <p> wilaya : <strong> {{
+                <p> {{ $t('userInfo.state') }} : <strong> {{
                     Deskree.loggedInUser.value.wilaya ? Deskree.loggedInUser.value.wilaya : "not set"
                 }}</strong></p>
-                <p> address : <strong> {{
+                <p> {{ $t('userInfo.address') }} : <strong> {{
                     Deskree.loggedInUser.value.address ? Deskree.loggedInUser.value.address : "not set"
                 }}</strong></p>
-                <AppButton class="mx-5 mt-8" @click="handleOrder">place my order</AppButton>
+                <AppButton class="mx-5 mt-8" @click="handleOrder">{{ $t('CheckoutConfirmation.placeMyOrder') }}
+                </AppButton>
             </div>
             <!--if guest buy-->
             <div v-else>
@@ -41,13 +44,13 @@
                     @submit="handleGuestOrder">
                     <FormKit type="text" label="full name" name="name" v-model="guestUser.name"
                         placeholder="enter your name" validation="required" />
-                    <FormKit type="number" label="Your phone number" name="phone" v-model="guestUser.phone_number" required
-                        validation="number|length:10,10" placeholder="enter your phone number" />
+                    <FormKit type="number" label="Your phone number" name="phone" v-model="guestUser.phone_number"
+                        required validation="number|length:10,10" placeholder="enter your phone number" />
                     <FormKit type="select" label="city name" name="city" v-model="guestUser.wilaya" placeholder="wilaya"
                         required :options="cartStore.wilayas" />
                     <FormKit type="text" label="Your address" name="address" v-model="guestUser.address"
                         placeholder="address" required />
-                    <AppButton class="mx-5 mt-8">place my order</AppButton>
+                    <AppButton class="mx-5 mt-8">{{ $t('CheckoutConfirmation.placeMyOrder') }}</AppButton>
                 </FormKit>
 
             </div>

@@ -21,5 +21,17 @@ export default {
             priceLowToHigh: 'الأرخص أولا',
             priceHighToLow: 'الأغلى أولا'
         }
+    },
+    CheckoutConfirmation: {
+        disclaimer: "فضلا قم بالـاكد من المعلومات التالية",
+        TotalPrice: "السعر الكلي",
+        placeMyOrder: 'تأكيد الطلب',
+    },
+    userIno: {
+        name: "الاسم الكامل",
+        phoneNumber: "رقم الهاتف",
+        state: "الولاية",
+        address: "العنوان",
     }
+
 }

@@ -1,4 +1,3 @@
-
 <template>
   <div>
     <Transition name="fade">
@@ -64,9 +63,9 @@
                     </td>
                     <th>
                       <NuxtLink :to="{
-                        name: 'products-id',
-                        params: { id: product.sys.id },
-                      }">
+        name: 'products-id',
+        params: { id: product.sys.id },
+      }">
                         <button class="btn btn-ghost btn-xs">details</button>
                       </NuxtLink>
                     </th>
@@ -74,9 +73,9 @@
                 </tbody>
               </table>
               <button v-if="selected.length" class="text-sm text-red-500" @click="
-                cartStore.removeProducts(selected);
-              selected = [];
-              ">
+        cartStore.removeProducts(selected);
+      selected = [];
+      ">
                 Remove Selected
               </button>
             </div>
@@ -104,15 +103,15 @@
               <div class="card-actions justify-end w-full flex-col my-10" v-if="Deskree.loggedInUser.value">
                 <p> Name : {{ Deskree.loggedInUser.value.email ? Deskree.loggedInUser.value.name : "not set" }}</p>
                 <p> phone number : <strong> {{
-                  Deskree.loggedInUser.value.phone_number.length > 5 ?
-                  Deskree.loggedInUser.value.phone_number : "not set"
-                }}</strong></p>
-                <p> wilaya : <strong> {{
-                  Deskree.loggedInUser.value.wilaya ? Deskree.loggedInUser.value.wilaya : "not set"
-                }}</strong></p>
+        Deskree.loggedInUser.value.phone_number.length > 5 ?
+          Deskree.loggedInUser.value.phone_number : "not set"
+      }}</strong></p>
+                <p> state : <strong> {{
+          Deskree.loggedInUser.value.wilaya ? Deskree.loggedInUser.value.wilaya : "not set"
+        }}</strong></p>
                 <p> address : <strong> {{
-                  Deskree.loggedInUser.value.address ? Deskree.loggedInUser.value.address : "not set"
-                }}</strong></p>
+          Deskree.loggedInUser.value.address ? Deskree.loggedInUser.value.address : "not set"
+        }}</strong></p>
 
                 <button class="btn btn-primary w-full" @click="handleBuyClick">
                   BUY!
