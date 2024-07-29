@@ -7,7 +7,8 @@ export default {
         buy: "شراء!",
         editMyInfos: "تعديل معلوماتي",
         buyAsAGuest: "شراء كضيف",
-        login: "تسجيل الدخول"
+        login: "تسجيل الدخول",
+        loginWithGoogle: "تسجيل الدخول عبر غوغل"
     },
     UserIno: {
         name: "الاسم الكامل",

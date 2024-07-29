@@ -29,17 +29,17 @@ async function handleLogin() {
 <template>
   <div>
     <div>
-      <h2 class="card-title mb-5">Login</h2>
+      <h2 class="card-title mb-5">{{ $t('Buttons.login') }}</h2>
       <FormKit type="form" :config="{ validationVisibility: 'submit' }" @submit="handleLogin" :actions="false"
         v-model="form">
         <FormKit type="text" label="Email" name="email" validation="required|email" />
 
         <FormKit type="password" name="password" label="Password" validation="required" />
-        <AppButton class="btn-primary block mx-auto " :loading="loading">Login</AppButton>
+        <AppButton class="btn-primary block mx-auto " :loading="loading">{{ $t('Buttons.login') }}</AppButton>
       </FormKit>
     </div>
     <button class="btn-primary login-with-google-btn block mx-auto " type="button">
-      login with Google
+      {{ $t('Buttons.loginWithGoogle') }}
     </button>
   </div>
 </template>
