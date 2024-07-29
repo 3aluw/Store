@@ -6,9 +6,15 @@ export default {
         details: "details",
         removeSelected: "Remove Selected",
         buy: "BUY!",
-        editMyInfos: "Edit my infos",
+        editMyInfo: "Edit my info",
         buyAsAGuest: "Buy as a guest",
         login: "login",
+    },
+    UserInfo: {
+        name: "Name",
+        phoneNumber: "Phone number",
+        state: "state",
+        address: "address",
     },
 
     TheNavbar: {
@@ -38,12 +44,7 @@ export default {
         totalPrice: "total price",
         placeMyOrder: 'place my order',
     },
-    UserInfo: {
-        name: "Name",
-        phoneNumber: "Phone number",
-        state: "state",
-        address: "address",
-    },
+
     ProductCard: {
         viewItem: "View item"
     },

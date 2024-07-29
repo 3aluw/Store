@@ -9,6 +9,12 @@ export default {
         buyAsAGuest: "شراء كضيف",
         login: "تسجيل الدخول"
     },
+    UserIno: {
+        name: "الاسم الكامل",
+        phoneNumber: "رقم الهاتف",
+        state: "الولاية",
+        address: "العنوان",
+    },
     TheNavbar: {
         viewCart: "رؤية السلة",
         numberOfItems: "عدد العناصر",
@@ -35,12 +41,6 @@ export default {
         disclaimer: "فضلا قم بالـاكد من المعلومات التالية",
         TotalPrice: "السعر الكلي",
         placeMyOrder: 'تأكيد الطلب',
-    },
-    UserIno: {
-        name: "الاسم الكامل",
-        phoneNumber: "رقم الهاتف",
-        state: "الولاية",
-        address: "العنوان",
     },
     ProductCard: {
         viewItem: "رؤية المنتج"
