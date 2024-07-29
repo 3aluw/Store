@@ -6,13 +6,12 @@
       <img src="/hero-hotsauce.jpeg" class="max-w-full w-60 rounded-lg shadow-2xl mb-5" />
       <div class="text-center lg:text-left">
         <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold">
-          <span style="transform: scaleX(-1)" class="inline-block">📢</span> Get
-          your hot sauce!
+          <span style="transform: scaleX(-1)" class="inline-block">📢</span> {{ $t('HomeHero.getYourHotSauce') }}
         </h1>
         <p class="py-6">
-          Add some hotness to your cold food!
+          {{ $t('HomeHero.addSomeHotness') }}
         </p>
-        <button class="btn btn-primary"> <a href="/#products">Discover</a></button>
+        <button class="btn btn-primary"> <a href="/#products">{{ $t('Buttons.discover') }}</a></button>
       </div>
     </div>
   </div>

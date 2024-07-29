@@ -1,6 +1,7 @@
 export default {
     welcome: 'مرحبا',
     Buttons: {
+        discover: "استكشاف",
         submit: "إرسال",
         details: "تفاصيل",
         removeSelected: "إزالة العناصر المختارة",
@@ -57,6 +58,12 @@ export default {
         reviews: "تقييم",
         outOf: "من"
     },
+    HomeHero: {
+        getYourHotSauce: "أضف بعض الصلصة الحارة",
+        addSomeHotness: "أضف بعض الحرارة إلى طعامك البارد!",
+
+    },
+
 
 
     //PAGES:

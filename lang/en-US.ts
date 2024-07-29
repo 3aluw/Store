@@ -1,7 +1,9 @@
 
+
 export default {
     welcome: 'welcome',
     Buttons: {
+        discover: "Discover",
         submit: "Submit",
         details: "details",
         removeSelected: "Remove Selected",
@@ -59,8 +61,14 @@ export default {
         reviews: "reviews",
         outOf: "out of"
     },
+    HomeHero: {
+        getYourHotSauce: "Get your hot sauce!",
+        addSomeHotness: "Add some hotness to your cold food!",
+
+    },
 
 
+    //PAGES:
     AdminPage: {
         dashboard: "Dashboard",
         stats: "stats",
