@@ -8,7 +8,10 @@ export default {
         editMyInfos: "تعديل معلوماتي",
         buyAsAGuest: "شراء كضيف",
         login: "تسجيل الدخول",
-        loginWithGoogle: "تسجيل الدخول عبر غوغل"
+        register: "إنشاء حساب",
+        loginWithGoogle: "تسجيل الدخول عبر غوغل",
+        signWithGoogle: "إنشاء حساب عبر غوغل",
+
     },
     UserIno: {
         name: "الاسم الكامل",

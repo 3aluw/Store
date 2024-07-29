@@ -9,7 +9,9 @@ export default {
         editMyInfo: "Edit my info",
         buyAsAGuest: "Buy as a guest",
         login: "login",
-        loginWithGoogle: "login with Google"
+        register: "register",
+        loginWithGoogle: "login with Google",
+        signWithGoogle: "sign up with Google",
     },
     UserInfo: {
         name: "Name",
