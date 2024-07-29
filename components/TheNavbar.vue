@@ -5,15 +5,8 @@ const { locale, setLocale } = useI18n()
 const deskree = useDeskree();
 const loggedInUser = computed(() => deskree.loggedInUser.value);
 const cartStore = useCartStore();
-/*
-const isLanguageEnglish = ref(true)
-
-watch(isLanguageEnglish, () => {
-  isLanguageEnglish.value === false ? setLocale('ar') : setLocale('en')
-})*/
 
 const isLanguageEnglish = computed(() => locale.value === "en" ? true : false)
-
 const switchLanguage = () => {
   locale.value === 'en' ? setLocale('ar') : setLocale('en')
 }
@@ -30,10 +23,9 @@ const switchLanguage = () => {
     <!--language controller-->
     <label class="swap swap-rotate ">
       <!-- this hidden checkbox controls the state -->
-      <input type="checkbox" v-bind="isLanguageEnglish" @click="switchLanguage">
+      <input type="checkbox" :checked="isLanguageEnglish" @click="switchLanguage">
 
       <!-- english icon -->
-
       <svg class="swap-on fill-current w-7 h-7 rounded-full" xmlns="http://www.w3.org/2000/svg" id="flag-icons-gb"
         viewBox="0 0 512 512">
         <path fill="#012169" d="M0 0h512v512H0z" />
