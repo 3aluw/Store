@@ -5,11 +5,18 @@ const { locale, setLocale } = useI18n()
 const deskree = useDeskree();
 const loggedInUser = computed(() => deskree.loggedInUser.value);
 const cartStore = useCartStore();
-
+/*
 const isLanguageEnglish = ref(true)
+
 watch(isLanguageEnglish, () => {
   isLanguageEnglish.value === false ? setLocale('ar') : setLocale('en')
-})
+})*/
+
+const isLanguageEnglish = computed(() => locale.value === "en" ? true : false)
+
+const switchLanguage = () => {
+  locale.value === 'en' ? setLocale('ar') : setLocale('en')
+}
 </script>
 
 
@@ -18,13 +25,12 @@ watch(isLanguageEnglish, () => {
     <div class="flex-1">
       <NuxtLink class="btn btn-ghost normal-case text-xl" to="/">FALAFEL</NuxtLink>
     </div>
-
     <!-- Right Side -->
 
     <!--language controller-->
     <label class="swap swap-rotate ">
       <!-- this hidden checkbox controls the state -->
-      <input type="checkbox" v-model="isLanguageEnglish">
+      <input type="checkbox" v-bind="isLanguageEnglish" @click="switchLanguage">
 
       <!-- english icon -->
 
