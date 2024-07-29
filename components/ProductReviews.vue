@@ -3,13 +3,14 @@
 
 
     <hr class="my-10" />
-    <p>Product Reviews </p>
+    <p>{{ $t("ProductReviews.productReviews") }} </p>
 
     <div class="overview flex items-center justify-around">
       <div class="final-mark p-6 border border-black rounded-lg text-center">
-        <p> <span class="text-2xl font-semibold"> {{ avregeRating }}</span> out of <span class="text-2xl font-semibold">
+        <p> <span class="text-2xl font-semibold"> {{ avregeRating }}</span> {{ $t('ProductReviews.outOf') }} <span
+            class="text-2xl font-semibold">
             5 </span></p>
-        <p> {{ res?.data.length }} reviews </p>
+        <p> {{ res?.data.length }} {{ $t('ProductReviews.reviews') }} </p>
       </div>
       <div class="stars -distribution flex flex-col gap-5 ">
 
@@ -27,7 +28,7 @@
         <div class="collapse  border border-base-300 bg-base-100 rounded-box">
           <input type="checkbox" />
           <div class="collapse-title text-xl font-medium">
-            Write a review
+            {{ $t("ProductReviews.writeAReview") }}
           </div>
           <div class="collapse-content flex flex-col  items-center justify-evenly">
             <div class=" rating"><input type="radio" name="rating-2" v-model="stars" value="0"
@@ -44,16 +45,16 @@
               <textarea v-model="reviewText" class="textarea textarea-bordered w-full" rows="5"
                 placeholder="insert details "></textarea>
             </div>
-            <button class="btn btn-primary my-2" @click="postReview">Submit</button>
+            <button class="btn btn-primary my-2" @click="postReview">{{ $t("Buttons.submit") }} </button>
           </div>
         </div>
       </div>
-      <div v-else class="text-xl font-medium text-center my-5"> Thank you for the review </div>
+      <div v-else class="text-xl font-medium text-center my-5"> {{ $t("ProductReviews.thankYou") }} </div>
 
 
       <div class="past-reviews my-8">
 
-        <h2 class="text-xl font-medium">Other costumers' reviews</h2>
+        <h2 class="text-xl font-medium">{{ $t("ProductReviews.costumersReviews") }}</h2>
         <p v-if="isLoading" class="text-xl font-medium "> Loading...</p>
         <div v-else class="card  bg-base-100 shadow-xl" v-for=" { attributes } in res?.data">
           <div class="card-body">

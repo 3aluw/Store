@@ -1,4 +1,3 @@
-
 <template>
   <div>
     <Transition name="fade">
@@ -7,7 +6,7 @@
     <div class="m-10" v-if="cartStore.count">
 
 
-      <h1 class="text-3xl mb-5 font-bold">Your Cart</h1>
+      <h1 class="text-3xl mb-5 font-bold">{{ $t('CartPage.yourCart') }}</h1>
 
       <div class="md:flex w-full">
         <div class="md:w-3/4">
@@ -25,9 +24,9 @@
                       </label>
                     </th>
                     <th></th>
-                    <th>Product</th>
-                    <th>Price</th>
-                    <th>Number of Items</th>
+                    <th>{{ $t('CartPage.product') }}</th>
+                    <th>{{ $t('CartPage.price') }}</th>
+                    <th>{{ $t('CartPage.numberOfItems') }}</th>
                     <th></th>
                   </tr>
                 </thead>
@@ -64,20 +63,20 @@
                     </td>
                     <th>
                       <NuxtLink :to="{
-                        name: 'products-id',
-                        params: { id: product.sys.id },
-                      }">
-                        <button class="btn btn-ghost btn-xs">details</button>
+        name: 'products-id',
+        params: { id: product.sys.id },
+      }">
+                        <button class="btn btn-ghost btn-xs">{{ $t('Buttons.details') }}</button>
                       </NuxtLink>
                     </th>
                   </tr>
                 </tbody>
               </table>
               <button v-if="selected.length" class="text-sm text-red-500" @click="
-                cartStore.removeProducts(selected);
-              selected = [];
-              ">
-                Remove Selected
+        cartStore.removeProducts(selected);
+      selected = [];
+      ">
+                {{ $t('Buttons.removeSelected') }}
               </button>
             </div>
           </div>
@@ -88,45 +87,46 @@
             <div class="card-body">
               <ul>
                 <li>
-                  <strong>Subtotal</strong>:
+                  <strong>{{ $t('CartPage.subtotal') }}</strong>:
                   <ProductPrice :price="cartStore.subtotal" />
                 </li>
                 <li>
-                  <strong>Estimated Taxes </strong>:
+                  <strong>{{ $t('CartPage.shippingCost') }} </strong>:
                   <ProductPrice :price="cartStore.taxTotal" />
                 </li>
                 <li>
-                  <strong>Total</strong>:
+                  <strong>{{ $t('CartPage.total') }}</strong>:
                   <ProductPrice :price="cartStore.total" />
                 </li>
               </ul>
 
               <div class="card-actions justify-end w-full flex-col my-10" v-if="Deskree.loggedInUser.value">
-                <p> Name : {{ Deskree.loggedInUser.value.email ? Deskree.loggedInUser.value.name : "not set" }}</p>
-                <p> phone number : <strong> {{
-                  Deskree.loggedInUser.value.phone_number.length > 5 ?
-                  Deskree.loggedInUser.value.phone_number : "not set"
-                }}</strong></p>
-                <p> wilaya : <strong> {{
-                  Deskree.loggedInUser.value.wilaya ? Deskree.loggedInUser.value.wilaya : "not set"
-                }}</strong></p>
-                <p> address : <strong> {{
-                  Deskree.loggedInUser.value.address ? Deskree.loggedInUser.value.address : "not set"
-                }}</strong></p>
+                <p> {{ $t('UserInfo.name') }} : {{ Deskree.loggedInUser.value.email ? Deskree.loggedInUser.value.name :
+        "not set" }}</p>
+                <p> {{ $t('UserInfo.phoneNumber') }} : <strong> {{
+        Deskree.loggedInUser.value.phone_number.length > 5 ?
+          Deskree.loggedInUser.value.phone_number : "not set"
+      }}</strong></p>
+                <p> {{ $t('UserInfo.state') }} : <strong> {{
+        Deskree.loggedInUser.value.wilaya ? Deskree.loggedInUser.value.wilaya : "not set"
+      }}</strong></p>
+                <p> {{ $t('UserInfo.address') }} : <strong> {{
+        Deskree.loggedInUser.value.address ? Deskree.loggedInUser.value.address : "not set"
+      }}</strong></p>
 
                 <button class="btn btn-primary w-full" @click="handleBuyClick">
-                  BUY!
+                  {{ $t('Buttons.buy') }}
                 </button>
                 <NuxtLink to="user/profile" class="btn btn-primary w-full"> <button>
-                    Edit my infos
+                    {{ $t('Buttons.editMyInfo') }}
                   </button></NuxtLink>
               </div>
               <div v-else class="card-actions justify-end w-full flex-col my-10">
                 <NuxtLink to="" class="btn btn-primary w-full" @click="handleGuestOrder"> <button>
-                    Buy as a guest
+                    {{ $t('Buttons.buyAsAGuest') }}
                   </button></NuxtLink>
                 <NuxtLink to="login" class="btn  w-full"> <button>
-                    login
+                    {{ $t('Buttons.login') }}
                   </button></NuxtLink>
               </div>
             </div>
@@ -136,7 +136,7 @@
       </div>
     </div>
     <div class="italic text-center text-3xl pt-10" v-else>
-      Cart is empty...
+      {{ $t('CartPage.cartIsEmpty') }}...
     </div>
   </div>
 </template>

@@ -1,4 +1,3 @@
-
 //requireEnvVars();
 
 
@@ -15,6 +14,9 @@ export default defineNuxtConfig({
   },
   modules: [
     "@formkit/nuxt",
+    '@nuxtjs/i18n',
+
+
     [
       "@pinia/nuxt",
       {
@@ -22,24 +24,47 @@ export default defineNuxtConfig({
       },
     ],
   ],
+  i18n: {
+    strategy: 'no_prefix',
+    locales: [
+      {
+        code: 'en',
+        name: 'Arabic',
+        iso: 'en-US',
+        file: 'en-US.ts',
+        dir: "ltr"
+      },
+      {
+        code: 'ar',
+        name: 'English',
+        iso: 'ar-SA',
+        file: 'ar.ts',
+        dir: "rtl",
+
+      }
+    ],
+    lazy: true,
+    langDir: 'lang',
+
+
+  },
   runtimeConfig: {
     stripeSecret: process.env.STRIPE_SECRET,
     public: {
       contentfulSpace: process.env.NUXT_CONTENTFUL_SPACE,
       contentfulCMAccessToken: process.env.NUXT_CONTENTFUL_CM_ACCESS_TOKEN,
-      contentfulPublicAccessToken:
-        process.env.NUXT_CONTENTFUL_PUBLIC_ACCESS_TOKEN,
+      contentfulPublicAccessToken: process.env.NUXT_CONTENTFUL_PUBLIC_ACCESS_TOKEN,
       deskreeBaseUrl: process.env.NUXT_DESKREE_BASE_URL,
     },
   },
   build: {
-
-  },  postcss: {
-        plugins: {
-          tailwindcss: {},
-          autoprefixer: {},
-        },
-      },
+  },
+  postcss: {
+    plugins: {
+      tailwindcss: {},
+      autoprefixer: {},
+    },
+  },
 
 });
 

@@ -22,13 +22,13 @@ debouncedWatch(
     <AppSpinner style="transform: translateY(15px)" v-if="loadingDebounced" />
     <div class="form-control">
       <label class="label" for="search">
-        <span class="label-text">Search</span>
+        <span class="label-text">{{ $t('ProductFilters.search') }}</span>
       </label>
       <input id="search" v-model="filters.query" type="text" class="input input-bordered" />
     </div>
     <div class="form-control w-full max-w-xs">
       <label class="label" for="filterHeat">
-        <span class="label-text">Filter By Heat</span>
+        <span class="label-text">{{ $t('ProductFilters.FilterByCategory') }}</span>
       </label>
       <select id="filterHeat" class="select select-bordered" v-model="filters[`fields.category`]">
         <option value="">All</option>
@@ -37,15 +37,15 @@ debouncedWatch(
     </div>
     <div class="form-control w-full max-w-xs">
       <label class="label" for="orderBy">
-        <span class="label-text">Order by</span>
+        <span class="label-text">{{ $t('ProductFilters.orderBy') }}</span>
       </label>
       <select class="select select-bordered" v-model="filters.order" id="orderBy">
-        <option value="">None</option>
+        <option value="">{{ $t('ProductFilters.orderByProps.none') }}</option>
 
-        <option value="-sys.createdAt">date (newest)</option>
-        <option value="sys.createdAt">date (oldest)</option>
-        <option value="fields.price">Price (Low to High)</option>
-        <option value="-fields.price">Price (High to Low)</option>
+        <option value="-sys.createdAt">{{ $t('ProductFilters.orderByProps.dateNewest') }}</option>
+        <option value="sys.createdAt">{{ $t('ProductFilters.orderByProps.dateOldest') }}</option>
+        <option value="fields.price">{{ $t('ProductFilters.orderByProps.priceLowToHigh') }}</option>
+        <option value="-fields.price">{{ $t('ProductFilters.orderByProps.priceHighToLow') }}</option>
       </select>
     </div>
   </div>

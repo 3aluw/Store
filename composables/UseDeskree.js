@@ -1,9 +1,13 @@
 import { useLocalStorage } from "@vueuse/core";
 import { useRouter } from "vue-router";
 import { ref, watch } from "vue"
+
 //roles
 //admin, moderator
 const roles = ["n1p7bliRJvTk3bwilZLh", "ysQAF8GKCCAGR9hWVgVY"]
+
+const defaultCallBackUri = "http://localhost:3000/register"
+const defaultProviderId = "google.com"
 // user data persisted to local storage
 const tokenInLocalStorage = useLocalStorage("deskree_token", null);
 const refreshTokenInLocalStorage = useLocalStorage("deskree_refresh_token", null);
@@ -81,7 +85,7 @@ export function useDeskree() {
  * Google Oauth functions exposed from composable
  */
   const Oauth = {
-    createOauthUrl: async (providerId = "google.com", callBackUri) => {
+    createOauthUrl: async (providerId = defaultProviderId, callBackUri = defaultCallBackUri) => {
       const res = await $fetch("/auth/accounts/sign-in/auth-url", {
         baseURL,
         method: "POST",
@@ -231,11 +235,11 @@ export function useDeskree() {
     initToken(user.idToken, user.refreshToken);
 
     if (isNew) {
-      // create the users one and only cart
+      // create the user's one and only cart
       const cart = await dbRestRequest("/carts", "POST", {
         products: JSON.stringify([]),
       });
-
+      console.log('cart: ', cart);
       // connect that cart to the user
       dbRestRequest(`/users/${user.uid}`, "PATCH", {
         cartId: cart.data.uid,
@@ -259,9 +263,11 @@ export function useDeskree() {
     if (typeof userIdOrUser === "string") {
       try {
         const res = await dbRestRequest(`/users/${userIdOrUser}`);
+        //Uncomment
+        // loggedInUser.value = await res.data;
+        // console.log('res: ', res);
         res.data.cart = await user.getCart();
         loggedInUser.value = await res.data;
-
       } catch (err) {
         if (!err.response._data) return;
 

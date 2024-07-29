@@ -1,7 +1,7 @@
 <template>
   <div>
     <div>
-      <h2 class="card-title mb-5">Register</h2>
+      <h2 class="card-title mb-5">{{ $t('Buttons.register') }}</h2>
       <FormKit type="form" :config="{ validationVisibility: 'submit' }" @submit="handleRegistration" :actions="false"
         v-model="form">
         <FormKit type="text" label="Email" name="email" validation="required|email" />
@@ -9,11 +9,11 @@
         <FormKit type="password" name="password" label="Password" validation="required" />
         <FormKit type="password" name="password_confirm" label="Confirm password" validation="required|confirm"
           validation-label="Password" />
-        <AppButton class="btn-primary block mx-auto" :loading="loading">Register</AppButton>
+        <AppButton class="btn-primary block mx-auto" :loading="loading">{{ $t('Buttons.register') }}</AppButton>
       </FormKit>
     </div>
     <button class="btn-primary login-with-google-btn block mx-auto" type="button" @click="OauthRegister">
-      sign-up with Google
+      {{ $t('Buttons.signWithGoogle') }}
     </button>
   </div>
 </template>
@@ -63,7 +63,8 @@ onMounted(async () => {
 })
 
 const OauthRegister = async () => {
-  const res = await deskree.Oauth.createOauthUrl("google.com", "http://localhost:3000/register");
+  const res = await deskree.Oauth.createOauthUrl();
+  console.log('res: ', res);
   userOauthData.value = res
   await navigateTo(res.data.authUri, { external: true })
 }
