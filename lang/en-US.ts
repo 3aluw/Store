@@ -14,6 +14,7 @@ export default {
         register: "register",
         loginWithGoogle: "login with Google",
         signWithGoogle: "sign up with Google",
+        addToCart: "Add to cart",
     },
     UserInfo: {
         name: "Name",
@@ -85,6 +86,10 @@ export default {
         shippingCost: "shipping cost",
         total: "Total",
         cartIsEmpty: "Cart is empty...",
-    }
+    } ,
+     productPage: {
+            productDescription: "Product description",
+        }
+    
 
 }

@@ -16,7 +16,7 @@ export const useProductStore = defineStore("ProductStore", {
         query: useRoute().query.query || "",
       },
 
-      singleProduct: null,
+      singleProduct: undefined,
 
       //Product categories
      categories : []

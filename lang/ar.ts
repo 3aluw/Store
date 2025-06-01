@@ -12,6 +12,7 @@ export default {
         register: "إنشاء حساب",
         loginWithGoogle: "تسجيل الدخول عبر غوغل",
         signWithGoogle: "إنشاء حساب عبر غوغل",
+        addToCart: "أضف إلى السلة",
 
     },
     UserIno: {
@@ -83,6 +84,9 @@ export default {
         shippingCost: "تكاليف التوصيل",
         total: "السعر الإجمالي",
         cartIsEmpty: "سلتك فارغة..."
+    }, 
+    ProductPage: {
+        productDescription : "تفاصيل المنتج",
     }
 
 

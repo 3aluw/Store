@@ -89,11 +89,11 @@ const Deskree = useDeskree();
 const { state: res, isLoading, execute } = useAsyncState(() => Deskree.reviews.get(props.productId), null, { immediate: false });
 
 onMounted(() => {
-  execute().then((res) => console.log(res));
+  execute().then((res) => undefined);
 })
 //reviews overview
 
-const avregeRating = computed(() => { return res.value ? (res.value.data.reduce((past, current) => past += current.attributes.rating, 0) / res.value.data.length).toFixed(1) : "..." })
+const avregeRating = computed(() => { return res.value?.length ? (res.value.data.reduce((past, current) => past += current.attributes.rating, 0) / res.value.data.length).toFixed(1) : "..." })
 
 //Grouping reviews' stars to show then organized
 const starsGrouped = computed(() => {
