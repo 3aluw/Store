@@ -9,7 +9,6 @@ const { data: product } = await useAsyncData(
   async () => {
     if (route.params.id === "undefined") return productStore.singleProduct;
     const productObj = await productStore.fetchProduct(route.params.id);
-    console.log('productObj: ', productObj);
     return productStore.singleProduct;
   },
   {
@@ -25,23 +24,38 @@ function handleAddToCart(product) {
   useCartStore().addProduct(product, 1);
   useAlertsStore().success(product.fields.name + " added to cart");
 }
+
+const carousel = ref(null);
+const slideTo = (index) => {
+    const carouselElement = carousel.value;
+    const slideWidth = carouselElement.clientWidth ;
+carouselElement.scrollTo({
+      left: slideWidth * index,
+      behavior: 'smooth'
+    });
+  };
 </script>
 <template>
   <div class="mt-10 max-w-6xl mx-auto">
+
     <div v-if="product">
       <div class="sm:flex">
-        <div class="image-cont flex flex-col pt-8 items-center gap-4 ">
-        <img v-if="product?.fields.image.length === 1" class="mr-10 h-80 object-contain sm:w-1/3"
-          :src="product?.fields.image[0].fields?.file.url" :alt="product?.fields.image[0].fields?.file.description" />
-        <div v-else  class="carousel h-80 object-contain sm:w-1/3 w-full">
-  <div :id="`item${index + 1}`"  v-for="(image, index) in product?.fields.image" class="carousel-item w-full">
-    <img :src="image.fields?.file.url" />
-  </div> 
-</div> 
-<div class="flex justify-center w-full py-2 gap-2">
-  <a v-for="(image, index)  in product?.fields.image" :href="`#item${index + 1}`" class="btn btn-xs">{{ index + 1 }}</a> 
 
-</div></div>
+        <img v-if="product?.fields.image.length === 1" class="mr-10 h-80 object-contain max-w-2xl"
+          :src="product?.fields.image[0].fields?.file.url" :alt="product?.fields.image[0].fields?.file.description" />
+        <div v-else class="carousel-cont flex flex-col items-center gap-4 max-w-2xl">
+          <div class="carousel h-80 object-contain  w-full" ref="carousel">
+            <div  class="carousel-item w-full justify-center" 
+              v-for="(image, index) in product?.fields.image">
+              <img :src="image.fields?.file.url" />
+            </div>
+          </div>
+          <div class="flex justify-center w-full py-2 gap-2">
+            <a v-for="(image, index) in product?.fields.image" @click="slideTo(index)" class="btn btn-xs">{{ index
+              + 1 }}</a>
+
+          </div>
+        </div>
         <div class="px-10 sm:pl-0 sm:w-2/3">
           <h1 class="text-2xl font-bold">{{ product?.fields.name }}</h1>
           <h2 class="text-l  my-2">
