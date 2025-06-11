@@ -45,10 +45,10 @@ carouselElement.scrollTo({
 
     <div v-if="product">
       <div class="sm:flex">
-
+      
         <img v-if="product?.fields.image.length === 1" class="mr-10 h-80 object-contain max-w-2xl"
           :src="product?.fields.image[0].fields?.file.url" :alt="product?.fields.image[0].fields?.file.description" />
-        <div v-else class="carousel-cont flex flex-col items-center gap-4 max-w-2xl">
+        <div v-else-if="product?.fields.image.length > 1" class="carousel-cont flex flex-col items-center gap-4 max-w-2xl">
           <div dir="ltr" class="carousel h-80 object-contain  w-full" ref="carousel">
             <div  class="carousel-item w-full justify-center" 
               v-for="(image, index) in productImagesToShow">
@@ -61,6 +61,8 @@ carouselElement.scrollTo({
 
           </div>
         </div>
+          <div v-else class="flex items-center justify-center">
+          <img class="h-80 object-contain max-w-2xl" src="https://ibb.co/fV2sN5Lm" alt="No image available" /></div>
         <div class="px-10 sm:pl-0 sm:w-2/3">
           <h1 class="text-2xl font-bold">{{ product?.fields.name }}</h1>
           <h2 class="text-l  my-2">
