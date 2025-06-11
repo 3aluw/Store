@@ -131,9 +131,9 @@ const addRandomItems = (productsArray,MatchesArray)=>{
         </div>
       </div>
     </div>
-    <div v-if="similarProducts.length" class="similar-products-cont" >
-    <div id="products" v-if="productStore.products"
-      class="gap-7 p-10 sm:grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 flex-wrap justify-items-stretch items-stretch">
+    <div v-if="similarProducts.length" class="similar-products-cont mt-8" >
+     <h3 class="text-xl font-semibold mb-2 px-4">{{ $t("ProductPage.similarProducts") }} </h3>
+    <div class="gap-7 p-10 sm:grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 flex-wrap justify-items-stretch items-stretch">
       <TransitionGroup name="products">
         <ProductCard v-for="product in similarProducts" :product="product" :key="product.sys.id" class="mb-5" />
       </TransitionGroup>

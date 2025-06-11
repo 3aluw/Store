@@ -89,6 +89,7 @@ export default {
     } ,
      ProductPage: {
             productDescription: "Product description",
+            similarProducts : "Similar products",
         }
     
 
