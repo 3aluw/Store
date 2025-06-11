@@ -15,7 +15,7 @@ export default {
         addToCart: "أضف إلى السلة",
 
     },
-    UserIno: {
+    UserInfo: {
         name: "الاسم الكامل",
         phoneNumber: "رقم الهاتف",
         state: "الولاية",
@@ -44,8 +44,8 @@ export default {
         }
     },
     CheckoutConfirmation: {
-        disclaimer: "فضلا قم بالـاكد من المعلومات التالية",
-        TotalPrice: "السعر الكلي",
+        disclaimer: "فضلا قم بالتأكد من المعلومات التالية",
+        totalPrice: "السعر الكلي",
         placeMyOrder: 'تأكيد الطلب',
     },
     ProductCard: {
@@ -87,6 +87,7 @@ export default {
     }, 
     ProductPage: {
         productDescription : "تفاصيل المنتج",
+        similarProducts : "منتجات مشابهة",
     }
 
 

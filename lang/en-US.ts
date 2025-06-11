@@ -87,8 +87,9 @@ export default {
         total: "Total",
         cartIsEmpty: "Cart is empty...",
     } ,
-     productPage: {
+     ProductPage: {
             productDescription: "Product description",
+            similarProducts : "Similar products",
         }
     
 
