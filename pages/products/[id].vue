@@ -25,6 +25,11 @@ function handleAddToCart(product) {
   useAlertsStore().success(product.fields.name + " added to cart");
 }
 
+//product images carousel 
+const productImagesToShow = computed(() => {
+  const imagesArray = product.value?.fields.image
+  return imagesArray.length > 5 ? imagesArray.slice(1) : imagesArray;
+}); 
 const carousel = ref(null);
 const slideTo = (index) => {
     const carouselElement = carousel.value;
@@ -44,14 +49,14 @@ carouselElement.scrollTo({
         <img v-if="product?.fields.image.length === 1" class="mr-10 h-80 object-contain max-w-2xl"
           :src="product?.fields.image[0].fields?.file.url" :alt="product?.fields.image[0].fields?.file.description" />
         <div v-else class="carousel-cont flex flex-col items-center gap-4 max-w-2xl">
-          <div class="carousel h-80 object-contain  w-full" ref="carousel">
+          <div dir="ltr" class="carousel h-80 object-contain  w-full" ref="carousel">
             <div  class="carousel-item w-full justify-center" 
-              v-for="(image, index) in product?.fields.image">
+              v-for="(image, index) in productImagesToShow">
               <img :src="image.fields?.file.url" />
             </div>
           </div>
-          <div class="flex justify-center w-full py-2 gap-2">
-            <a v-for="(image, index) in product?.fields.image" @click="slideTo(index)" class="btn btn-xs">{{ index
+          <div dir="ltr" class="flex justify-center w-full py-2 gap-2">
+            <a v-for="(image, index) in productImagesToShow" @click="slideTo(index)" class="btn btn-xs">{{ index
               + 1 }}</a>
 
           </div>
