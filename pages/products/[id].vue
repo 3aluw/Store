@@ -15,7 +15,6 @@ const { data: product } = await useAsyncData(
     pick: ["fields", "sys"],
   }
 );
-console.log("Product data:", product.value);
 const description = computed(() =>
   product.value ? marked.parse(product.value?.fields?.description) : null
 );
@@ -41,17 +40,24 @@ carouselElement.scrollTo({
   };
 
   // similar products
+  const similarItemsCount = 5;
   const fetchProducts = useAsyncData("products", async () => productStore.fetchProducts());
+  
   const similarProducts = computed(() => {
     if( !productStore.products) fetchProducts();
 let productsArray = productStore.products;
-console.log('productsArray: ', productStore.products);
    productsArray= excludeCurrentProduct(productsArray);
   const categoryMatches = getCategoryMatches(productsArray, product.value?.fields?.category[0]);
   const tagMatches = getTagMatches(productsArray, product.value?.fields?.tags );
- return tagMatches 
+ const combinedMatches = Array.from(new Set([
+    ...categoryMatches,
+    ...tagMatches
+  ]));
+  const shuffledMatches = shuffle(combinedMatches).slice(0, similarItemsCount);
+ const MatchesArray = shuffledMatches.length < similarItemsCount ? addRandomItems(productsArray, shuffledMatches) : shuffledMatches
+return MatchesArray
+  })
 
-})
 //exclude the current product from the similar products
 const excludeCurrentProduct = (productsArray) => {
   return productsArray.filter(
@@ -65,7 +71,7 @@ const excludeCurrentProduct = (productsArray) => {
   const getTagMatches = (productsArray, tags)  => productsArray.filter(p => 
     p.fields?.tags.some(tag => tags.includes(tag))
   );
-
+//shuffle array items
   function shuffle(array) {
   const arr = [...array];
   for (let i = arr.length - 1; i > 0; i--) {
@@ -74,6 +80,12 @@ const excludeCurrentProduct = (productsArray) => {
   }
   return arr;
 } 
+const addRandomItems = (productsArray,MatchesArray)=>{
+ const alreadyUsedIds = new Set([...MatchesArray.map(p => p.sys.id)]);
+  const remaining = shuffle(productsArray).filter(p => !alreadyUsedIds.has(p.sys.id));
+  MatchesArray.push(...remaining.slice(0, similarItemsCount - MatchesArray.length));
+  return MatchesArray;
+}
 </script>
 <template>
   <div class="mt-10 " v-if="product">
@@ -123,7 +135,7 @@ const excludeCurrentProduct = (productsArray) => {
     <div id="products" v-if="productStore.products"
       class="gap-7 p-10 sm:grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 flex-wrap justify-items-stretch items-stretch">
       <TransitionGroup name="products">
-        <ProductCard v-for="product in productStore.products" :product="product" :key="product.sys.id" class="mb-5" />
+        <ProductCard v-for="product in similarProducts" :product="product" :key="product.sys.id" class="mb-5" />
       </TransitionGroup>
     </div>
     
