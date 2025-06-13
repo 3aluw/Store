@@ -38,9 +38,11 @@ export const useProductStore = defineStore("ProductStore", {
    const activeFilters = this.activeFilters
    const entries = await $contentful.getEntries({
     content_type : "product",
-    ...this.filters
+    ...this.filters,
+    locale: useI18n().localeProperties.value.iso,
    });
    this.products =  entries.items ; 
+   console.log('entries.items : ', entries.items );
    return this.products
     },
 
