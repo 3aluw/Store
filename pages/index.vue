@@ -1,7 +1,7 @@
 <script setup>
-
+const { localeProperties } = useI18n()
 const productStore = useProductStore();
-useAsyncData("products", async () => productStore.fetchProducts());
+useAsyncData("products", async () => productStore.fetchProducts(localeProperties.value.iso));
 useAsyncData("products", async () => productStore.fetchCategories());
 
 </script>

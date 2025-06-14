@@ -1,20 +1,21 @@
 <script setup>
 import * as marked from "marked";
 import { useCartStore } from "~~/stores/cartStore";
+const { locale, setLocale,localeProperties } = useI18n()
+
 const route = useRoute();
 const productStore = useProductStore();
 
-const { data: product } = await useAsyncData(
+const { data } = await useAsyncData(
   `product${route.params.id}`,
   async () => {
-    if (route.params.id === "undefined") return productStore.singleProduct;
-    const productObj = await productStore.fetchProduct(route.params.id);
-    return productStore.singleProduct;
+  await productStore.fetchProduct(route.params.id,localeProperties.value.iso);
   },
   {
     pick: ["fields", "sys"],
   }
 );
+const product = computed(() => productStore.singleProduct);
 const description = computed(() =>
   product.value ? marked.parse(product.value?.fields?.description) : null
 );
