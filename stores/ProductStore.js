@@ -32,21 +32,23 @@ export const useProductStore = defineStore("ProductStore", {
     },
   },
   actions: {
-    async fetchProducts() {
-
+    async fetchProducts(locale) {
    const { $contentful} = useNuxtApp();
    const activeFilters = this.activeFilters
    const entries = await $contentful.getEntries({
     content_type : "product",
-    ...this.filters
+    ...this.filters,
+    locale: locale,
    });
    this.products =  entries.items ; 
    return this.products
     },
 
-    async fetchProduct(id) {
+    async fetchProduct(id, locale) {
       const { $contentful } = useNuxtApp();
-      this.singleProduct = await $contentful.getEntry(id);
+      this.singleProduct = await $contentful.getEntry(id,{
+        locale,
+      });
       return this.singleProduct;
     },
     async fetchCategories(){
