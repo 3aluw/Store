@@ -41,10 +41,9 @@ carouselElement.scrollTo({
 
   // similar products
   const similarItemsCount = 5;
-  const fetchProducts = useAsyncData("products", async () => productStore.fetchProducts());
+ if( !productStore.products.length) useAsyncData("products", async () => productStore.fetchProducts());
   
   const similarProducts = computed(() => {
-    if( !productStore.products) fetchProducts();
 let productsArray = productStore.products;
    productsArray= excludeCurrentProduct(productsArray);
   const categoryMatches = getCategoryMatches(productsArray, product.value?.fields?.category[0]);
@@ -131,6 +130,7 @@ const addRandomItems = (productsArray,MatchesArray)=>{
         </div>
       </div>
     </div>
+    <ClientOnly>
     <div v-if="similarProducts.length" class="similar-products-cont mt-8" >
      <h3 class="text-xl font-semibold mb-2 px-4">{{ $t("ProductPage.similarProducts") }} </h3>
     <div class="gap-7 p-10 sm:grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 flex-wrap justify-items-stretch items-stretch">
@@ -140,5 +140,6 @@ const addRandomItems = (productsArray,MatchesArray)=>{
     </div>
     
     </div>
+  </ClientOnly>
   </div>
 </template>

@@ -8,8 +8,16 @@ const cartStore = useCartStore();
 
 const isLanguageEnglish = computed(() => locale.value === "en" ? true : false)
 const switchLanguage = () => {
-  locale.value === 'en' ? setLocale('ar') : setLocale('en')
+  locale.value === 'en' ? setLocale('ar') : setLocale('en');
+  reFetchContent();
 }
+// Re-fetch content when language is switched; if on product page, fetch the specific product
+const reFetchContent = async () => {
+  async () => cartStore.fetchProducts()
+  if(useRoute().path.includes('/products/')) {
+    await useAsyncData('product', async () => cartStore.fetchProduct(useRoute().params.id));
+  }
+};
 </script>
 
 

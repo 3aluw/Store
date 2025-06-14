@@ -48,7 +48,9 @@ export const useProductStore = defineStore("ProductStore", {
 
     async fetchProduct(id) {
       const { $contentful } = useNuxtApp();
-      this.singleProduct = await $contentful.getEntry(id);
+      this.singleProduct = await $contentful.getEntry(id,{
+        locale: useI18n().localeProperties.value.iso,
+      });
       return this.singleProduct;
     },
     async fetchCategories(){
