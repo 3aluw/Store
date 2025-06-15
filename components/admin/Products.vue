@@ -4,11 +4,11 @@
             class="gap-7 p-10 sm:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 flex-wrap justify-items-stretch items-stretch">
             <TransitionGroup name="products">
                 <AdminProductCard v-for="product in productStore.products" :product="product" :key="product.sys.id"
-                    class="mb-5" @open-fields-modal="handleFieldsModal" />
+                    class="mb-5" @open-fields-modal="handleFieldsModal" @open-assets-modal="handleAssetsModal" />
             </TransitionGroup>
         </div>
 
-        <!--modal-->
+        <!--fields modal-->
         <div class="modal" :class="{ 'modal-open': showFieldsModal }" v-if="showFieldsModal">
             <div class="modal-box">
                 <table class="table table-compact w-full">
@@ -27,9 +27,9 @@
                     </tbody>
                 </table>
                 <!--upload an image (only available for new products)-->
-                <label class="block pt-4 pb-2" v-if="!existingProduct">Chose an image for the product 
-                <input id="product-pic-input" type="file"
-                    class="file-input file-input-success w-full max-w-xs mt-2" /></label>
+                <label class="block pt-4 pb-2" v-if="!existingProduct">Chose an image for the product
+                    <input id="product-pic-input" type="file"
+                        class="file-input file-input-success w-full max-w-xs mt-2" /></label>
 
                 <div class="modal-action">
                     <button class="btn" @click="showFieldsModal = false">
@@ -50,18 +50,41 @@
                     </button>
                     <!--newProducts buttons-->
                     <button v-if="!existingProduct" class="btn" @click="createProduct">
-
                         <span class="pl-2">create product</span>
                     </button>
                 </div>
             </div>
         </div>
 
+        <!--assets modal-->
+        <div class="modal" :class="{ 'modal-open': showAssetsModal }" v-if="showAssetsModal">
+            <div class="modal-box ">
+                   <div class="pictures-cont gap-7 p-10 sm:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 flex-wrap justify-items-stretch items-stretch">
+                <div v-for="asset in productAssets" class="card w-full bg-base-100 shadow-xl">
+                    <figure class="px-10 pt-10">
+                        <img class="product-img rounded-xl " :src="asset.fields.file.url" :alt="asset.fields.file.title" />
+                    </figure>
+                    <div class="card-body items-center text-center">
+                        <div class="card-actions">
+                            <button class="btn btn-primary">delete</button>
+                        </div>
+                    </div>
+                </div></div>
+                <div class="modal-action">
+                    <button class="btn" @click="showAssetsModal = false">
+                        cancel
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
         <!--add a product / manage categories-- dropdown button-->
         <div class="dropdown dropdown-hover dropdown-top dropdown-end fixed">
             <label tabindex="0" class="btn m-1 bg-white shadow-xl border-red-400 btn-circle"><img
                     src="~/assets/icons/cog.svg"></label>
-            <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 border border-slate-300">
+            <ul tabindex="0"
+                class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 border border-slate-300">
                 <li><a @click="handleFieldsModal(undefined)">Add a product</a></li>
                 <li><a @click="openCategoriesModal">manage categories</a></li>
             </ul>
@@ -98,7 +121,7 @@ const productStore = useProductStore();
 if (productStore.products.length === 0) useAsyncData("products", async () => productStore.fetchProducts());
 
 
-                                               //fields modal logic
+//fields modal logic
 const showFieldsModal = ref(false)
 const modalProperties = [
     { name: "name", value: "name" },
@@ -109,10 +132,8 @@ const modalProperties = [
 ]
 
 
-//product editing
-//const selectedId = ref('')
+                                          //product editing
 const selectedProduct = ref()
-
 
 const existingProduct = ref(true)
 const handleFieldsModal = async (id) => {
@@ -170,10 +191,21 @@ const validateProductForm = (obj) => {
     return allPropertiesHaveContent
 }
 
-                                            // assets modal logic
+                                               // assets modal logic
 
 const showAssetsModal = ref(false)
+const productAssets = ref([])
+const handleAssetsModal = async (id) => {
 
+    if (id) {
+ const selectedProduct =  productStore.products.find((product) => product.sys.id === id)
+        if (selectedProduct) {
+            productAssets.value = selectedProduct.fields.image
+           }
+           console.log(productAssets.value);
+    }
+    showAssetsModal.value = true
+}
 
 
 
@@ -276,7 +308,7 @@ const handleDelete = async () => {
 
 
 
-                                               //categories logic
+//categories logic
 const showCategoriesModal = ref(false);
 const categories = ref([])
 const contentType = ref()
@@ -304,7 +336,11 @@ const patchCategories = () => {
 .product-card {
     transition: all 0.5s ease-in-out;
 }
-
+.product-img {
+    width: 100%;
+    height: 200px;
+    object-fit: contain;
+}
 .products-enter-from {
     transform: scale(0.5) translateY(-80px);
     opacity: 0;
