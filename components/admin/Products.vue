@@ -216,6 +216,11 @@ const handleAssetsModal = async (id) => {
 
 const unlinkAsset = async (assetId) => {
  const assetsArray = productStore.products.find((product) => product.sys.id === selectedProductId.value).fields.image
+        if(assetsArray.length === 1) {
+            useAlertsStore().warning("You can't delete the last asset")
+            showAssetsModal.value = false
+            return
+        }
 const selectedProduct = await $contentfulManager.entry.get({ entryId: selectedProductId.value });
 const newAssetsArray = selectedProduct.fields.image['en-US'].filter(asset => asset.sys.id !== assetId)
     selectedProduct.fields.image['en-US'] = newAssetsArray;
