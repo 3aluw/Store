@@ -1,15 +1,15 @@
 <template>
     <div>
         <div v-if="productStore.products"
-            class="gap-7 p-10 sm:grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 flex-wrap justify-items-stretch items-stretch">
+            class="gap-7 p-10 sm:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 flex-wrap justify-items-stretch items-stretch">
             <TransitionGroup name="products">
                 <AdminProductCard v-for="product in productStore.products" :product="product" :key="product.sys.id"
-                    class="mb-5" @open-modal="handleModal" />
+                    class="mb-5" @open-fields-modal="handleFieldsModal" />
             </TransitionGroup>
         </div>
 
         <!--modal-->
-        <div class="modal" :class="{ 'modal-open': showModal }" v-if="showModal">
+        <div class="modal" :class="{ 'modal-open': showFieldsModal }" v-if="showFieldsModal">
             <div class="modal-box">
                 <table class="table table-compact w-full">
                     <tbody>
@@ -26,13 +26,13 @@
                         </tr>
                     </tbody>
                 </table>
-                <!--upload an image (only available for new products now)-->
-                <label class="block pt-4 pb-2">Chose an image for the product </label>
-                <input id="product-pic-input" v-if="!existingProduct" type="file"
-                    class="file-input file-input-success w-full max-w-xs" />
+                <!--upload an image (only available for new products)-->
+                <label class="block pt-4 pb-2" v-if="!existingProduct">Chose an image for the product 
+                <input id="product-pic-input" type="file"
+                    class="file-input file-input-success w-full max-w-xs mt-2" /></label>
 
                 <div class="modal-action">
-                    <button class="btn" @click="showModal = false">
+                    <button class="btn" @click="showFieldsModal = false">
                         cancel
                     </button>
                     <!--existingProduct buttons-->
@@ -62,7 +62,7 @@
             <label tabindex="0" class="btn m-1 bg-white shadow-xl border-red-400 btn-circle"><img
                     src="~/assets/icons/cog.svg"></label>
             <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 border border-slate-300">
-                <li><a @click="handleModal(undefined)">Add a product</a></li>
+                <li><a @click="handleFieldsModal(undefined)">Add a product</a></li>
                 <li><a @click="openCategoriesModal">manage categories</a></li>
             </ul>
         </div>
@@ -98,8 +98,8 @@ const productStore = useProductStore();
 if (productStore.products.length === 0) useAsyncData("products", async () => productStore.fetchProducts());
 
 
-//modal logic
-const showModal = ref(false)
+                                               //fields modal logic
+const showFieldsModal = ref(false)
 const modalProperties = [
     { name: "name", value: "name" },
     { name: "summary", value: "summary" },
@@ -115,7 +115,7 @@ const selectedProduct = ref()
 
 
 const existingProduct = ref(true)
-const handleModal = async (id) => {
+const handleFieldsModal = async (id) => {
     //selectedId.value = id;
     // const findProductById = productStore.products.find((product) => product.sys.id === id)
     if (id) { selectedProduct.value = await $contentfulManager.entry.get({ entryId: id }); existingProduct.value = true }
@@ -133,7 +133,7 @@ const handleModal = async (id) => {
 
         }))
     }
-    showModal.value = true
+    showFieldsModal.value = true
 
 }
 
@@ -156,10 +156,28 @@ const handlePatch = async () => {
         useAlertsStore().error("An error occurred, please contact teh dev team")
     }
     finally {
-        showModal.value = false;
+        showFieldsModal.value = false;
         productStore.fetchProducts()
     }
 }
+
+const validateProductForm = (obj) => {
+    const allPropertiesHaveContent = Object.values(obj).every(item => {
+        const value = item['en-US'];
+        const length = typeof value === "string" ? value.replace(/ /g, "").length : Math.ceil(Math.log10(value + 1))
+        return value !== null && length > 0;
+    })
+    return allPropertiesHaveContent
+}
+
+                                            // assets modal logic
+
+const showAssetsModal = ref(false)
+
+
+
+
+
 //new product logic
 
 const createProduct = async () => {
@@ -179,10 +197,6 @@ const createProduct = async () => {
     } else {
         useAlertsStore().warning("All fields are required")
     }
-
-
-
-
 }
 
 const uploadPicture = async (picture) => {
@@ -255,22 +269,14 @@ const handleDelete = async () => {
         console.log(err)
     }
     finally {
-        showModal.value = false;
+        showFieldsModal.value = false;
         productStore.fetchProducts()
     }
 }
 
 
-const validateProductForm = (obj) => {
-    const allPropertiesHaveContent = Object.values(obj).every(item => {
-        const value = item['en-US'];
-        const length = typeof value === "string" ? value.replace(/ /g, "").length : Math.ceil(Math.log10(value + 1))
-        return value !== null && length > 0;
-    })
-    return allPropertiesHaveContent
-}
 
-//categories logic
+                                               //categories logic
 const showCategoriesModal = ref(false);
 const categories = ref([])
 const contentType = ref()
