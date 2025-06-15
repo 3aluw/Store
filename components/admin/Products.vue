@@ -36,7 +36,7 @@
                         cancel
                     </button>
                     <!--existingProduct buttons-->
-                    <button v-if="existingProduct" class="btn" @click="handlePatch">
+                    <button v-if="existingProduct" class="btn" @click="handlePatch(selectedProduct)">
 
                         <span class="pl-2">apply changes</span>
                     </button>
@@ -162,7 +162,7 @@ const handleFieldsModal = async (id) => {
 
 }
 
-const handlePatch = async (eventProperties , productObj = selectedProduct.value) => {
+const handlePatch = async ( productObj) => {
 
     try {
         //update the entry
@@ -174,7 +174,7 @@ const handlePatch = async (eventProperties , productObj = selectedProduct.value)
             entryId: productObj.sys.id
         }, productObj)
 
-        useAlertsStore().success("Done!")
+        useAlertsStore().success("product updated!")
     }
     catch (err) {
         console.log(err);
@@ -215,20 +215,31 @@ const handleAssetsModal = async (id) => {
 
 
 const unlinkAsset = async (assetId) => {
- const assetsArray = productStore.products.find((product) => product.sys.id === selectedProductId.value).fields.image
-        if(assetsArray.length === 1) {
-            useAlertsStore().warning("You can't delete the last asset")
-            showAssetsModal.value = false
-            return
-        }
-const selectedProduct = await $contentfulManager.entry.get({ entryId: selectedProductId.value });
-const newAssetsArray = selectedProduct.fields.image['en-US'].filter(asset => asset.sys.id !== assetId)
+    const assetsArray = productStore.products.find((product) => product.sys.id === selectedProductId.value).fields.image
+    if (assetsArray.length === 1) {
+        useAlertsStore().warning("You can't delete the last asset")
+        return
+    }
+
+    const selectedProduct = await $contentfulManager.entry.get({ entryId: selectedProductId.value });
+    const newAssetsArray = selectedProduct.fields.image['en-US'].filter(asset => asset.sys.id !== assetId)
     selectedProduct.fields.image['en-US'] = newAssetsArray;
-    handlePatch(undefined, selectedProduct)
+    await handlePatch(selectedProduct)
+    deleteAsset(assetId)
 }
 
 const deleteAsset = async (assetId) => {
-    console.log(await $contentfulManager.entry.getMany({ query: { links_to_asset: assetId } }));
+    const assetLinks = await $contentfulManager.entry.getMany({ query: { links_to_asset: assetId } })
+    if (assetLinks.total > 0) return
+    try {
+        await $contentfulManager.asset.unpublish({ assetId })
+        await $contentfulManager.asset.delete({ assetId })
+    }
+
+    catch (err) {
+        console.log(err);
+        useAlertsStore().error("An error occurred while deleting the asset")
+    }
 
 }
 //new product logic
