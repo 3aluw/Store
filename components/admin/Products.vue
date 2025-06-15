@@ -59,17 +59,20 @@
         <!--assets modal-->
         <div class="modal" :class="{ 'modal-open': showAssetsModal }" v-if="showAssetsModal">
             <div class="modal-box ">
-                   <div class="pictures-cont gap-7 p-10 sm:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 flex-wrap justify-items-stretch items-stretch">
-                <div v-for="asset in productAssets" class="card w-full bg-base-100 shadow-xl">
-                    <figure class="px-10 pt-10">
-                        <img class="product-img rounded-xl " :src="asset.fields.file.url" :alt="asset.fields.file.title" />
-                    </figure>
-                    <div class="card-body items-center text-center">
-                        <div class="card-actions">
-                            <button class="btn btn-primary">delete</button>
+                <div
+                    class="pictures-cont gap-7 p-10 sm:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 flex-wrap justify-items-stretch items-stretch">
+                    <div v-for="asset in productAssets" class="card w-full bg-base-100 shadow-xl">
+                        <figure class="px-10 pt-10">
+                            <img class="product-img rounded-xl " :src="asset.fields.file.url"
+                                :alt="asset.fields.file.title" />
+                        </figure>
+                        <div class="card-body items-center text-center">
+                            <div class="card-actions">
+                                <button class="btn btn-primary" @click="unlinkAsset(asset.sys.id)">delete</button>
+                            </div>
                         </div>
                     </div>
-                </div></div>
+                </div>
                 <div class="modal-action">
                     <button class="btn" @click="showAssetsModal = false">
                         cancel
@@ -116,6 +119,7 @@
 <script setup>
 
 const { $contentfulManager } = useNuxtApp();
+
 //check if the products hadn't been fetched yet. if so fetch them
 const productStore = useProductStore();
 if (productStore.products.length === 0) useAsyncData("products", async () => productStore.fetchProducts());
@@ -132,10 +136,10 @@ const modalProperties = [
 ]
 
 
-                                          //product editing
+//product editing
 const selectedProduct = ref()
-
 const existingProduct = ref(true)
+
 const handleFieldsModal = async (id) => {
     //selectedId.value = id;
     // const findProductById = productStore.products.find((product) => product.sys.id === id)
@@ -158,17 +162,17 @@ const handleFieldsModal = async (id) => {
 
 }
 
-const handlePatch = async () => {
+const handlePatch = async (eventProperties , productObj = selectedProduct.value) => {
 
     try {
         //update the entry
-        selectedProduct.value = await $contentfulManager.entry.update({
-            entryId: selectedProduct.value.sys.id
-        }, selectedProduct.value)
+        productObj = await $contentfulManager.entry.update({
+            entryId: productObj.sys.id
+        }, productObj)
         //publish it
         const res = await $contentfulManager.entry.publish({
-            entryId: selectedProduct.value.sys.id
-        }, selectedProduct.value)
+            entryId: productObj.sys.id
+        }, productObj)
 
         useAlertsStore().success("Done!")
     }
@@ -178,6 +182,8 @@ const handlePatch = async () => {
     }
     finally {
         showFieldsModal.value = false;
+        showAssetsModal.value = false;
+        productStore.products = []
         productStore.fetchProducts()
     }
 }
@@ -191,25 +197,35 @@ const validateProductForm = (obj) => {
     return allPropertiesHaveContent
 }
 
-                                               // assets modal logic
+// assets modal logic
 
 const showAssetsModal = ref(false)
 const productAssets = ref([])
-const handleAssetsModal = async (id) => {
+const selectedProductId = ref()
 
+const handleAssetsModal = async (id) => {
+    selectedProductId.value = id;
     if (id) {
- const selectedProduct =  productStore.products.find((product) => product.sys.id === id)
-        if (selectedProduct) {
-            productAssets.value = selectedProduct.fields.image
-           }
-           console.log(productAssets.value);
+        const selectedProduct = productStore.products.find((product) => product.sys.id === id)
+        productAssets.value = selectedProduct.fields.image
     }
     showAssetsModal.value = true
 }
 
 
 
+const unlinkAsset = async (assetId) => {
+ const assetsArray = productStore.products.find((product) => product.sys.id === selectedProductId.value).fields.image
+const selectedProduct = await $contentfulManager.entry.get({ entryId: selectedProductId.value });
+const newAssetsArray = selectedProduct.fields.image['en-US'].filter(asset => asset.sys.id !== assetId)
+    selectedProduct.fields.image['en-US'] = newAssetsArray;
+    handlePatch(undefined, selectedProduct)
+}
 
+const deleteAsset = async (assetId) => {
+    console.log(await $contentfulManager.entry.getMany({ query: { links_to_asset: assetId } }));
+
+}
 //new product logic
 
 const createProduct = async () => {
@@ -336,11 +352,13 @@ const patchCategories = () => {
 .product-card {
     transition: all 0.5s ease-in-out;
 }
+
 .product-img {
     width: 100%;
     height: 200px;
     object-fit: contain;
 }
+
 .products-enter-from {
     transform: scale(0.5) translateY(-80px);
     opacity: 0;
