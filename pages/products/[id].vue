@@ -1,20 +1,21 @@
 <script setup>
 import * as marked from "marked";
 import { useCartStore } from "~~/stores/cartStore";
+const { locale, setLocale,localeProperties } = useI18n()
+
 const route = useRoute();
 const productStore = useProductStore();
 
-const { data: product } = await useAsyncData(
+const { data } = await useAsyncData(
   `product${route.params.id}`,
   async () => {
-    if (route.params.id === "undefined") return productStore.singleProduct;
-    const productObj = await productStore.fetchProduct(route.params.id);
-    return productStore.singleProduct;
+  await productStore.fetchProduct(route.params.id,localeProperties.value.iso);
   },
   {
     pick: ["fields", "sys"],
   }
 );
+const product = computed(() => productStore.singleProduct);
 const description = computed(() =>
   product.value ? marked.parse(product.value?.fields?.description) : null
 );
@@ -41,10 +42,9 @@ carouselElement.scrollTo({
 
   // similar products
   const similarItemsCount = 5;
-  const fetchProducts = useAsyncData("products", async () => productStore.fetchProducts());
+ if( !productStore.products.length) useAsyncData("products", async () => productStore.fetchProducts());
   
   const similarProducts = computed(() => {
-    if( !productStore.products) fetchProducts();
 let productsArray = productStore.products;
    productsArray= excludeCurrentProduct(productsArray);
   const categoryMatches = getCategoryMatches(productsArray, product.value?.fields?.category[0]);
@@ -131,6 +131,7 @@ const addRandomItems = (productsArray,MatchesArray)=>{
         </div>
       </div>
     </div>
+    <ClientOnly>
     <div v-if="similarProducts.length" class="similar-products-cont mt-8" >
      <h3 class="text-xl font-semibold mb-2 px-4">{{ $t("ProductPage.similarProducts") }} </h3>
     <div class="gap-7 p-10 sm:grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 flex-wrap justify-items-stretch items-stretch">
@@ -140,5 +141,6 @@ const addRandomItems = (productsArray,MatchesArray)=>{
     </div>
     
     </div>
+  </ClientOnly>
   </div>
 </template>

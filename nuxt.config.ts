@@ -29,14 +29,14 @@ export default defineNuxtConfig({
     locales: [
       {
         code: 'en',
-        name: 'Arabic',
+        name: 'English',
         iso: 'en-US',
         file: 'en-US.ts',
         dir: "ltr"
       },
       {
         code: 'ar',
-        name: 'English',
+        name: 'Arabic',
         iso: 'ar-SA',
         file: 'ar.ts',
         dir: "rtl",
