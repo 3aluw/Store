@@ -43,7 +43,7 @@ const emitProductUid = (id: string, modalType: "fields" | "assets") => {
                         <path d="m21 15-5-5L5 21"></path>
                     </svg>
                 </button>
-                <NuxtLink class="product-card" :to="{ name: 'products-id', params: { id: product.sys.id } }"> <button
+                <NuxtLink class="product-card" :to="{ name: 'products-id', params: { id: product.sys.id } }" target="_blank"> <button
                         class="btn btn-circle btn-outline btn-primary border-gray-200 p-2 product-card-action-btn">
                         <svg class="w-full h-full" stroke="#959393" width="20" height="19" viewBox="0 0 20 19"
                             fill="none" xmlns="http://www.w3.org/2000/svg">
