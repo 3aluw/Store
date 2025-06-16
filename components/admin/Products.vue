@@ -297,6 +297,7 @@ const createProduct = async () => {
             publishAssetOrEntry(asset.sys.id, entry.sys.id)
             useAlertsStore().success("Product created successfully")
             showFieldsModal.value = false;
+            productStore.fetchProducts()
         }
         catch (err) {
             useAlertsStore().warning("A problem occurred while creating the product")
@@ -370,11 +371,7 @@ const publishAssetOrEntry = async (assetId, entryId) => {
         const entry = await $contentfulManager.entry.get({ entryId })
         $contentfulManager.entry.publish({ entryId: entry.sys.id }, entry)
     }
-
-
 }
-
-
 
 
 const handleDelete = async () => {
@@ -391,9 +388,17 @@ const handleDelete = async () => {
         productStore.fetchProducts()
     }
 }
-
-
-
+/*  Since An APi call is made to fetch the product, We can fetch all products instead 
+const updateProductLocally = async (productId, isNewProduct) => {
+    const productIndex = productStore.products.findIndex(product => product.sys.id === productId);
+     const productObj = await productStore.fetchProduct(productId, 'en-Us')
+    if (productIndex !== -1 && !isNewProduct) {
+        productStore.products.splice(productIndex, 1, productObj);
+    } else {
+        productStore.products.push(productObj);
+    }
+}
+ */
 //categories logic
 const showCategoriesModal = ref(false);
 const categories = ref([])
