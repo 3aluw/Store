@@ -72,6 +72,20 @@
                             </div>
                         </div>
                     </div>
+                    <div class="card w-full bg-base-100 shadow-xl">
+                        <figure class="px-10 pt-10">
+                            <img class="product-img rounded-xl " src="~/assets/icons/image.svg" alt="upload an image" />
+                        </figure>
+                        <div class="card-body items-center text-center">
+                            <div class="card-actions">
+                                <label class="btn btn-primary" for="add-product-pic-input">upload new</label>
+                                <input id="add-product-pic-input" type="file" accept="image/*" @input="addNewImage"
+                                    class="file-input file-input-primary w-full max-w-xs " style="display: none" />
+                            </div>
+                        </div>
+                    </div>
+
+
                 </div>
                 <div class="modal-action">
                     <button class="btn" @click="showAssetsModal = false">
@@ -82,7 +96,7 @@
 
         </div>
 
-        <!--add a product / manage categories-- dropdown button-->
+        <!--dropdown button -- add a product / manage categories-- -->
         <div class="dropdown dropdown-hover dropdown-top dropdown-end fixed">
             <label tabindex="0" class="btn m-1 bg-white shadow-xl border-red-400 btn-circle"><img
                     src="~/assets/icons/cog.svg"></label>
@@ -162,7 +176,7 @@ const handleFieldsModal = async (id) => {
 
 }
 
-const handlePatch = async ( productObj) => {
+const handlePatch = async (productObj) => {
 
     try {
         //update the entry
@@ -178,7 +192,7 @@ const handlePatch = async ( productObj) => {
     }
     catch (err) {
         console.log(err);
-        useAlertsStore().error("An error occurred, please contact teh dev team")
+        useAlertsStore().error("An error occurred, please contact the dev team")
     }
     finally {
         showFieldsModal.value = false;
@@ -242,25 +256,62 @@ const deleteAsset = async (assetId) => {
     }
 
 }
+
+
+const addNewImage = async () => {
+    const picture = document.getElementById("add-product-pic-input").files[0];
+
+    if (picture) {
+        try {
+            const asset = await handleImageUploading(picture)
+            publishAssetOrEntry(asset.sys.id)
+            const selectedProduct = await $contentfulManager.entry.get({ entryId: selectedProductId.value });
+            const newAssetsArray = selectedProduct.fields.image['en-US'] || [];
+            newAssetsArray.push({
+                sys: {
+                    id: asset.sys.id,
+                    linkType: 'Asset',
+                    type: 'Link',
+                }
+            })
+            selectedProduct.fields.image['en-US'] = newAssetsArray;
+            await handlePatch(selectedProduct)
+            useAlertsStore().success("Image added successfully")
+        }
+        catch (err) {
+            useAlertsStore().error("An error occurred while adding the image")
+        }
+    }
+}
 //new product logic
 
 const createProduct = async () => {
-
     //upload picture > create asset & process it fot all locales
     const picture = document.getElementById("product-pic-input").files[0];
-
     //check if all fields are written then upload then create the entry and upload the image  
     if (picture && validateProductForm(selectedProduct.value.fields)) {
 
-
-        const uploadId = await uploadPicture(picture)
-        const asset = await createAsset(uploadId, picture)
-        const entry = await createEntry(asset.sys.id);
-        publishAssetEntry(asset.sys.id, entry.sys.id)
+        try {
+            const asset = await handleImageUploading(picture)
+            const entry = await createEntry(asset.sys.id);
+            publishAssetOrEntry(asset.sys.id, entry.sys.id)
+            useAlertsStore().success("Product created successfully")
+            showFieldsModal.value = false;
+        }
+        catch (err) {
+            useAlertsStore().warning("A problem occurred while creating the product")
+        }
 
     } else {
         useAlertsStore().warning("All fields are required")
     }
+}
+
+
+const handleImageUploading = async (image) => {
+    const uploadId = await uploadPicture(image)
+    const asset = await createAsset(uploadId, image)
+    return asset
 }
 
 const uploadPicture = async (picture) => {
@@ -309,13 +360,16 @@ const createEntry = async (assetId) => {
     const entry = await $contentfulManager.entry.create({ contentTypeId: "product" }, selectedProduct.value)
     return entry
 }
-const publishAssetEntry = async (assetId, entryId) => {
-    const asset = await $contentfulManager.asset.get({ assetId })
-    console.log('asset: ', asset);
-    const entry = await $contentfulManager.entry.get({ entryId })
+const publishAssetOrEntry = async (assetId, entryId) => {
+    if (assetId) {
+        const asset = await $contentfulManager.asset.get({ assetId })
+        $contentfulManager.asset.publish({ assetId: asset.sys.id }, asset)
+    }
 
-    $contentfulManager.asset.publish({ assetId: asset.sys.id }, asset)
-    $contentfulManager.entry.publish({ entryId: entry.sys.id }, entry)
+    if (entryId) {
+        const entry = await $contentfulManager.entry.get({ entryId })
+        $contentfulManager.entry.publish({ entryId: entry.sys.id }, entry)
+    }
 
 
 }
@@ -393,9 +447,5 @@ const patchCategories = () => {
 .dropdown {
     bottom: 2rem;
     right: 0.5rem;
-}
-
-label.btn:hover {
-    background: rgba(255, 255, 255, 0.623);
 }
 </style>
