@@ -151,7 +151,7 @@
 <script setup>
 
 const { $contentfulManager } = useNuxtApp();
-const useContentfulManager = useContentfulManager();
+const Contentful = useContentful();
 
 //check if the products hadn't been fetched yet. if so fetch them
 const productStore = useProductStore();
@@ -161,10 +161,10 @@ if (productStore.products.length === 0) useAsyncData("products", async () => pro
 //fields modal logic
 const showFieldsModal = ref(false)
 const modalProperties = [
-    { name: "name", value: "name" },
-    { name: "summary", value: "summary" },
-    { name: "description", value: "description" },
-    { name: "price", value: "price" },
+    { name: "name", value: "name",multiLocales: true  },
+    { name: "summary", value: "summary",multiLocales: true  },
+    { name: "description", value: "description",multiLocales: true  },
+    { name: "price", value: "price" ,multiLocales: false  },
 
 ]
 
@@ -175,6 +175,8 @@ const existingProduct = ref(true)
 const selectedLocale = ref("en-US")
 
 const handleFieldsModal = async (id) => {
+    //if the id is provided, it means we are editing an existing product
+    //if not, we are creating a new product
     if (id) {
         selectedProduct.value = await $contentfulManager.entry.get({ entryId: id });
         existingProduct.value = true
@@ -183,6 +185,7 @@ const handleFieldsModal = async (id) => {
         existingProduct.value = false
         selectedProduct.value = {}
         selectedProduct.value.fields = {}
+
 
         modalProperties.forEach((property) => Object.defineProperty(selectedProduct.value.fields, property.name, {
             value: {
@@ -229,10 +232,18 @@ const handlePatch = async (productObj) => {
 
 const validateProductForm = (obj) => {
     const allPropertiesHaveContent = Object.values(obj).every(item => {
-        const value = item['en-US'];
-        const length = typeof value === "string" ? value.replace(/ /g, "").length : Math.ceil(Math.log10(value + 1))
-        return value !== null && length > 0;
-    })
+    const value = item['en-US'];
+
+    if (typeof value === 'string') {
+      return value.trim().length > 0;
+    }
+
+    if (typeof value === 'number') {
+      return !isNaN(value);
+    }
+
+    return value != null;
+  });
     return allPropertiesHaveContent
 }
 
