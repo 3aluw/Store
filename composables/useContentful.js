@@ -1,5 +1,8 @@
-/* We can get the content type and locales from Contentful using the Contentful Management API.       
-  const contentType = await $contentfulManager.contentType.get({ contentTypeId: "product" })
+const { $contentfulManager } = useNuxtApp();
+
+
+/* We can get the locales from Contentful using the Contentful Management API.       
+
         const locales = await $contentfulManager.locale.getMany({ query: { contentTypeId: "product" } }) 
         const availableLocales = locales.items.map(locale => locale.code)
         const defaultLocales = locales.items.find(locale => locale.default).code
@@ -12,7 +15,20 @@ const defaultLocales = "en-US";
 const requiredLocales = ["en-US"]
 const availableLocales = ["en-US", "ar-SA"]
 
-const Management = {
+const management = {
+   contentType:{
+      contentTypeObject:{},
+      getContentType: async function(contentTypeId){
+       const contentType = await $contentfulManager.contentType.get({ contentTypeId: "product" })
+       this.contentTypeObject = contentType;
+      }
+       
+     
+   },
+   asset:{},
+   entry:{
+   },
+   
 
 }
 
