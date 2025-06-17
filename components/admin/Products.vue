@@ -22,11 +22,16 @@
                     <tbody>
                         <tr v-for="property in modalProperties">
                             <td>{{ property.name }}</td>
-                            <input v-if="property.name !== 'description'" placeholder="Type: here"
+                            <input v-if="property.HTMLElement === 'input'" placeholder="Type: here"
                                 class="input input-bordered w-full max-w-xs input-sm my-2"
-                                :type="property.name === 'price' ? 'number' : 'text'"
+                                :type="property.type === 'number' ? 'number' : 'text'"
                                 v-model="selectedProduct.fields[property.value][selectedLocale]" />
-                            <textarea v-else placeholder="Type here" rows="6"
+                            <select  class="select select-bordered w-full max-w-xs" v-else-if="property.HTMLElement === 'dropdown'"
+                                v-model="selectedProduct.fields[property.value][selectedLocale]" :id="property.name">
+                                <option disabled value="">Select...</option>
+                                <option v-for="item in property.items" :key="item" :value="item">{{ item }}</option>
+                            </select>
+                            <textarea v-else-if="property.HTMLElement === 'textarea'" placeholder="Type here" rows="6"
                                 class="textarea textarea-bordered textarea-md w-full max-w-xs"
                                 v-model="selectedProduct.fields[property.value][selectedLocale]"></textarea>
                             <td></td>
@@ -164,25 +169,25 @@ if (productStore.products.length === 0) useAsyncData("products", async () => pro
 
 //fields modal logic
 const showFieldsModal = ref(false)
-const modalProperties = [
+/* const modalProperties = [
     { name: "name", value: "name", multiLocales: true },
     { name: "summary", value: "summary", multiLocales: true },
     { name: "description", value: "description", multiLocales: true },
     { name: "price", value: "price", multiLocales: false },
-]
+] */
 onMounted(async () => {
-    if(!manageContentType.object?.fields) await manageContentType.set("product" )
+    if (!manageContentType.object?.fields) await manageContentType.set("product")
     //generate the modal properties from the contentful content type
-    newModalProperties.value =  generateModalProperties(manageContentType.object?.fields);
-    console.log(newModalProperties.value);
+    modalProperties.value = generateModalProperties(manageContentType.object?.fields);
+    console.log(modalProperties.value);
 })
 
-const newModalProperties = ref([])
+const modalProperties = ref([])
 
 const types = [
     { TypeName: 'Text', defaultValue: '', HTMLElement: 'textarea' },
     { TypeName: 'Symbol', defaultValue: '', HTMLElement: 'input' },
-    { TypeName: 'Number', defaultValue: 0, HTMLElement: 'number' },
+    { TypeName: 'Number', defaultValue: 0, HTMLElement: 'input' },
     { TypeName: 'Integer', defaultValue: 0, HTMLElement: 'number' },
     { TypeName: 'Boolean', defaultValue: false, HTMLElement: 'checkbox' },
     { TypeName: 'Object', defaultValue: {}, HTMLElement: 'json-editor' },
@@ -193,45 +198,45 @@ const types = [
 const generateModalProperties = (fields) => {
 
 
- const typeMap = Object.fromEntries(types.map(t => [t.TypeName, t]));
+    const typeMap = Object.fromEntries(types.map(t => [t.TypeName, t]));
 
-  return fields.map(field => {
-    const { id, type, localized, required, validations, items } = field;
+    return fields.map(field => {
+        const { id, type, localized, required, validations, items } = field;
 
-    // Determine base type (for Array, use items.type if present)
-    const baseType = type === 'Array' ? items?.type || 'Symbol' : type;
+        // Determine base type (for Array, use items.type if present)
+        const baseType = type === 'Array' ? items?.type || 'Symbol' : type;
 
-    const typeInfo = typeMap[type] || typeMap[baseType] || {
-      defaultValue: null,
-      HTMLElement: 'input'
-    };
+        const typeInfo = typeMap[type] || typeMap[baseType] || {
+            defaultValue: null,
+            HTMLElement: 'input'
+        };
 
-    const prop = {
-      name: id,
-      value: id,
-      localized,
-      required,
-      type: baseType.toLowerCase(),
-      HTMLElement: typeInfo.HTMLElement
-    };
+        const prop = {
+            name: id,
+            value: id,
+            localized,
+            required,
+            type: baseType.toLowerCase(),
+            HTMLElement: typeInfo.HTMLElement
+        };
 
-    // Special handling for Array
-    if (type === 'Array') {
-      const inValidation = items?.validations?.find(v => v.in);
-      const sizeValidation = validations?.find(v => v.size?.max);
-      const max = sizeValidation?.size?.max;
+        // Special handling for Array
+        if (type === 'Array') {
+            const inValidation = items?.validations?.find(v => v.in);
+            const sizeValidation = validations?.find(v => v.size?.max);
+            const max = sizeValidation?.size?.max;
 
-      if (inValidation) prop.items = inValidation.in;
-      if (max===1) {
-        prop.size = max;
-        prop.HTMLElement = 'dropdown'; // single select
-      } else {
-        prop.HTMLElement = 'input';
-      }
-    }
+            if (inValidation) prop.items = inValidation.in;
+            if (max === 1) {
+                prop.size = max;
+                prop.HTMLElement = 'dropdown'; // single select
+            } else {
+                prop.HTMLElement = 'input';
+            }
+        }
 
-    return prop;
-  });
+        return prop;
+    });
 }
 
 //product editing
@@ -252,7 +257,7 @@ const handleFieldsModal = async (id) => {
         selectedProduct.value.fields = {}
 
 
-        modalProperties.forEach((property) => Object.defineProperty(selectedProduct.value.fields, property.name, {
+        modalProperties.value.forEach((property) => Object.defineProperty(selectedProduct.value.fields, property.name, {
             value: {
                 'en-US': null
             },

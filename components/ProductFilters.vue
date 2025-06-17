@@ -41,7 +41,6 @@ debouncedWatch(
       </label>
       <select class="select select-bordered" v-model="filters.order" id="orderBy">
         <option value="">{{ $t('ProductFilters.orderByProps.none') }}</option>
-
         <option value="-sys.createdAt">{{ $t('ProductFilters.orderByProps.dateNewest') }}</option>
         <option value="sys.createdAt">{{ $t('ProductFilters.orderByProps.dateOldest') }}</option>
         <option value="fields.price">{{ $t('ProductFilters.orderByProps.priceLowToHigh') }}</option>
