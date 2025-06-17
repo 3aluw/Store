@@ -149,11 +149,13 @@
     </div>
 </template>
 <script setup>
-import contentful from '~/plugins/contentful';
 
 
 const { $contentfulManager } = useNuxtApp();
 const Contentful = useContentful();
+const manageContentType = Contentful.management.contentType
+const manageEntry = Contentful.management.entry
+const manageAsset = Contentful.management.asset
 
 //check if the products hadn't been fetched yet. if so fetch them
 const productStore = useProductStore();
@@ -168,8 +170,15 @@ const modalProperties = [
     { name: "description", value: "description", multiLocales: true },
     { name: "price", value: "price", multiLocales: false },
 ]
+onMounted(async () => {
+    if(!manageContentType.object?.fields) await manageContentType.set("product" )
+    //generate the modal properties from the contentful content type
+    newModalProperties.value =  generateModalProperties(manageContentType.object?.fields);
+    console.log(newModalProperties.value);
+})
 
 const newModalProperties = ref([])
+
 const types = [
     { TypeName: 'Text', defaultValue: '', HTMLElement: 'textarea' },
     { TypeName: 'Symbol', defaultValue: '', HTMLElement: 'input' },
@@ -181,9 +190,9 @@ const types = [
     { TypeName: 'Array', defaultValue: [], HTMLElement: 'inputOrDropdown' }
 ];
 
-const generateModalProperties = async() => {
-const contentType = await Contentful.management.contentType.getContentType("product")
-const fields = contentType.fields
+const generateModalProperties = (fields) => {
+
+
  const typeMap = Object.fromEntries(types.map(t => [t.TypeName, t]));
 
   return fields.map(field => {

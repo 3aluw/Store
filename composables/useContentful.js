@@ -17,11 +17,10 @@ const availableLocales = ["en-US", "ar-SA"]
 
 const management = {
    contentType:{
-      contentTypeObject:{},
-      getContentType: async function(contentTypeId){
+      object:{},
+      set: async function(contentTypeId){
        const contentType = await $contentfulManager.contentType.get({contentTypeId: contentTypeId});
-       console.log('contentType: ', contentType);
-       this.contentTypeObject = contentType;
+       this.object = contentType;
        return contentType;
       }
        
