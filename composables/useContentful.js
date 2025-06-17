@@ -1,4 +1,3 @@
-const { $contentfulManager } = useNuxtApp();
 
 
 /* We can get the locales from Contentful using the Contentful Management API.       
@@ -10,6 +9,7 @@ const { $contentfulManager } = useNuxtApp();
 */
 export default function useContentful() {
 
+const { $contentfulManager } = useNuxtApp();
 const requiredFields = ["name", "summary", "description", "price"]
 const defaultLocales = "en-US";
 const requiredLocales = ["en-US"]
@@ -19,8 +19,10 @@ const management = {
    contentType:{
       contentTypeObject:{},
       getContentType: async function(contentTypeId){
-       const contentType = await $contentfulManager.contentType.get({ contentTypeId: "product" })
+       const contentType = await $contentfulManager.contentType.get({contentTypeId: contentTypeId});
+       console.log('contentType: ', contentType);
        this.contentTypeObject = contentType;
+       return contentType;
       }
        
      
@@ -33,6 +35,6 @@ const management = {
 }
 
 return{
-   requiredFields,requiredLocales
+   requiredFields,requiredLocales, management
 }
 }

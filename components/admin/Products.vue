@@ -30,7 +30,7 @@
                                 class="textarea textarea-bordered textarea-md w-full max-w-xs"
                                 v-model="selectedProduct.fields[property.value][selectedLocale]"></textarea>
                             <td></td>
-                            
+
                         </tr>
                     </tbody>
                 </table>
@@ -149,6 +149,8 @@
     </div>
 </template>
 <script setup>
+import contentful from '~/plugins/contentful';
+
 
 const { $contentfulManager } = useNuxtApp();
 const Contentful = useContentful();
@@ -161,13 +163,67 @@ if (productStore.products.length === 0) useAsyncData("products", async () => pro
 //fields modal logic
 const showFieldsModal = ref(false)
 const modalProperties = [
-    { name: "name", value: "name",multiLocales: true  },
-    { name: "summary", value: "summary",multiLocales: true  },
-    { name: "description", value: "description",multiLocales: true  },
-    { name: "price", value: "price" ,multiLocales: false  },
-
+    { name: "name", value: "name", multiLocales: true },
+    { name: "summary", value: "summary", multiLocales: true },
+    { name: "description", value: "description", multiLocales: true },
+    { name: "price", value: "price", multiLocales: false },
 ]
 
+const newModalProperties = ref([])
+const types = [
+    { TypeName: 'Text', defaultValue: '', HTMLElement: 'textarea' },
+    { TypeName: 'Symbol', defaultValue: '', HTMLElement: 'input' },
+    { TypeName: 'Number', defaultValue: 0, HTMLElement: 'number' },
+    { TypeName: 'Integer', defaultValue: 0, HTMLElement: 'number' },
+    { TypeName: 'Boolean', defaultValue: false, HTMLElement: 'checkbox' },
+    { TypeName: 'Object', defaultValue: {}, HTMLElement: 'json-editor' },
+    { TypeName: 'Date', defaultValue: '', HTMLElement: 'date' },
+    { TypeName: 'Array', defaultValue: [], HTMLElement: 'inputOrDropdown' }
+];
+
+const generateModalProperties = async() => {
+const contentType = await Contentful.management.contentType.getContentType("product")
+const fields = contentType.fields
+ const typeMap = Object.fromEntries(types.map(t => [t.TypeName, t]));
+
+  return fields.map(field => {
+    const { id, type, localized, required, validations, items } = field;
+
+    // Determine base type (for Array, use items.type if present)
+    const baseType = type === 'Array' ? items?.type || 'Symbol' : type;
+
+    const typeInfo = typeMap[type] || typeMap[baseType] || {
+      defaultValue: null,
+      HTMLElement: 'input'
+    };
+
+    const prop = {
+      name: id,
+      value: id,
+      localized,
+      required,
+      type: baseType.toLowerCase(),
+      HTMLElement: typeInfo.HTMLElement
+    };
+
+    // Special handling for Array
+    if (type === 'Array') {
+      const inValidation = items?.validations?.find(v => v.in);
+      const sizeValidation = validations?.find(v => v.size?.max);
+      const max = sizeValidation?.size?.max;
+
+      if (inValidation) prop.items = inValidation.in;
+      if (max===1) {
+        prop.size = max;
+        prop.HTMLElement = 'dropdown'; // single select
+      } else {
+        prop.HTMLElement = 'input';
+      }
+    }
+
+    return prop;
+  });
+}
 
 //product editing
 const selectedProduct = ref()
@@ -201,12 +257,12 @@ const handleFieldsModal = async (id) => {
 }
 
 const handlePatch = async (productObj) => {
-       if(!validateProductForm(productObj.fields)) {
-            useAlertsStore().warning("All fields are required")
-            return
-        }
+    if (!validateProductForm(productObj.fields)) {
+        useAlertsStore().warning("All fields are required")
+        return
+    }
     try {
-     
+
         //update the entry
         productObj = await $contentfulManager.entry.update({
             entryId: productObj.sys.id
@@ -232,18 +288,18 @@ const handlePatch = async (productObj) => {
 
 const validateProductForm = (obj) => {
     const allPropertiesHaveContent = Object.values(obj).every(item => {
-    const value = item['en-US'];
+        const value = item['en-US'];
 
-    if (typeof value === 'string') {
-      return value.trim().length > 0;
-    }
+        if (typeof value === 'string') {
+            return value.trim().length > 0;
+        }
 
-    if (typeof value === 'number') {
-      return !isNaN(value);
-    }
+        if (typeof value === 'number') {
+            return !isNaN(value);
+        }
 
-    return value != null;
-  });
+        return value != null;
+    });
     return allPropertiesHaveContent
 }
 
@@ -424,7 +480,7 @@ const handleDelete = async () => {
         productStore.fetchProducts()
     }
 }
-/*  Since An APi call is made to fetch the product, We can fetch all products instead 
+/*  Since An APi call is made to fetch the product, I chose to fetch all products instead 
 const updateProductLocally = async (productId, isNewProduct) => {
     const productIndex = productStore.products.findIndex(product => product.sys.id === productId);
      const productObj = await productStore.fetchProduct(productId, 'en-Us')
@@ -445,7 +501,6 @@ const openCategoriesModal = async () => {
     showCategoriesModal.value = !showCategoriesModal.value;
 }
 const patchCategories = () => {
-    console.log(categories.value)
     contentType.value.fields.find(field => field.id === "category").items.validations[0].in = categories.value
     try {
         $contentfulManager.contentType.update({ "contentTypeId": "product" }, contentType.value)
