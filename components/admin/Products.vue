@@ -11,13 +11,11 @@
         <!--fields modal-->
         <div class="modal" :class="{ 'modal-open': showFieldsModal }" v-if="showFieldsModal">
             <div class="modal-box text-center">
-                <div class="dropdown dropdown-hover mt-4">
-                    <label tabindex="0" class="btn m-1">Language</label>
-                    <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
-                        <li><a @click="selectedLocale = 'en-US'">English</a></li>
-                        <li><a @click="selectedLocale = 'ar-SA'">Arabic</a></li>
-                    </ul>
-                </div>
+
+                <select class="select max-w-xs shadow bg-base-100 rounded-box w-52 mt-2 mb-8" v-model="selectedLocale">
+                    <option disabled selected>Select language</option>
+                    <option v-for="locale in manageLocale.availableLocalesCodes" :key="locale" :value="locale">{{ manageLocale.localeNames[locale] }}</option>
+                </select>
                 <table class="table table-compact w-full">
                     <tbody>
                         <tr v-for="property in modalProperties">
@@ -25,18 +23,17 @@
                             <input v-if="property.HTMLElement === 'input'" placeholder="Type: here"
                                 class="input input-bordered w-full max-w-xs input-sm my-2"
                                 :type="property.type === 'number' ? 'number' : 'text'"
-                                v-model="modalBind(property).value" /> 
-                                <textarea v-else-if="property.HTMLElement === 'textarea'" placeholder="Type here" rows="6"
+                                v-model="modalBind(property).value" />
+                            <textarea v-else-if="property.HTMLElement === 'textarea'" placeholder="Type here" rows="6"
                                 class="textarea textarea-bordered textarea-md w-full max-w-xs"
                                 v-model="modalBind(property).value"></textarea>
                             <select class="select select-bordered w-full max-w-xs"
-                                v-else-if="property.HTMLElement === 'dropdown'"
-                                v-model="modalBind(property).value[0]"
+                                v-else-if="property.HTMLElement === 'dropdown'" v-model="modalBind(property).value[0]"
                                 :id="property.name">
                                 <option disabled value="">Select...</option>
                                 <option v-for="item in property.items" :key="item" :value="item">{{ item }}</option>
                             </select>
-                       
+
                             <div v-else-if="property.HTMLElement === 'chips'"
                                 class="categories flex flex-col flex-wrap gap-2">
                                 <div class="flex flex-wrap gap-2">
@@ -52,7 +49,8 @@
                                     @keyup.enter="(e) => { selectedProduct.fields[property.value][property.localized ? selectedLocale : defaultLocale].push(e.target.value); e.target.value = '' }" />
                             </div>
                             <!--upload an image (only available for new products)-->
-                            <label class="block pt-4 pb-2" v-else-if="!existingProduct && property.HTMLElement === 'imageInput'">
+                            <label class="block pt-4 pb-2"
+                                v-else-if="!existingProduct && property.HTMLElement === 'imageInput'">
                                 <input id="product-pic-input" type="file"
                                     class="file-input file-input-success w-full max-w-xs mt-2" /></label>
                             <td></td>
@@ -234,7 +232,7 @@ const generateModalProperties = (fields) => {
             const validationItems = items?.validations?.find(v => v.in)?.in;
             const max = validations?.find(v => v.size?.max)?.size?.max;
             if (validationItems) prop.items = validationItems;
-            
+
             if (id === "image") {
                 prop.HTMLElement = 'imageInput';
             }
@@ -302,17 +300,17 @@ const handleFieldsModal = async (id) => {
 }
 // function uses a writable computed property to bind the modal inputs to the selected product fields
 function modalBind(property) {
-  return computed({
-    get() {
-      const field = selectedProduct.value.fields[property.value];
-      const locale = property.localized ? selectedLocale.value : defaultLocale;
-      return field?.[locale];
-    },
-    set(newValue) {
-      const locale = property.localized ? selectedLocale.value : defaultLocale;
-      selectedProduct.value.fields[property.value][locale] = newValue;
-    }
-  });
+    return computed({
+        get() {
+            const field = selectedProduct.value.fields[property.value];
+            const locale = property.localized ? selectedLocale.value : defaultLocale;
+            return field?.[locale];
+        },
+        set(newValue) {
+            const locale = property.localized ? selectedLocale.value : defaultLocale;
+            selectedProduct.value.fields[property.value][locale] = newValue;
+        }
+    });
 }
 
 const handlePatch = async () => {
@@ -346,56 +344,58 @@ const handlePatch = async () => {
     }
 }
 
+// Helper function to check if a value is empty
 function isValueEmpty(val) {
-  if (val == null) return true;
-  if (typeof val === 'string') return val.trim() === '';
-  if (Array.isArray(val)) return val.length === 0;
-  if (typeof val === 'object' && !Array.isArray(val)) return Object.keys(val).length === 0;
-  return false;
+    if (val == null) return true;
+    if (typeof val === 'string') return val.trim() === '';
+    if (Array.isArray(val)) return val.length === 0;
+    if (typeof val === 'object' && !Array.isArray(val)) return Object.keys(val).length === 0;
+    return false;
 }
 
+//returns true if the product form is valid, otherwise returns an error message (string)
 const validateProductForm = () => {
-    const availableLocales = manageLocale.availableLocales
+    const availableLocales = manageLocale.availableLocalesCodes
     const requiredLocales = manageLocale.requiredLocales
-     const typesMap = Object.fromEntries(types.map(t => [t.TypeName.toLowerCase(), t.defaultValue]));
+    const typesMap = Object.fromEntries(types.map(t => [t.TypeName.toLowerCase(), t.defaultValue]));
 
-  for (const property of modalProperties.value) {
-    const { value: fieldName, required, localized, type, items, validations = [] } = property;
-    const localesToCheck = localized ? availableLocales : [defaultLocale];
-    const fieldData = selectedProduct.value.fields[fieldName];
-    const inValidation = items?.validations?.find(v => v.in);
-    const sizeValidation = validations.find(v => v.size?.max);
-    const expectedType = type !== 'array' ? typeof typesMap[type] : null;
+    for (const property of modalProperties.value) {
+        const { value: fieldName, required, localized, type, items, validations = [] } = property;
+        const localesToCheck = localized ? availableLocales : [defaultLocale];
+        const fieldData = selectedProduct.value.fields[fieldName];
+        const inValidation = items?.validations?.find(v => v.in);
+        const sizeValidation = validations.find(v => v.size?.max);
+        const expectedType = type !== 'array' ? typeof typesMap[type] : null;
 
-    for (const locale of localesToCheck) {
-      const val = fieldData?.[locale];
+        for (const locale of localesToCheck) {
+            const val = fieldData?.[locale];
 
-      // 1. Required
-       if (required && requiredLocales.includes(locale) && isValueEmpty(val)) {
-        return `${fieldName} field is required (${locale})`;
-      }
+            // 1. Required
+            if (required && requiredLocales.includes(locale) && isValueEmpty(val)) {
+                return `${fieldName} field is required (${locale})`;
+            }
 
-      // 2. "in" validation
-      if (inValidation && Array.isArray(val)) {
-        const invalid = val.filter(item => !inValidation.in.includes(item));
-        if (invalid.length > 0) {
-          return inValidation.message || `${fieldName} has invalid value(s): ${invalid.join(', ')}`;
+            // 2. "in" validation
+            if (inValidation && Array.isArray(val)) {
+                const invalid = val.filter(item => !inValidation.in.includes(item));
+                if (invalid.length > 0) {
+                    return inValidation.message || `${fieldName} has invalid value(s): ${invalid.join(', ')}`;
+                }
+            }
+
+            // 3. size.max
+            if (sizeValidation && Array.isArray(val) && val.length > sizeValidation.size.max) {
+                return sizeValidation.message || `${fieldName} must have at most ${sizeValidation.size.max} item(s)`;
+            }
+
+            // 4. Type check (optional)
+            if (expectedType && val != null && typeof val !== expectedType) {
+                return `${fieldName} must be of type ${expectedType}`;
+            }
         }
-      }
-
-      // 3. size.max
-      if (sizeValidation && Array.isArray(val) && val.length > sizeValidation.size.max) {
-        return sizeValidation.message || `${fieldName} must have at most ${sizeValidation.size.max} item(s)`;
-      }
-
-      // 4. Type check (optional)
-      if (expectedType && val != null && typeof val !== expectedType) {
-        return `${fieldName} must be of type ${expectedType}`;
-      }
     }
-  }
 
-  return true; // ✅ All valid
+    return true; // ✅ All valid
 }
 
 // assets modal logic

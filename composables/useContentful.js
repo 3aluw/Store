@@ -3,7 +3,7 @@
 /* We can get the locales from Contentful using the Contentful Management API.       
 
         const locales = await $contentfulManager.locale.getMany({ query: { contentTypeId: "product" } }) 
-        const availableLocales = locales.items.map(locale => locale.code)
+        const availableLocalesCodes = locales.items.map(locale => locale.code)
         const defaultLocales = locales.items.find(locale => locale.default).code
         const requiredLocales = locales.items.filter(locale => !locale.optional).map(locale => locale.code)
 */
@@ -15,10 +15,14 @@ export default function useContentful() {
 
   
    const management = {
-        locale : {
+      locale : {
       defaultLocale: "en-US",
       requiredLocales: ["en-US"],
-      availableLocales: ["en-US", "ar-SA"]
+      availableLocalesCodes: ["en-US", "ar-SA"],
+      localeNames:{
+         "en-US": "English (United States)",
+         "ar-SA": "Arabic (Saudi Arabia)"
+      }
    },
       contentType: {
          object: {},
