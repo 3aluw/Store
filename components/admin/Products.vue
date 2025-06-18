@@ -52,7 +52,7 @@
                             <!--upload an image (only available for new products)-->
                             <label class="block pt-4 pb-2"
                                 v-else-if="!existingProduct && property.HTMLElement === 'imageInput'">
-                                <input id="product-pic-input" type="file"
+                                <input id="product-pic-input" type="file" multiple accept="image/*"
                                     class="file-input file-input-success w-full max-w-xs mt-2" /></label>
                             <td></td>
                         </tr>
@@ -477,18 +477,13 @@ const createProduct = async () => {
     //upload picture > create asset & process it fot all locales
     const isFormValidOrError = validateProductForm();
     const picture = document.getElementById("product-pic-input").files[0];
-
-   
+    
      if (isFormValidOrError !== true) {
         useAlertsStore().warning(isFormValidOrError)
         return
     } 
-    else if (!picture) {
-        useAlertsStore().warning("Please upload a product image")
-        return
-    }
     //check if all fields are written then upload then create the entry and upload the image  
-    else if (picture && validateProductForm() === true) {
+    else if (isFormValidOrError === true) {
 
         try {
             const asset = await handleImageUploading(picture)

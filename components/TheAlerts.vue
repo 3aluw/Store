@@ -29,4 +29,7 @@ const alerts = useAlertsStore();
   opacity: 0;
   transform: translateX(30px);
 }
+.toast{
+  z-index: 1000;
+}
 </style>
