@@ -66,7 +66,7 @@
                         cancel
                     </button>
                     <!--existingProduct buttons-->
-                    <button v-if="existingProduct" class="btn" @click="handlePatch(selectedProduct)">
+                    <button v-if="existingProduct" class="btn" @click="handlePatch()">
 
                         <span class="pl-2">apply changes</span>
                     </button>
@@ -209,7 +209,6 @@ const types = [
 ];
 
 const generateModalProperties = (fields) => {
-
     const typeMap = Object.fromEntries(types.map(t => [t.TypeName, t]));
 
     return fields.map(field => {
@@ -301,7 +300,7 @@ const handleFieldsModal = async (id) => {
     showFieldsModal.value = true
 
 }
-
+// function uses a writable computed property to bind the modal inputs to the selected product fields
 function modalBind(property) {
   return computed({
     get() {
@@ -316,17 +315,18 @@ function modalBind(property) {
   });
 }
 
-const handlePatch = async (productObj) => {
-    if (!validateProductForm(productObj.fields)) {
-        useAlertsStore().warning("All fields are required")
+const handlePatch = async () => {
+    const isFormValidOrError = validateProductForm();
+    if (isFormValidOrError !== true) {
+        useAlertsStore().warning(isFormValidOrError)
         return
     }
     try {
 
         //update the entry
-        productObj = await $contentfulManager.entry.update({
-            entryId: productObj.sys.id
-        }, productObj)
+        const productObj = await $contentfulManager.entry.update({
+            entryId: selectedProduct.value.sys.id
+        }, selectedProduct.value)
         //publish it
         const res = await $contentfulManager.entry.publish({
             entryId: productObj.sys.id
@@ -346,21 +346,56 @@ const handlePatch = async (productObj) => {
     }
 }
 
-const validateProductForm = (obj) => {
-    const allPropertiesHaveContent = Object.values(obj).every(item => {
-        const value = item['en-US'];
+function isValueEmpty(val) {
+  if (val == null) return true;
+  if (typeof val === 'string') return val.trim() === '';
+  if (Array.isArray(val)) return val.length === 0;
+  if (typeof val === 'object' && !Array.isArray(val)) return Object.keys(val).length === 0;
+  return false;
+}
 
-        if (typeof value === 'string') {
-            return value.trim().length > 0;
+const validateProductForm = () => {
+    const availableLocales = manageLocale.availableLocales
+    const requiredLocales = manageLocale.requiredLocales
+     const typesMap = Object.fromEntries(types.map(t => [t.TypeName.toLowerCase(), t.defaultValue]));
+
+  for (const property of modalProperties.value) {
+    const { value: fieldName, required, localized, type, items, validations = [] } = property;
+    const localesToCheck = localized ? availableLocales : [defaultLocale];
+    const fieldData = selectedProduct.value.fields[fieldName];
+    const inValidation = items?.validations?.find(v => v.in);
+    const sizeValidation = validations.find(v => v.size?.max);
+    const expectedType = type !== 'array' ? typeof typesMap[type] : null;
+
+    for (const locale of localesToCheck) {
+      const val = fieldData?.[locale];
+
+      // 1. Required
+       if (required && requiredLocales.includes(locale) && isValueEmpty(val)) {
+        return `${fieldName} field is required (${locale})`;
+      }
+
+      // 2. "in" validation
+      if (inValidation && Array.isArray(val)) {
+        const invalid = val.filter(item => !inValidation.in.includes(item));
+        if (invalid.length > 0) {
+          return inValidation.message || `${fieldName} has invalid value(s): ${invalid.join(', ')}`;
         }
+      }
 
-        if (typeof value === 'number') {
-            return !isNaN(value);
-        }
+      // 3. size.max
+      if (sizeValidation && Array.isArray(val) && val.length > sizeValidation.size.max) {
+        return sizeValidation.message || `${fieldName} must have at most ${sizeValidation.size.max} item(s)`;
+      }
 
-        return value != null;
-    });
-    return allPropertiesHaveContent
+      // 4. Type check (optional)
+      if (expectedType && val != null && typeof val !== expectedType) {
+        return `${fieldName} must be of type ${expectedType}`;
+      }
+    }
+  }
+
+  return true; // ✅ All valid
 }
 
 // assets modal logic
@@ -440,8 +475,10 @@ const addNewImage = async () => {
 const createProduct = async () => {
     //upload picture > create asset & process it fot all locales
     const picture = document.getElementById("product-pic-input").files[0];
+    console.log(validateProductForm());
+    return
     //check if all fields are written then upload then create the entry and upload the image  
-    if (picture && validateProductForm(selectedProduct.value.fields)) {
+    if (picture && validateProductForm()) {
 
         try {
             const asset = await handleImageUploading(picture)
