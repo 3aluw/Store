@@ -25,16 +25,16 @@
                             <input v-if="property.HTMLElement === 'input'" placeholder="Type: here"
                                 class="input input-bordered w-full max-w-xs input-sm my-2"
                                 :type="property.type === 'number' ? 'number' : 'text'"
-                                v-model="selectedProduct.fields[property.value][selectedLocale]" />
+                                v-model="selectedProduct.fields[property.value][property.localized ? selectedLocale : defaultLocale]" />
                             <select class="select select-bordered w-full max-w-xs"
                                 v-else-if="property.HTMLElement === 'dropdown'"
-                                v-model="selectedProduct.fields[property.value][selectedLocale][0]" :id="property.name">
+                                v-model="selectedProduct.fields[property.value][property.localized ? selectedLocale : defaultLocale][0]" :id="property.name">
                                 <option disabled value="">Select...</option>
                                 <option v-for="item in property.items" :key="item" :value="item">{{ item }}</option>
                             </select>
                             <textarea v-else-if="property.HTMLElement === 'textarea'" placeholder="Type here" rows="6"
                                 class="textarea textarea-bordered textarea-md w-full max-w-xs"
-                                v-model="selectedProduct.fields[property.value][selectedLocale]"></textarea>
+                                v-model="selectedProduct.fields[property.value][property.localized ? selectedLocale : defaultLocale]"></textarea>
                             <td></td>
                         </tr>
                     </tbody>
@@ -170,12 +170,8 @@ if (productStore.products.length === 0) useAsyncData("products", async () => pro
 
 //fields modal logic
 const showFieldsModal = ref(false)
-/* const modalProperties = [
-    { name: "name", value: "name", multiLocales: true },
-    { name: "summary", value: "summary", multiLocales: true },
-    { name: "description", value: "description", multiLocales: true },
-    { name: "price", value: "price", multiLocales: false },
-] */
+const modalProperties = ref([])
+
 onMounted(async () => {
     if (!manageContentType.object?.fields) await manageContentType.set("product")
     //generate the modal properties from the contentful content type
@@ -183,7 +179,6 @@ onMounted(async () => {
     console.log(manageContentType.object?.fields, modalProperties.value);
 })
 
-const modalProperties = ref([])
 
 const types = [
     { TypeName: 'Text', defaultValue: '', HTMLElement: 'textarea' },
@@ -265,7 +260,7 @@ const createBlankProductEntry = () => {
 const selectedProduct = ref()
 const existingProduct = ref(true)
 const selectedLocale = ref("en-US")
-
+const defaultLocale = manageLocale.defaultLocale
 const handleFieldsModal = async (id) => {
     //if the id is provided, it means we are editing an existing product
     //if not, we are creating a new product
