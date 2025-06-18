@@ -25,21 +25,22 @@
                             <input v-if="property.HTMLElement === 'input'" placeholder="Type: here"
                                 class="input input-bordered w-full max-w-xs input-sm my-2"
                                 :type="property.type === 'number' ? 'number' : 'text'"
-                                v-model="selectedProduct.fields[property.value][property.localized ? selectedLocale : defaultLocale]" />
+                                v-model="modalBind(property).value" /> 
+                                <textarea v-else-if="property.HTMLElement === 'textarea'" placeholder="Type here" rows="6"
+                                class="textarea textarea-bordered textarea-md w-full max-w-xs"
+                                v-model="modalBind(property).value"></textarea>
                             <select class="select select-bordered w-full max-w-xs"
                                 v-else-if="property.HTMLElement === 'dropdown'"
-                                v-model="selectedProduct.fields[property.value][property.localized ? selectedLocale : defaultLocale][0]"
+                                v-model="modalBind(property).value[0]"
                                 :id="property.name">
                                 <option disabled value="">Select...</option>
                                 <option v-for="item in property.items" :key="item" :value="item">{{ item }}</option>
                             </select>
-                            <textarea v-else-if="property.HTMLElement === 'textarea'" placeholder="Type here" rows="6"
-                                class="textarea textarea-bordered textarea-md w-full max-w-xs"
-                                v-model="selectedProduct.fields[property.value][property.localized ? selectedLocale : defaultLocale]"></textarea>
+                       
                             <div v-else-if="property.HTMLElement === 'chips'"
                                 class="categories flex flex-col flex-wrap gap-2">
                                 <div class="flex flex-wrap gap-2">
-                                    <div v-for="(item, index) in selectedProduct.fields[property.value][property.localized ? selectedLocale : defaultLocale]"
+                                    <div v-for="(item, index) in modalBind(property).value"
                                         class="btn btn-sm  btn-outline normal-case gap-2 cursor-default ">
                                         {{ item }}
                                         <button class="badge badge-sm badge-error"
@@ -298,8 +299,21 @@ const handleFieldsModal = async (id) => {
     }
 
     showFieldsModal.value = true
-    console.log(createBlankProductEntry(), selectedProduct.value.fields);
 
+}
+
+function modalBind(property) {
+  return computed({
+    get() {
+      const field = selectedProduct.value.fields[property.value];
+      const locale = property.localized ? selectedLocale.value : defaultLocale;
+      return field?.[locale];
+    },
+    set(newValue) {
+      const locale = property.localized ? selectedLocale.value : defaultLocale;
+      selectedProduct.value.fields[property.value][locale] = newValue;
+    }
+  });
 }
 
 const handlePatch = async (productObj) => {
@@ -424,7 +438,6 @@ const addNewImage = async () => {
 //new product logic
 
 const createProduct = async () => {
-    console.log(selectedProduct.value);
     //upload picture > create asset & process it fot all locales
     const picture = document.getElementById("product-pic-input").files[0];
     //check if all fields are written then upload then create the entry and upload the image  
