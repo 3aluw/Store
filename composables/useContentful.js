@@ -9,31 +9,35 @@
 */
 export default function useContentful() {
 
-const { $contentfulManager } = useNuxtApp();
-const requiredFields = ["name", "summary", "description", "price"]
-const defaultLocales = "en-US";
-const requiredLocales = ["en-US"]
-const availableLocales = ["en-US", "ar-SA"]
+   const { $contentfulManager } = useNuxtApp();
+   const requiredFields = ["name", "summary", "description", "price"]
 
-const management = {
-   contentType:{
-      object:{},
-      set: async function(contentTypeId){
-       const contentType = await $contentfulManager.contentType.get({contentTypeId: contentTypeId});
-       this.object = contentType;
-       return contentType;
-      }
-       
-     
+
+  
+   const management = {
+        locale : {
+      defaultLocale: "en-US",
+      requiredLocales: ["en-US"],
+      availableLocales: ["en-US", "ar-SA"]
    },
-   asset:{},
-   entry:{
-   },
-   
+      contentType: {
+         object: {},
+         set: async function (contentTypeId) {
+            const contentType = await $contentfulManager.contentType.get({ contentTypeId: contentTypeId });
+            this.object = contentType;
+            return contentType;
+         }
 
-}
 
-return{
-   requiredFields,requiredLocales, management
-}
+      },
+      asset: {},
+      entry: {
+      },
+
+
+   }
+
+   return {
+      management
+   }
 }
