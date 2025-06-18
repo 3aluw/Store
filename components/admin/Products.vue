@@ -26,8 +26,9 @@
                                 class="input input-bordered w-full max-w-xs input-sm my-2"
                                 :type="property.type === 'number' ? 'number' : 'text'"
                                 v-model="selectedProduct.fields[property.value][selectedLocale]" />
-                            <select  class="select select-bordered w-full max-w-xs" v-else-if="property.HTMLElement === 'dropdown'"
-                                v-model="selectedProduct.fields[property.value][selectedLocale]" :id="property.name">
+                            <select class="select select-bordered w-full max-w-xs"
+                                v-else-if="property.HTMLElement === 'dropdown'"
+                                v-model="selectedProduct.fields[property.value][selectedLocale][0]" :id="property.name">
                                 <option disabled value="">Select...</option>
                                 <option v-for="item in property.items" :key="item" :value="item">{{ item }}</option>
                             </select>
@@ -35,7 +36,6 @@
                                 class="textarea textarea-bordered textarea-md w-full max-w-xs"
                                 v-model="selectedProduct.fields[property.value][selectedLocale]"></textarea>
                             <td></td>
-
                         </tr>
                     </tbody>
                 </table>
@@ -159,6 +159,7 @@
 const { $contentfulManager } = useNuxtApp();
 const Contentful = useContentful();
 const manageContentType = Contentful.management.contentType
+const manageLocale = Contentful.management.locale
 const manageEntry = Contentful.management.entry
 const manageAsset = Contentful.management.asset
 
@@ -179,7 +180,7 @@ onMounted(async () => {
     if (!manageContentType.object?.fields) await manageContentType.set("product")
     //generate the modal properties from the contentful content type
     modalProperties.value = generateModalProperties(manageContentType.object?.fields);
-    console.log(modalProperties.value);
+    console.log(manageContentType.object?.fields, modalProperties.value);
 })
 
 const modalProperties = ref([])
@@ -197,16 +198,12 @@ const types = [
 
 const generateModalProperties = (fields) => {
 
-
     const typeMap = Object.fromEntries(types.map(t => [t.TypeName, t]));
 
     return fields.map(field => {
         const { id, type, localized, required, validations, items } = field;
 
-        // Determine base type (for Array, use items.type if present)
-        const baseType = type === 'Array' ? items?.type || 'Symbol' : type;
-
-        const typeInfo = typeMap[type] || typeMap[baseType] || {
+        const typeInfo = typeMap[type] || {
             defaultValue: null,
             HTMLElement: 'input'
         };
@@ -216,7 +213,7 @@ const generateModalProperties = (fields) => {
             value: id,
             localized,
             required,
-            type: baseType.toLowerCase(),
+            type: type.toLowerCase(),
             HTMLElement: typeInfo.HTMLElement
         };
 
@@ -231,7 +228,7 @@ const generateModalProperties = (fields) => {
                 prop.size = max;
                 prop.HTMLElement = 'dropdown'; // single select
             } else {
-                prop.HTMLElement = 'input';
+                prop.HTMLElement = 'multiselect'; // multiple select
             }
         }
 
@@ -239,6 +236,31 @@ const generateModalProperties = (fields) => {
     });
 }
 
+
+const createBlankProductEntry = () => {
+    const locales = manageLocale.availableLocales
+    const defaultLocale = manageLocale.defaultLocale
+    const typeMap = Object.fromEntries(types.map(t => [t.TypeName.toLowerCase(), t.defaultValue]));
+    const entry = {};
+
+    for (const prop of modalProperties.value) {
+        // Get default value from types map (falling back to empty string)
+        const defaultValue = typeMap[prop.type] ?? '';
+
+        // Assign value per localization
+        if (prop.localized) {
+            entry[prop.name] = Object.fromEntries(
+                locales.map(locale => [locale, Array.isArray(defaultValue) ? [...defaultValue] : defaultValue])
+            );
+        } else {
+            entry[prop.name] = {
+                [defaultLocale]: Array.isArray(defaultValue) ? [...defaultValue] : defaultValue
+            };
+        }
+    }
+
+    return entry;
+};
 //product editing
 const selectedProduct = ref()
 const existingProduct = ref(true)
@@ -255,18 +277,11 @@ const handleFieldsModal = async (id) => {
         existingProduct.value = false
         selectedProduct.value = {}
         selectedProduct.value.fields = {}
-
-
-        modalProperties.value.forEach((property) => Object.defineProperty(selectedProduct.value.fields, property.name, {
-            value: {
-                'en-US': null
-            },
-            writable: true,
-            enumerable: true,
-
-        }))
+        selectedProduct.value.fields = createBlankProductEntry()
     }
+
     showFieldsModal.value = true
+    console.log(createBlankProductEntry(), selectedProduct.value.fields);
 
 }
 
@@ -392,6 +407,7 @@ const addNewImage = async () => {
 //new product logic
 
 const createProduct = async () => {
+    console.log(selectedProduct.value);
     //upload picture > create asset & process it fot all locales
     const picture = document.getElementById("product-pic-input").files[0];
     //check if all fields are written then upload then create the entry and upload the image  
