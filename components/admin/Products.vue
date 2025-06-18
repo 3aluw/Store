@@ -14,7 +14,8 @@
 
                 <select class="select max-w-xs shadow bg-base-100 rounded-box w-52 mt-2 mb-8" v-model="selectedLocale">
                     <option disabled selected>Select language</option>
-                    <option v-for="locale in manageLocale.availableLocalesCodes" :key="locale" :value="locale">{{ manageLocale.localeNames[locale] }}</option>
+                    <option v-for="locale in manageLocale.availableLocalesCodes" :key="locale" :value="locale">{{
+                        manageLocale.localeNames[locale] }}</option>
                 </select>
                 <table class="table table-compact w-full">
                     <tbody>
@@ -253,7 +254,7 @@ const generateModalProperties = (fields) => {
 
 
 const createBlankProductEntry = () => {
-    const locales = manageLocale.availableLocales
+    const locales = manageLocale.availableLocalesCodes
     const defaultLocale = manageLocale.defaultLocale
     const typeMap = Object.fromEntries(types.map(t => [t.TypeName.toLowerCase(), t.defaultValue]));
     const entry = {};
@@ -474,11 +475,20 @@ const addNewImage = async () => {
 
 const createProduct = async () => {
     //upload picture > create asset & process it fot all locales
+    const isFormValidOrError = validateProductForm();
     const picture = document.getElementById("product-pic-input").files[0];
-    console.log(validateProductForm());
-    return
+
+   
+     if (isFormValidOrError !== true) {
+        useAlertsStore().warning(isFormValidOrError)
+        return
+    } 
+    else if (!picture) {
+        useAlertsStore().warning("Please upload a product image")
+        return
+    }
     //check if all fields are written then upload then create the entry and upload the image  
-    if (picture && validateProductForm()) {
+    else if (picture && validateProductForm() === true) {
 
         try {
             const asset = await handleImageUploading(picture)
