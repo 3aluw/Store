@@ -354,13 +354,14 @@ function isValueEmpty(val) {
     return false;
 }
 
+// checks the product form for validity Except for image which is validated separately
 //returns true if the product form is valid, otherwise returns an error message (string)
 const validateProductForm = () => {
     const availableLocales = manageLocale.availableLocalesCodes
     const requiredLocales = manageLocale.requiredLocales
     const typesMap = Object.fromEntries(types.map(t => [t.TypeName.toLowerCase(), t.defaultValue]));
-
-    for (const property of modalProperties.value) {
+    const propertiesExcludingImage = modalProperties.value.filter(p => p.HTMLElement !== 'imageInput')
+    for (const property of propertiesExcludingImage) {
         const { value: fieldName, required, localized, type, items, validations = [] } = property;
         const localesToCheck = localized ? availableLocales : [defaultLocale];
         const fieldData = selectedProduct.value.fields[fieldName];
@@ -482,11 +483,16 @@ const createProduct = async () => {
         useAlertsStore().warning(isFormValidOrError)
         return
     } 
+    else if(!picture) {
+        useAlertsStore().warning("Please upload an image")
+        return
+    }
     //check if all fields are written then upload then create the entry and upload the image  
     else if (isFormValidOrError === true) {
 
         try {
             const asset = await handleImageUploading(picture)
+            linkAssetToEntry(asset.sys.id)
             const entry = await createEntry(asset.sys.id);
             publishAssetOrEntry(asset.sys.id, entry.sys.id)
             useAlertsStore().success("Product created successfully")
@@ -540,9 +546,10 @@ const createAsset = async (uploadId, picture) => {
     await $contentfulManager.asset.processForAllLocales({ environmentId: "master" }, asset)
     return asset
 }
-const createEntry = async (assetId) => {
-    selectedProduct.value.fields.image = {
-        'en-US': [{
+
+const linkAssetToEntry = (assetId)=>{
+        selectedProduct.value.fields.image = {
+        [defaultLocale]: [{
             sys: {
                 id: assetId,
                 linkType: 'Asset',
@@ -551,10 +558,9 @@ const createEntry = async (assetId) => {
 
         }]
     }
-
-    const entry = await $contentfulManager.entry.create({ contentTypeId: "product" }, selectedProduct.value)
-    return entry
 }
+const createEntry = async () =>  await $contentfulManager.entry.create({ contentTypeId: "product" }, selectedProduct.value)
+
 const publishAssetOrEntry = async (assetId, entryId) => {
     if (assetId) {
         const asset = await $contentfulManager.asset.get({ assetId })
