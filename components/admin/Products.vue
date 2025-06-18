@@ -28,21 +28,37 @@
                                 v-model="selectedProduct.fields[property.value][property.localized ? selectedLocale : defaultLocale]" />
                             <select class="select select-bordered w-full max-w-xs"
                                 v-else-if="property.HTMLElement === 'dropdown'"
-                                v-model="selectedProduct.fields[property.value][property.localized ? selectedLocale : defaultLocale][0]" :id="property.name">
+                                v-model="selectedProduct.fields[property.value][property.localized ? selectedLocale : defaultLocale][0]"
+                                :id="property.name">
                                 <option disabled value="">Select...</option>
                                 <option v-for="item in property.items" :key="item" :value="item">{{ item }}</option>
                             </select>
                             <textarea v-else-if="property.HTMLElement === 'textarea'" placeholder="Type here" rows="6"
                                 class="textarea textarea-bordered textarea-md w-full max-w-xs"
                                 v-model="selectedProduct.fields[property.value][property.localized ? selectedLocale : defaultLocale]"></textarea>
+                            <div v-else-if="property.HTMLElement === 'chips'"
+                                class="categories flex flex-col flex-wrap gap-2">
+                                <div class="flex flex-wrap gap-2">
+                                    <div v-for="(item, index) in selectedProduct.fields[property.value][property.localized ? selectedLocale : defaultLocale]"
+                                        class="btn btn-sm  btn-outline normal-case gap-2 cursor-default ">
+                                        {{ item }}
+                                        <button class="badge badge-sm badge-error"
+                                            @click="selectedProduct.fields[property.value][property.localized ? selectedLocale : defaultLocale].splice(index, 1)">X</button>
+                                    </div>
+                                </div>
+                                <input type="text" :placeholder="`add new ${property.name}`"
+                                    class="input input-bordered max-w-xs my-4"
+                                    @keyup.enter="(e) => { selectedProduct.fields[property.value][property.localized ? selectedLocale : defaultLocale].push(e.target.value); e.target.value = '' }" />
+                            </div>
+                            <!--upload an image (only available for new products)-->
+                            <label class="block pt-4 pb-2" v-else-if="!existingProduct && property.HTMLElement === 'imageInput'">
+                                <input id="product-pic-input" type="file"
+                                    class="file-input file-input-success w-full max-w-xs mt-2" /></label>
                             <td></td>
                         </tr>
                     </tbody>
                 </table>
-                <!--upload an image (only available for new products)-->
-                <label class="block pt-4 pb-2" v-if="!existingProduct">Chose an image for the product
-                    <input id="product-pic-input" type="file"
-                        class="file-input file-input-success w-full max-w-xs mt-2" /></label>
+
 
                 <div class="modal-action">
                     <button class="btn" @click="showFieldsModal = false">
@@ -188,7 +204,7 @@ const types = [
     { TypeName: 'Boolean', defaultValue: false, HTMLElement: 'checkbox' },
     { TypeName: 'Object', defaultValue: {}, HTMLElement: 'json-editor' },
     { TypeName: 'Date', defaultValue: '', HTMLElement: 'date' },
-    { TypeName: 'Array', defaultValue: [], HTMLElement: 'inputOrDropdown' }
+    { TypeName: 'Array', defaultValue: [], HTMLElement: 'inputOrDropdown' }  // if type is Array, HTMLElement will be : input if(!items); dropdown  if(items & max = 1); multiselect if(items & max >= 1)   
 ];
 
 const generateModalProperties = (fields) => {
@@ -214,16 +230,22 @@ const generateModalProperties = (fields) => {
 
         // Special handling for Array
         if (type === 'Array') {
-            const inValidation = items?.validations?.find(v => v.in);
-            const sizeValidation = validations?.find(v => v.size?.max);
-            const max = sizeValidation?.size?.max;
 
-            if (inValidation) prop.items = inValidation.in;
-            if (max === 1) {
+            const validationItems = items?.validations?.find(v => v.in)?.in;
+            const max = validations?.find(v => v.size?.max)?.size?.max;
+            if (validationItems) prop.items = validationItems;
+            
+            if (id === "image") {
+                prop.HTMLElement = 'imageInput';
+            }
+            else if (max === 1 && validationItems) {
                 prop.size = max;
                 prop.HTMLElement = 'dropdown'; // single select
-            } else {
+            } else if (validationItems && (!max || max > 1)) {
                 prop.HTMLElement = 'multiselect'; // multiple select
+            }
+            else if (!validationItems) {
+                prop.HTMLElement = 'chips'; // multiple select
             }
         }
 
