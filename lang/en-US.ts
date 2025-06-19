@@ -15,6 +15,13 @@ export default {
         loginWithGoogle: "login with Google",
         signWithGoogle: "sign up with Google",
         addToCart: "Add to cart",
+        select: "Select...",
+        cancel: "cancel",
+        applyChanges: "apply changes",
+        deleteProduct: "delete product",
+        createProduct: "create product",
+        delete: "delete",
+        uploadImage: "upload an image",
     },
     UserInfo: {
         name: "Name",
@@ -68,6 +75,9 @@ export default {
 
     },
     AdminProducts: {
+        addNewCategory: "add a new category",
+        addProduct: "Add product",
+        manageCategories: "Manage categories",
         alertProductUpdated: "Product updated!",
         alertTypicalError: "An error occurred, please contact the dev team",
         alertLastAssetDeletionError: "You can't delete the last asset",

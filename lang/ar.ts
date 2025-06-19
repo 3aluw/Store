@@ -15,7 +15,13 @@ export default {
         loginWithGoogle: "تسجيل الدخول عبر غوغل",
         signWithGoogle: "إنشاء حساب عبر غوغل",
         addToCart: "أضف إلى السلة",
-
+        select: "اختر...",
+        cancel: "إلغاء",
+        applyChanges: "تطبيق التغييرات",
+        deleteProduct: "حذف المنتج",
+        createProduct: "إنشاء منتج",
+        delete: "حذف",
+        uploadImage: "ارفع صورة",
     },
     UserInfo: {
         name: "الاسم الكامل",
@@ -67,6 +73,9 @@ export default {
 
     },
     AdminProducts: {
+        addProduct: "أضف منتجًا",
+        addNewCategory: "أضف تصنيفا جديدا",
+        manageCategories: "إدارة التصنيفات",
         alertProductUpdated: "تم تحديث المنتج!",
         alertTypicalError: "حدث خطأ، يرجى التواصل مع فريق التطوير",
         alertLastAssetDeletionError: "لا يمكنك حذف آخر عنصر",
