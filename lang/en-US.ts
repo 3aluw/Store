@@ -82,6 +82,7 @@ export default {
         alertTypicalError: "An error occurred, please contact the dev team",
         alertLastAssetDeletionError: "You can't delete the last asset",
         alertAssetDeletionError: "An error occurred while deleting the asset",
+        alertProductDeletionError: "An error occurred while deleting the product",
         alertUploadingImage: "Uploading image, please wait...",
         alertImageAdded: "Image added successfully",
         alertImageAddError: "An error occurred while adding the image",

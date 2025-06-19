@@ -65,11 +65,12 @@
                         {{ $t('Buttons.cancel') }}
                     </button>
                     <!--existingProduct buttons-->
-                    <button v-if="existingProduct" class="btn" @click="handlePatch()">
+                    <button :disabled="disableModalActions" v-if="existingProduct" class="btn" @click="handlePatch()">
 
                         <span class="pl-2">{{ $t('Buttons.applyChanges') }}</span>
                     </button>
-                    <button v-if="existingProduct" class="btn  btn-error" @click="handleDelete">
+                    <button :disabled="disableModalActions" v-if="existingProduct" class="btn  btn-error"
+                        @click="handleDelete">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path
                                 d="M10 11V17M14 11V17M4 7H20M19 7L18.133 19.142C18.0971 19.6466 17.8713 20.1188 17.5011 20.4636C17.1309 20.8083 16.6439 21 16.138 21H7.862C7.35614 21 6.86907 20.8083 6.49889 20.4636C6.1287 20.1188 5.90292 19.6466 5.867 19.142L5 7H19ZM15 7V4C15 3.73478 14.8946 3.48043 14.7071 3.29289C14.5196 3.10536 14.2652 3 14 3H10C9.73478 3 9.48043 3.10536 9.29289 3.29289C9.10536 3.48043 9 3.73478 9 4V7H15Z"
@@ -78,7 +79,7 @@
                         <span class="pl-2">{{ $t('Buttons.deleteProduct') }}</span>
                     </button>
                     <!--newProducts buttons-->
-                    <button v-if="!existingProduct" class="btn" @click="createProduct">
+                    <button :disabled="disableModalActions" v-if="!existingProduct" class="btn" @click="createProduct">
                         <span class="pl-2">{{ $t('Buttons.createProduct') }}</span>
                     </button>
                 </div>
@@ -97,7 +98,8 @@
                         </figure>
                         <div class="card-body items-center text-center">
                             <div class="card-actions">
-                                <button class="btn btn-primary" @click="unlinkAsset(asset.sys.id)">{{ $t('Buttons.delete') }}</button>
+                                <button class="btn btn-primary" @click="unlinkAsset(asset.sys.id)">{{
+                                    $t('Buttons.delete') }}</button>
                             </div>
                         </div>
                     </div>
@@ -107,7 +109,8 @@
                         </figure>
                         <div class="card-body items-center text-center">
                             <div class="card-actions">
-                                <label class="btn btn-primary max-w-full" for="product-pic-input">{{ $t('Buttons.uploadImage') }}</label>
+                                <label class="btn btn-primary max-w-full" for="product-pic-input">{{
+                                    $t('Buttons.uploadImage') }}</label>
                                 <input id="product-pic-input" type="file" accept="image/*" multiple @input="addNewImage"
                                     class="file-input file-input-primary w-full max-w-xs " style="display: none" />
                             </div>
@@ -182,7 +185,6 @@ const manageAsset = Contentful.management.asset
 //check if the products hadn't been fetched yet. if so fetch them
 const productStore = useProductStore();
 if (productStore.products.length === 0) useAsyncData("products", async () => productStore.fetchProducts());
-
 
 //fields modal logic
 const showFieldsModal = ref(false)
@@ -296,11 +298,11 @@ const handleFieldsModal = async (id) => {
                 selectedProduct.value.fields[key] = blankEntry[key];
             }
         }
-        
+
     }
     else {
         existingProduct.value = false
-        selectedProduct.value = {fields: {}}
+        selectedProduct.value = { fields: {} }
         selectedProduct.value.fields = blankEntry
     }
 
@@ -346,7 +348,6 @@ const handlePatch = async () => {
     }
     finally {
         showFieldsModal.value = false;
-        showAssetsModal.value = false;
         productStore.products = []
         productStore.fetchProducts()
     }
@@ -408,7 +409,7 @@ const validateProductForm = () => {
 }
 
 // assets modal logic
-
+const disableModalActions = ref(false)
 const showAssetsModal = ref(false)
 const productAssets = ref([])
 const selectedProductId = ref()
@@ -431,11 +432,15 @@ const unlinkAsset = async (assetId) => {
         return
     }
 
-    const selectedProduct = await $contentfulManager.entry.get({ entryId: selectedProductId.value });
-    const newAssetsArray = selectedProduct.fields.image['en-US'].filter(asset => asset.sys.id !== assetId)
-    selectedProduct.fields.image['en-US'] = newAssetsArray;
-    await handlePatch(selectedProduct)
+    selectedProduct.value = await $contentfulManager.entry.get({ entryId: selectedProductId.value });
+    const newAssetsArray = selectedProduct.value.fields.image['en-US'].filter(asset => asset.sys.id !== assetId)
+    selectedProduct.value.fields.image[defaultLocale] = newAssetsArray;
+    await handlePatch()
     deleteAsset(assetId)
+    //update product Assets
+    await productStore.fetchProducts()
+    const updatedProduct = productStore.products.find((product) => product.sys.id === selectedProductId.value)
+    productAssets.value = updatedProduct.fields.image
 }
 
 const deleteAsset = async (assetId) => {
@@ -491,6 +496,8 @@ const createProduct = async () => {
     else if (isFormValidOrError === true && pictures.length) {
 
         try {
+            disableModalActions.value = true;
+            useAlertsStore().info(t("AdminProducts.alertUploadingImage"))
             const assets = await handleAssetsUploading(pictures)
             assets.forEach((asset) => { linkAssetToEntry(asset.sys.id) })
             const entry = await createEntry();
@@ -501,10 +508,11 @@ const createProduct = async () => {
         }
         catch (err) {
             useAlertsStore().warning(t("AdminProducts.alertProductCreateError"))
-            console.log(err);
+        } finally {
+            disableModalActions.value = false
         }
 
-    } 
+    }
 }
 
 //uploads the images and creates assets for them then publishes the asset
@@ -581,6 +589,7 @@ const publishAsset = async (asset) => {
 
 const handleDelete = async () => {
     try {
+        disableModalActions.value = true;
         await $contentfulManager.entry.unpublish({
             entryId: selectedProduct.value.sys.id
         })
@@ -588,13 +597,13 @@ const handleDelete = async () => {
             entryId: selectedProduct.value.sys.id
         })
         useAlertsStore().success(t("AdminProducts.alertProductDeleted"))
-    }
-    catch (err) {
-        console.log(err)
-    }
-    finally {
         showFieldsModal.value = false;
         productStore.fetchProducts()
+    }
+    catch (err) {
+        useAlertsStore().error(t("AdminProducts.alertProductDeletionError"))
+    } finally {
+        disableModalActions.value = false
     }
 }
 /*  Since An APi call is made to fetch the product, I chose to fetch all products instead 

@@ -80,6 +80,7 @@ export default {
         alertTypicalError: "حدث خطأ، يرجى التواصل مع فريق التطوير",
         alertLastAssetDeletionError: "لا يمكنك حذف آخر عنصر",
         alertAssetDeletionError: "حدث خطأ أثناء حذف العنصر",
+        alertProductDeletionError: "حدث خطأ أثناء حذف المنتج",
         alertUploadingImage: "جاري رفع الصورة، يرجى الانتظار...",
         alertImageAdded: "تمت إضافة الصورة بنجاح",
         alertImageAddError: "حدث خطأ أثناء إضافة الصورة",
