@@ -453,9 +453,9 @@ const addNewImage = async () => {
     if (picture) {
         try {
             const asset = await handleImageUploading(picture)
-            publishAssetOrEntry(asset.sys.id)
-            const selectedProduct = await $contentfulManager.entry.get({ entryId: selectedProductId.value });
-            const newAssetsArray = selectedProduct.fields.image['en-US'] || [];
+            await publishAsset(asset)
+             selectedProduct.value = await $contentfulManager.entry.get({ entryId: selectedProductId.value });
+            const newAssetsArray = selectedProduct.value.fields.image['en-US'] || [];
             newAssetsArray.push({
                 sys: {
                     id: asset.sys.id,
@@ -463,8 +463,8 @@ const addNewImage = async () => {
                     type: 'Link',
                 }
             })
-            selectedProduct.fields.image['en-US'] = newAssetsArray;
-            await handlePatch(selectedProduct)
+            selectedProduct.value.fields.image['en-US'] = newAssetsArray;
+            await handlePatch()
             useAlertsStore().success("Image added successfully")
         }
         catch (err) {
@@ -477,24 +477,27 @@ const addNewImage = async () => {
 const createProduct = async () => {
     //upload picture > create asset & process it fot all locales
     const isFormValidOrError = validateProductForm();
-    const picture = document.getElementById("product-pic-input").files[0];
-    
-     if (isFormValidOrError !== true) {
+    const pictures = Array.from(document.getElementById("product-pic-input").files);
+
+    if (isFormValidOrError !== true) {
         useAlertsStore().warning(isFormValidOrError)
         return
-    } 
-    else if(!picture) {
+    }
+    else if (!pictures || pictures.length === 0) {
         useAlertsStore().warning("Please upload an image")
         return
     }
     //check if all fields are written then upload then create the entry and upload the image  
-    else if (isFormValidOrError === true) {
+    else if (isFormValidOrError === true && pictures.length) {
 
         try {
-            const asset = await handleImageUploading(picture)
-            linkAssetToEntry(asset.sys.id)
-            const entry = await createEntry(asset.sys.id);
-            publishAssetOrEntry(asset.sys.id, entry.sys.id)
+            const assets = await Promise.all(pictures.map(async (picture) => {
+                return await handleImageUploading(picture)
+            }))
+            assets.forEach((asset) => { linkAssetToEntry(asset.sys.id) })
+            const entry = await createEntry();
+            await Promise.all(assets.map((asset) =>{ publishAsset(asset) }))
+            await publishEntry(entry)
             useAlertsStore().success("Product created successfully")
             showFieldsModal.value = false;
             productStore.fetchProducts()
@@ -547,30 +550,30 @@ const createAsset = async (uploadId, picture) => {
     return asset
 }
 
-const linkAssetToEntry = (assetId)=>{
-        selectedProduct.value.fields.image = {
-        [defaultLocale]: [{
+const linkAssetToEntry = (assetId) => {
+    selectedProduct.value.fields.image[defaultLocale].push(
+        {
             sys: {
                 id: assetId,
                 linkType: 'Asset',
                 type: 'Link',
             }
 
-        }]
-    }
+        })
+
 }
-const createEntry = async () =>  await $contentfulManager.entry.create({ contentTypeId: "product" }, selectedProduct.value)
 
-const publishAssetOrEntry = async (assetId, entryId) => {
-    if (assetId) {
-        const asset = await $contentfulManager.asset.get({ assetId })
-        $contentfulManager.asset.publish({ assetId: asset.sys.id }, asset)
-    }
+const createEntry = async () => await $contentfulManager.entry.create({ contentTypeId: "product" }, selectedProduct.value)
+const publishEntry = async (entry) => {
+    const entryId = entry.sys.id;
+    const res = await $contentfulManager.entry.publish({ entryId }, entry)
+}
+const publishAsset = async (asset) => {
+    //somehow you need to increase the version of the asset by 1 to publish it
+    asset.sys.version = asset.sys.version + 1; 
+    const assetId = asset.sys.id
+    await $contentfulManager.asset.publish({ assetId }, asset)
 
-    if (entryId) {
-        const entry = await $contentfulManager.entry.get({ entryId })
-        $contentfulManager.entry.publish({ entryId: entry.sys.id }, entry)
-    }
 }
 
 
