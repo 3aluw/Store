@@ -192,7 +192,6 @@ onMounted(async () => {
     if (!manageContentType.object?.fields) await manageContentType.set("product")
     //generate the modal properties from the contentful content type
     modalProperties.value = generateModalProperties(manageContentType.object?.fields);
-    console.log(manageContentType.object?.fields, modalProperties.value);
 })
 
 
@@ -285,15 +284,24 @@ const defaultLocale = manageLocale.defaultLocale
 const handleFieldsModal = async (id) => {
     //if the id is provided, it means we are editing an existing product
     //if not, we are creating a new product
+
+    const blankEntry = createBlankProductEntry()
+
     if (id) {
         selectedProduct.value = await $contentfulManager.entry.get({ entryId: id });
+        console.log('selectedProduct.value: ', selectedProduct.value);
+        for (const key in blankEntry) {
+            if (!(key in selectedProduct.value.fields)) {
+                selectedProduct.value.fields[key] = blankEntry[key];
+            }
+        }
         existingProduct.value = true
     }
     else {
         existingProduct.value = false
         selectedProduct.value = {}
         selectedProduct.value.fields = {}
-        selectedProduct.value.fields = createBlankProductEntry()
+        selectedProduct.value.fields = blankEntry
     }
 
     showFieldsModal.value = true
@@ -334,7 +342,6 @@ const handlePatch = async () => {
         useAlertsStore().success("product updated!")
     }
     catch (err) {
-        console.log(err);
         useAlertsStore().error("An error occurred, please contact the dev team")
     }
     finally {
@@ -452,7 +459,9 @@ const addNewImage = async () => {
 
     if (pictures.length !== 0) {
         try {
+            useAlertsStore().info("Uploading image, please wait...")
             const assets = await handleAssetsUploading(pictures)
+            showAssetsModal.value = false
             selectedProduct.value = await $contentfulManager.entry.get({ entryId: selectedProductId.value });
             assets.forEach((asset) => { linkAssetToEntry(asset.sys.id) })
             await handlePatch()
@@ -482,7 +491,7 @@ const createProduct = async () => {
     else if (isFormValidOrError === true && pictures.length) {
 
         try {
-         const assets = await handleAssetsUploading(pictures)
+            const assets = await handleAssetsUploading(pictures)
             assets.forEach((asset) => { linkAssetToEntry(asset.sys.id) })
             const entry = await createEntry();
             await publishEntry(entry)
@@ -574,9 +583,13 @@ const publishAsset = async (asset) => {
 
 const handleDelete = async () => {
     try {
+        await $contentfulManager.entry.unpublish({
+            entryId: selectedProduct.value.sys.id
+        })
         await $contentfulManager.entry.delete({
             entryId: selectedProduct.value.sys.id
         })
+        useAlertsStore().success("Product deleted successfully")
     }
     catch (err) {
         console.log(err)
@@ -614,7 +627,6 @@ const patchCategories = () => {
         showCategoriesModal.value = false
     }
     catch (err) {
-        console.log(err);
         useAlertsStore().error("categories didn't get updated")
     }
 }
