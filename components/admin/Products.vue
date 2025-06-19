@@ -107,8 +107,8 @@
                         </figure>
                         <div class="card-body items-center text-center">
                             <div class="card-actions">
-                                <label class="btn btn-primary" for="add-product-pic-input">upload new</label>
-                                <input id="add-product-pic-input" type="file" accept="image/*" @input="addNewImage"
+                                <label class="btn btn-primary" for="product-pic-input">upload new</label>
+                                <input id="product-pic-input" type="file" accept="image/*" multiple @input="addNewImage"
                                     class="file-input file-input-primary w-full max-w-xs " style="display: none" />
                             </div>
                         </div>
@@ -448,22 +448,13 @@ const deleteAsset = async (assetId) => {
 
 
 const addNewImage = async () => {
-    const picture = document.getElementById("add-product-pic-input").files[0];
+    const pictures = Array.from(document.getElementById("product-pic-input").files);
 
-    if (picture) {
+    if (pictures.length !== 0) {
         try {
-            const asset = await handleImageUploading(picture)
-            await publishAsset(asset)
-             selectedProduct.value = await $contentfulManager.entry.get({ entryId: selectedProductId.value });
-            const newAssetsArray = selectedProduct.value.fields.image['en-US'] || [];
-            newAssetsArray.push({
-                sys: {
-                    id: asset.sys.id,
-                    linkType: 'Asset',
-                    type: 'Link',
-                }
-            })
-            selectedProduct.value.fields.image['en-US'] = newAssetsArray;
+            const assets = await handleAssetsUploading(pictures)
+            selectedProduct.value = await $contentfulManager.entry.get({ entryId: selectedProductId.value });
+            assets.forEach((asset) => { linkAssetToEntry(asset.sys.id) })
             await handlePatch()
             useAlertsStore().success("Image added successfully")
         }
@@ -491,12 +482,9 @@ const createProduct = async () => {
     else if (isFormValidOrError === true && pictures.length) {
 
         try {
-            const assets = await Promise.all(pictures.map(async (picture) => {
-                return await handleImageUploading(picture)
-            }))
+         const assets = await handleAssetsUploading(pictures)
             assets.forEach((asset) => { linkAssetToEntry(asset.sys.id) })
             const entry = await createEntry();
-            await Promise.all(assets.map((asset) =>{ publishAsset(asset) }))
             await publishEntry(entry)
             useAlertsStore().success("Product created successfully")
             showFieldsModal.value = false;
@@ -504,6 +492,7 @@ const createProduct = async () => {
         }
         catch (err) {
             useAlertsStore().warning("A problem occurred while creating the product")
+            console.log(err);
         }
 
     } else {
@@ -511,11 +500,17 @@ const createProduct = async () => {
     }
 }
 
+//uploads the images and creates assets for them then publishes the asset
+const handleAssetsUploading = async (pictures) => {
 
-const handleImageUploading = async (image) => {
-    const uploadId = await uploadPicture(image)
-    const asset = await createAsset(uploadId, image)
-    return asset
+    const assets = await Promise.all(pictures.map(async (picture) => {
+        const uploadId = await uploadPicture(picture)
+        const asset = await createAsset(uploadId, picture)
+        return asset
+    }))
+
+    await Promise.all(assets.map((asset) => { publishAsset(asset) }))
+    return assets
 }
 
 const uploadPicture = async (picture) => {
@@ -570,7 +565,7 @@ const publishEntry = async (entry) => {
 }
 const publishAsset = async (asset) => {
     //somehow you need to increase the version of the asset by 1 to publish it
-    asset.sys.version = asset.sys.version + 1; 
+    asset.sys.version = asset.sys.version + 1;
     const assetId = asset.sys.id
     await $contentfulManager.asset.publish({ assetId }, asset)
 
