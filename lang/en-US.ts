@@ -67,6 +67,21 @@ export default {
         addSomeHotness: "Add some hotness to your cold food!",
 
     },
+    AdminProducts: {
+        alertProductUpdated: "Product updated!",
+        alertTypicalError: "An error occurred, please contact the dev team",
+        alertLastAssetDeletionError: "You can't delete the last asset",
+        alertAssetDeletionError: "An error occurred while deleting the asset",
+        alertUploadingImage: "Uploading image, please wait...",
+        alertImageAdded: "Image added successfully",
+        alertImageAddError: "An error occurred while adding the image",
+        alertImageRequired: "Please upload an image",
+        alertProductCreated: "Product created successfully",
+        alertProductCreateError: "A problem occurred while creating the product",
+        alertProductDeleted: "Product deleted successfully",
+        alertCategoriesUpdated: "Categories are updated",
+        alertCategoriesNotUpdated: "Categories didn't get updated"
+    },
 
 
     //PAGES:
@@ -86,11 +101,11 @@ export default {
         shippingCost: "shipping cost",
         total: "Total",
         cartIsEmpty: "Cart is empty...",
-    } ,
-     ProductPage: {
-            productDescription: "Product description",
-            similarProducts : "Similar products",
-        }
-    
+    },
+    ProductPage: {
+        productDescription: "Product description",
+        similarProducts: "Similar products",
+    }
+
 
 }

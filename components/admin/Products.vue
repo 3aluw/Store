@@ -171,7 +171,7 @@
 </template>
 <script setup>
 
-
+const { t } = useI18n()
 const { $contentfulManager } = useNuxtApp();
 const Contentful = useContentful();
 const manageContentType = Contentful.management.contentType
@@ -288,19 +288,19 @@ const handleFieldsModal = async (id) => {
     const blankEntry = createBlankProductEntry()
 
     if (id) {
+        existingProduct.value = true
+        //blank properties are not returned from contentful; SO we add them from the blank entry
         selectedProduct.value = await $contentfulManager.entry.get({ entryId: id });
-        console.log('selectedProduct.value: ', selectedProduct.value);
         for (const key in blankEntry) {
             if (!(key in selectedProduct.value.fields)) {
                 selectedProduct.value.fields[key] = blankEntry[key];
             }
         }
-        existingProduct.value = true
+        
     }
     else {
         existingProduct.value = false
-        selectedProduct.value = {}
-        selectedProduct.value.fields = {}
+        selectedProduct.value = {fields: {}}
         selectedProduct.value.fields = blankEntry
     }
 
@@ -339,10 +339,10 @@ const handlePatch = async () => {
             entryId: productObj.sys.id
         }, productObj)
 
-        useAlertsStore().success("product updated!")
+        useAlertsStore().success(t("AdminProducts.alertProductUpdated"));
     }
     catch (err) {
-        useAlertsStore().error("An error occurred, please contact the dev team")
+        useAlertsStore().error(t("AdminProducts.alertTypicalError"))
     }
     finally {
         showFieldsModal.value = false;
@@ -427,7 +427,7 @@ const handleAssetsModal = async (id) => {
 const unlinkAsset = async (assetId) => {
     const assetsArray = productStore.products.find((product) => product.sys.id === selectedProductId.value).fields.image
     if (assetsArray.length === 1) {
-        useAlertsStore().warning("You can't delete the last asset")
+        useAlertsStore().warning(t("AdminProducts.alertLastAssetDeletionError"))
         return
     }
 
@@ -448,7 +448,7 @@ const deleteAsset = async (assetId) => {
 
     catch (err) {
         console.log(err);
-        useAlertsStore().error("An error occurred while deleting the asset")
+        useAlertsStore().error(t("AdminProducts.alertAssetDeletionError"))
     }
 
 }
@@ -459,16 +459,16 @@ const addNewImage = async () => {
 
     if (pictures.length !== 0) {
         try {
-            useAlertsStore().info("Uploading image, please wait...")
+            useAlertsStore().info(t("AdminProducts.alertUploadingImage"))
             const assets = await handleAssetsUploading(pictures)
             showAssetsModal.value = false
             selectedProduct.value = await $contentfulManager.entry.get({ entryId: selectedProductId.value });
             assets.forEach((asset) => { linkAssetToEntry(asset.sys.id) })
             await handlePatch()
-            useAlertsStore().success("Image added successfully")
+            useAlertsStore().success(t("AdminProducts.alertImageAdded"))
         }
         catch (err) {
-            useAlertsStore().error("An error occurred while adding the image")
+            useAlertsStore().error(t("AdminProducts.alertImageAddError"))
         }
     }
 }
@@ -484,7 +484,7 @@ const createProduct = async () => {
         return
     }
     else if (!pictures || pictures.length === 0) {
-        useAlertsStore().warning("Please upload an image")
+        useAlertsStore().warning(t("AdminProducts.alertImageRequired"))
         return
     }
     //check if all fields are written then upload then create the entry and upload the image  
@@ -495,18 +495,16 @@ const createProduct = async () => {
             assets.forEach((asset) => { linkAssetToEntry(asset.sys.id) })
             const entry = await createEntry();
             await publishEntry(entry)
-            useAlertsStore().success("Product created successfully")
+            useAlertsStore().success(t("AdminProducts.alertProductCreated"));
             showFieldsModal.value = false;
             productStore.fetchProducts()
         }
         catch (err) {
-            useAlertsStore().warning("A problem occurred while creating the product")
+            useAlertsStore().warning(t("AdminProducts.alertProductCreateError"))
             console.log(err);
         }
 
-    } else {
-        useAlertsStore().warning("All fields are required")
-    }
+    } 
 }
 
 //uploads the images and creates assets for them then publishes the asset
@@ -589,7 +587,7 @@ const handleDelete = async () => {
         await $contentfulManager.entry.delete({
             entryId: selectedProduct.value.sys.id
         })
-        useAlertsStore().success("Product deleted successfully")
+        useAlertsStore().success(t("AdminProducts.alertProductDeleted"))
     }
     catch (err) {
         console.log(err)
@@ -623,11 +621,11 @@ const patchCategories = () => {
     contentType.value.fields.find(field => field.id === "category").items.validations[0].in = categories.value
     try {
         $contentfulManager.contentType.update({ "contentTypeId": "product" }, contentType.value)
-        useAlertsStore().success("categories are updated")
+        useAlertsStore().success(t("AdminProducts.alertCategoriesUpdated"))
         showCategoriesModal.value = false
     }
     catch (err) {
-        useAlertsStore().error("categories didn't get updated")
+        useAlertsStore().error(t("AdminProducts.alertCategoriesNotUpdated"))
     }
 }
 
