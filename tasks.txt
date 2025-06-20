@@ -22,3 +22,6 @@ prevent the loginUsingLocalStorage from running on every mount...instead store t
 
 TASK 6 
 improve placing orders on handleOrder function on cart component by using PromiseALl or an other better method
+
+TASK 7 IMPORTANT: 
+save only product IDs in Deskree

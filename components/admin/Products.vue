@@ -611,17 +611,17 @@ const handleDelete = async () => {
             entryId: selectedProduct.value.sys.id
         })
         const entryAssetsIds = selectedProduct.value.fields.image[defaultLocale].map(asset => asset.sys.id)
-        entryAssetsIds.forEach(assetId => {deleteAsset(assetId)})
-            alertsStore.success(t("AdminProducts.alertProductDeleted"))
-            showFieldsModal.value = false;
-            productStore.fetchProducts()
-        }
-    catch (err) {
-            alertsStore.error(t("AdminProducts.alertProductDeletionError"))
-        } finally {
-            disableModalActions.value = false
-        }
+        entryAssetsIds.forEach(assetId => { deleteAsset(assetId) })
+        alertsStore.success(t("AdminProducts.alertProductDeleted"))
+        showFieldsModal.value = false;
+        productStore.fetchProducts()
     }
+    catch (err) {
+        alertsStore.error(t("AdminProducts.alertProductDeletionError"))
+    } finally {
+        disableModalActions.value = false
+    }
+}
 /*  Since An APi call is made to fetch the product, I chose to fetch all products instead 
 const updateProductLocally = async (productId, isNewProduct) => {
     const productIndex = productStore.products.findIndex(product => product.sys.id === productId);
@@ -635,24 +635,32 @@ const updateProductLocally = async (productId, isNewProduct) => {
  */
 //categories logic
 const showCategoriesModal = ref(false);
-    const categories = ref([])
-    const contentType = ref()
-    const openCategoriesModal = async () => {
-        contentType.value = await $contentfulManager.contentType.get({ "contentTypeId": "product" })
-        categories.value = [...contentType.value.fields.find(field => field.id === "category").items.validations[0].in]
-        showCategoriesModal.value = !showCategoriesModal.value;
+const categories = ref([])
+
+const openCategoriesModal = async () => {
+    const contentType = manageContentType.object
+    const field = contentType?.fields.find(field => field.id === "category");
+
+    if (field?.items?.validations?.[0]) {
+        categories.value = field.items.validations[0].in
     }
-    const patchCategories = () => {
-        contentType.value.fields.find(field => field.id === "category").items.validations[0].in = categories.value
-        try {
-            $contentfulManager.contentType.update({ "contentTypeId": "product" }, contentType.value)
-            alertsStore.success(t("AdminProducts.alertCategoriesUpdated"))
-            showCategoriesModal.value = false
-        }
-        catch (err) {
-            alertsStore.error(t("AdminProducts.alertCategoriesNotUpdated"))
-        }
+    showCategoriesModal.value = !showCategoriesModal.value;
+}
+const patchCategories = async () => {
+    let contentType = manageContentType.object;
+
+    try {
+        contentType = manageContentType.object = await $contentfulManager.contentType.update(
+            { contentTypeId: "product" },
+            contentType
+        );
+        modalProperties.value = generateModalProperties(contentType?.fields);
+        alertsStore.success(t("AdminProducts.alertCategoriesUpdated"));
+        showCategoriesModal.value = false;
+    } catch (err) {
+        alertsStore.error(t("AdminProducts.alertCategoriesNotUpdated"));
     }
+}
 
 </script>
 <style scoped>
