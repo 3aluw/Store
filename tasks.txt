@@ -25,3 +25,6 @@ improve placing orders on handleOrder function on cart component by using Promis
 
 TASK 7 IMPORTANT: 
 save only product IDs in Deskree
+
+TASK 8 : 
+create a multiselect element in Admin > products > template. create the element and link it to selectedProduct variable

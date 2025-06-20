@@ -36,7 +36,7 @@
                             </select>
 
                             <div v-else-if="property.HTMLElement === 'chips'"
-                                class="categories flex flex-col flex-wrap gap-2">
+                                class="flex flex-col flex-wrap gap-2">
                                 <div class="flex flex-wrap gap-2">
                                     <div v-for="(item, index) in modalBind(property).value"
                                         class="btn btn-sm  btn-outline normal-case gap-2 cursor-default ">
@@ -49,6 +49,8 @@
                                     class="input input-bordered max-w-xs my-4"
                                     @keyup.enter="(e) => { selectedProduct.fields[property.value][property.localized ? selectedLocale : defaultLocale].push(e.target.value); e.target.value = '' }" />
                             </div>
+                            <div v-else-if="property.HTMLElement === 'multiselect'" class="multiselect"> unCreated element </div>
+
                             <!--upload an image (only available for new products)-->
                             <label class="block pt-4 pb-2"
                                 v-else-if="!existingProduct && property.HTMLElement === 'imageInput'">
