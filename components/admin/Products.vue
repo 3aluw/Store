@@ -519,19 +519,19 @@ const createProduct = async () => {
 const handleAssetsUploading = async (pictures) => {
 
 
-  // Step 1: Upload all pictures in parallel
-  const uploadIds = await Promise.all(
-  pictures.map((picture, index) =>
-    uploadPicture(picture).then((uploadId) => {
-      useAlertsStore().info(`${t("AdminProducts.alertImageUploaded")} ${index + 1 }`);
-      return uploadId;
-    })
-  )
-);
+    // Step 1: Upload all pictures in parallel
+    const uploadIds = await Promise.all(
+        pictures.map((picture, index) =>
+            uploadPicture(picture).then((uploadId) => {
+                useAlertsStore().info(`${t("AdminProducts.alertImageUploaded")} ${index + 1}`);
+                return uploadId;
+            })
+        )
+    );
     // Step 2: Create and process assets in parallel
-  const assets = await Promise.all(uploadIds.map((uploadId, i) =>
-    createAsset(uploadId, pictures[i])
-  ));
+    const assets = await Promise.all(uploadIds.map((uploadId, i) =>
+        createAsset(uploadId, pictures[i])
+    ));
     assets.forEach(asset => {
         publishAsset(asset).catch(err => {
             console.error(`Failed to publish asset ${asset.sys.id}:`, err);
@@ -609,16 +609,18 @@ const handleDelete = async () => {
         await $contentfulManager.entry.delete({
             entryId: selectedProduct.value.sys.id
         })
-        useAlertsStore().success(t("AdminProducts.alertProductDeleted"))
-        showFieldsModal.value = false;
-        productStore.fetchProducts()
-    }
+        const entryAssetsIds = selectedProduct.value.fields.image[defaultLocale].map(asset => asset.sys.id)
+        entryAssetsIds.forEach(assetId => {deleteAsset(assetId)})
+            useAlertsStore().success(t("AdminProducts.alertProductDeleted"))
+            showFieldsModal.value = false;
+            productStore.fetchProducts()
+        }
     catch (err) {
-        useAlertsStore().error(t("AdminProducts.alertProductDeletionError"))
-    } finally {
-        disableModalActions.value = false
+            useAlertsStore().error(t("AdminProducts.alertProductDeletionError"))
+        } finally {
+            disableModalActions.value = false
+        }
     }
-}
 /*  Since An APi call is made to fetch the product, I chose to fetch all products instead 
 const updateProductLocally = async (productId, isNewProduct) => {
     const productIndex = productStore.products.findIndex(product => product.sys.id === productId);
@@ -632,24 +634,24 @@ const updateProductLocally = async (productId, isNewProduct) => {
  */
 //categories logic
 const showCategoriesModal = ref(false);
-const categories = ref([])
-const contentType = ref()
-const openCategoriesModal = async () => {
-    contentType.value = await $contentfulManager.contentType.get({ "contentTypeId": "product" })
-    categories.value = [...contentType.value.fields.find(field => field.id === "category").items.validations[0].in]
-    showCategoriesModal.value = !showCategoriesModal.value;
-}
-const patchCategories = () => {
-    contentType.value.fields.find(field => field.id === "category").items.validations[0].in = categories.value
-    try {
-        $contentfulManager.contentType.update({ "contentTypeId": "product" }, contentType.value)
-        useAlertsStore().success(t("AdminProducts.alertCategoriesUpdated"))
-        showCategoriesModal.value = false
+    const categories = ref([])
+    const contentType = ref()
+    const openCategoriesModal = async () => {
+        contentType.value = await $contentfulManager.contentType.get({ "contentTypeId": "product" })
+        categories.value = [...contentType.value.fields.find(field => field.id === "category").items.validations[0].in]
+        showCategoriesModal.value = !showCategoriesModal.value;
     }
-    catch (err) {
-        useAlertsStore().error(t("AdminProducts.alertCategoriesNotUpdated"))
+    const patchCategories = () => {
+        contentType.value.fields.find(field => field.id === "category").items.validations[0].in = categories.value
+        try {
+            $contentfulManager.contentType.update({ "contentTypeId": "product" }, contentType.value)
+            useAlertsStore().success(t("AdminProducts.alertCategoriesUpdated"))
+            showCategoriesModal.value = false
+        }
+        catch (err) {
+            useAlertsStore().error(t("AdminProducts.alertCategoriesNotUpdated"))
+        }
     }
-}
 
 </script>
 <style scoped>
