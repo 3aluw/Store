@@ -11,34 +11,32 @@
         <!--fields modal-->
         <div class="modal" :class="{ 'modal-open': showFieldsModal }" v-if="showFieldsModal">
             <div class="modal-box text-center">
-                <div class="dropdown dropdown-hover mt-4">
-                    <label tabindex="0" class="btn m-1">Language</label>
-                    <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
-                        <li><a @click="selectedLocale = 'en-US'">English</a></li>
-                        <li><a @click="selectedLocale = 'ar-SA'">Arabic</a></li>
-                    </ul>
-                </div>
+
+                <select class="select max-w-xs shadow bg-base-100 rounded-box w-52 mt-2 mb-8" v-model="selectedLocale">
+                    <option disabled selected>Select language</option>
+                    <option v-for="locale in manageLocale.availableLocalesCodes" :key="locale" :value="locale">{{
+                        manageLocale.localeNames[locale] }}</option>
+                </select>
                 <table class="table table-compact w-full">
                     <tbody>
                         <tr v-for="property in modalProperties">
                             <td>{{ property.name }}</td>
-                            <input v-if="property.HTMLElement === 'input'" placeholder="Type: here"
+                            <input v-if="property.HTMLElement === 'input'" placeholder="Type here"
                                 class="input input-bordered w-full max-w-xs input-sm my-2"
                                 :type="property.type === 'number' ? 'number' : 'text'"
-                                v-model="modalBind(property).value" /> 
-                                <textarea v-else-if="property.HTMLElement === 'textarea'" placeholder="Type here" rows="6"
+                                v-model="modalBind(property).value" />
+                            <textarea v-else-if="property.HTMLElement === 'textarea'" placeholder="Type here" rows="6"
                                 class="textarea textarea-bordered textarea-md w-full max-w-xs"
                                 v-model="modalBind(property).value"></textarea>
                             <select class="select select-bordered w-full max-w-xs"
-                                v-else-if="property.HTMLElement === 'dropdown'"
-                                v-model="modalBind(property).value[0]"
+                                v-else-if="property.HTMLElement === 'dropdown'" v-model="modalBind(property).value[0]"
                                 :id="property.name">
-                                <option disabled value="">Select...</option>
+                                <option disabled value="">{{ $t('Buttons.select') }}</option>
                                 <option v-for="item in property.items" :key="item" :value="item">{{ item }}</option>
                             </select>
-                       
+
                             <div v-else-if="property.HTMLElement === 'chips'"
-                                class="categories flex flex-col flex-wrap gap-2">
+                                class="flex flex-col flex-wrap gap-2">
                                 <div class="flex flex-wrap gap-2">
                                     <div v-for="(item, index) in modalBind(property).value"
                                         class="btn btn-sm  btn-outline normal-case gap-2 cursor-default ">
@@ -51,9 +49,12 @@
                                     class="input input-bordered max-w-xs my-4"
                                     @keyup.enter="(e) => { selectedProduct.fields[property.value][property.localized ? selectedLocale : defaultLocale].push(e.target.value); e.target.value = '' }" />
                             </div>
+                            <div v-else-if="property.HTMLElement === 'multiselect'" class="multiselect"> unCreated element </div>
+
                             <!--upload an image (only available for new products)-->
-                            <label class="block pt-4 pb-2" v-else-if="!existingProduct && property.HTMLElement === 'imageInput'">
-                                <input id="product-pic-input" type="file"
+                            <label class="block pt-4 pb-2"
+                                v-else-if="!existingProduct && property.HTMLElement === 'imageInput'">
+                                <input id="product-pic-input" type="file" multiple accept="image/*"
                                     class="file-input file-input-success w-full max-w-xs mt-2" /></label>
                             <td></td>
                         </tr>
@@ -63,24 +64,25 @@
 
                 <div class="modal-action">
                     <button class="btn" @click="showFieldsModal = false">
-                        cancel
+                        {{ $t('Buttons.cancel') }}
                     </button>
                     <!--existingProduct buttons-->
-                    <button v-if="existingProduct" class="btn" @click="handlePatch()">
+                    <button :disabled="disableModalActions" v-if="existingProduct" class="btn" @click="handlePatch()">
 
-                        <span class="pl-2">apply changes</span>
+                        <span class="pl-2">{{ $t('Buttons.applyChanges') }}</span>
                     </button>
-                    <button v-if="existingProduct" class="btn  btn-error" @click="handleDelete">
+                    <button :disabled="disableModalActions" v-if="existingProduct" class="btn  btn-error"
+                        @click="handleDelete">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path
                                 d="M10 11V17M14 11V17M4 7H20M19 7L18.133 19.142C18.0971 19.6466 17.8713 20.1188 17.5011 20.4636C17.1309 20.8083 16.6439 21 16.138 21H7.862C7.35614 21 6.86907 20.8083 6.49889 20.4636C6.1287 20.1188 5.90292 19.6466 5.867 19.142L5 7H19ZM15 7V4C15 3.73478 14.8946 3.48043 14.7071 3.29289C14.5196 3.10536 14.2652 3 14 3H10C9.73478 3 9.48043 3.10536 9.29289 3.29289C9.10536 3.48043 9 3.73478 9 4V7H15Z"
                                 stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
-                        <span class="pl-2">delete product</span>
+                        <span class="pl-2">{{ $t('Buttons.deleteProduct') }}</span>
                     </button>
                     <!--newProducts buttons-->
-                    <button v-if="!existingProduct" class="btn" @click="createProduct">
-                        <span class="pl-2">create product</span>
+                    <button :disabled="disableModalActions" v-if="!existingProduct" class="btn" @click="createProduct">
+                        <span class="pl-2">{{ $t('Buttons.createProduct') }}</span>
                     </button>
                 </div>
             </div>
@@ -98,7 +100,8 @@
                         </figure>
                         <div class="card-body items-center text-center">
                             <div class="card-actions">
-                                <button class="btn btn-primary" @click="unlinkAsset(asset.sys.id)">delete</button>
+                                <button class="btn btn-primary" @click="unlinkAsset(asset.sys.id)">{{
+                                    $t('Buttons.delete') }}</button>
                             </div>
                         </div>
                     </div>
@@ -108,8 +111,9 @@
                         </figure>
                         <div class="card-body items-center text-center">
                             <div class="card-actions">
-                                <label class="btn btn-primary" for="add-product-pic-input">upload new</label>
-                                <input id="add-product-pic-input" type="file" accept="image/*" @input="addNewImage"
+                                <label class="btn btn-primary max-w-full" for="product-pic-input">{{
+                                    $t('Buttons.uploadImage') }}</label>
+                                <input id="product-pic-input" type="file" accept="image/*" multiple @input="addNewImage"
                                     class="file-input file-input-primary w-full max-w-xs " style="display: none" />
                             </div>
                         </div>
@@ -119,7 +123,7 @@
                 </div>
                 <div class="modal-action">
                     <button class="btn" @click="showAssetsModal = false">
-                        cancel
+                        {{ $t('Buttons.cancel') }}
                     </button>
                 </div>
             </div>
@@ -142,8 +146,8 @@
             </label>
             <ul tabindex="0"
                 class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 border border-slate-300">
-                <li><a @click="handleFieldsModal(undefined)">Add a product</a></li>
-                <li><a @click="openCategoriesModal">manage categories</a></li>
+                <li><a @click="handleFieldsModal(undefined)">{{ $t('AdminProducts.addProduct') }}</a></li>
+                <li><a @click="openCategoriesModal">{{ $t('AdminProducts.manageCategories') }}</a></li>
             </ul>
         </div>
 
@@ -172,9 +176,10 @@
 </template>
 <script setup>
 
-
+const { t } = useI18n()
 const { $contentfulManager } = useNuxtApp();
 const Contentful = useContentful();
+const alertsStore = useAlertsStore()
 const manageContentType = Contentful.management.contentType
 const manageLocale = Contentful.management.locale
 const manageEntry = Contentful.management.entry
@@ -184,7 +189,6 @@ const manageAsset = Contentful.management.asset
 const productStore = useProductStore();
 if (productStore.products.length === 0) useAsyncData("products", async () => productStore.fetchProducts());
 
-
 //fields modal logic
 const showFieldsModal = ref(false)
 const modalProperties = ref([])
@@ -193,7 +197,6 @@ onMounted(async () => {
     if (!manageContentType.object?.fields) await manageContentType.set("product")
     //generate the modal properties from the contentful content type
     modalProperties.value = generateModalProperties(manageContentType.object?.fields);
-    console.log(manageContentType.object?.fields, modalProperties.value);
 })
 
 
@@ -234,7 +237,7 @@ const generateModalProperties = (fields) => {
             const validationItems = items?.validations?.find(v => v.in)?.in;
             const max = validations?.find(v => v.size?.max)?.size?.max;
             if (validationItems) prop.items = validationItems;
-            
+
             if (id === "image") {
                 prop.HTMLElement = 'imageInput';
             }
@@ -255,7 +258,7 @@ const generateModalProperties = (fields) => {
 
 
 const createBlankProductEntry = () => {
-    const locales = manageLocale.availableLocales
+    const locales = manageLocale.availableLocalesCodes
     const defaultLocale = manageLocale.defaultLocale
     const typeMap = Object.fromEntries(types.map(t => [t.TypeName.toLowerCase(), t.defaultValue]));
     const entry = {};
@@ -286,15 +289,24 @@ const defaultLocale = manageLocale.defaultLocale
 const handleFieldsModal = async (id) => {
     //if the id is provided, it means we are editing an existing product
     //if not, we are creating a new product
+
+    const blankEntry = createBlankProductEntry()
+
     if (id) {
-        selectedProduct.value = await $contentfulManager.entry.get({ entryId: id });
         existingProduct.value = true
+        //blank properties are not returned from contentful; SO we add them from the blank entry
+        selectedProduct.value = await $contentfulManager.entry.get({ entryId: id });
+        for (const key in blankEntry) {
+            if (!(key in selectedProduct.value.fields)) {
+                selectedProduct.value.fields[key] = blankEntry[key];
+            }
+        }
+
     }
     else {
         existingProduct.value = false
-        selectedProduct.value = {}
-        selectedProduct.value.fields = {}
-        selectedProduct.value.fields = createBlankProductEntry()
+        selectedProduct.value = { fields: {} }
+        selectedProduct.value.fields = blankEntry
     }
 
     showFieldsModal.value = true
@@ -302,23 +314,23 @@ const handleFieldsModal = async (id) => {
 }
 // function uses a writable computed property to bind the modal inputs to the selected product fields
 function modalBind(property) {
-  return computed({
-    get() {
-      const field = selectedProduct.value.fields[property.value];
-      const locale = property.localized ? selectedLocale.value : defaultLocale;
-      return field?.[locale];
-    },
-    set(newValue) {
-      const locale = property.localized ? selectedLocale.value : defaultLocale;
-      selectedProduct.value.fields[property.value][locale] = newValue;
-    }
-  });
+    return computed({
+        get() {
+            const field = selectedProduct.value.fields[property.value];
+            const locale = property.localized ? selectedLocale.value : defaultLocale;
+            return field?.[locale];
+        },
+        set(newValue) {
+            const locale = property.localized ? selectedLocale.value : defaultLocale;
+            selectedProduct.value.fields[property.value][locale] = newValue;
+        }
+    });
 }
 
 const handlePatch = async () => {
     const isFormValidOrError = validateProductForm();
     if (isFormValidOrError !== true) {
-        useAlertsStore().warning(isFormValidOrError)
+        alertsStore.warning(isFormValidOrError)
         return
     }
     try {
@@ -332,74 +344,75 @@ const handlePatch = async () => {
             entryId: productObj.sys.id
         }, productObj)
 
-        useAlertsStore().success("product updated!")
+        alertsStore.success(t("AdminProducts.alertProductUpdated"));
     }
     catch (err) {
-        console.log(err);
-        useAlertsStore().error("An error occurred, please contact the dev team")
+        alertsStore.error(t("AdminProducts.alertTypicalError"))
     }
     finally {
         showFieldsModal.value = false;
-        showAssetsModal.value = false;
         productStore.products = []
         productStore.fetchProducts()
     }
 }
 
+// Helper function to check if a value is empty
 function isValueEmpty(val) {
-  if (val == null) return true;
-  if (typeof val === 'string') return val.trim() === '';
-  if (Array.isArray(val)) return val.length === 0;
-  if (typeof val === 'object' && !Array.isArray(val)) return Object.keys(val).length === 0;
-  return false;
+    if (val == null) return true;
+    if (typeof val === 'string') return val.trim() === '';
+    if (Array.isArray(val)) return val.length === 0;
+    if (typeof val === 'object' && !Array.isArray(val)) return Object.keys(val).length === 0;
+    return false;
 }
 
+// checks the product form for validity Except for image which is validated separately
+//returns true if the product form is valid, otherwise returns an error message (string)
 const validateProductForm = () => {
-    const availableLocales = manageLocale.availableLocales
+    const availableLocales = manageLocale.availableLocalesCodes
     const requiredLocales = manageLocale.requiredLocales
-     const typesMap = Object.fromEntries(types.map(t => [t.TypeName.toLowerCase(), t.defaultValue]));
+    const typesMap = Object.fromEntries(types.map(t => [t.TypeName.toLowerCase(), t.defaultValue]));
+    const propertiesExcludingImage = modalProperties.value.filter(p => p.HTMLElement !== 'imageInput')
+    for (const property of propertiesExcludingImage) {
+        const { value: fieldName, required, localized, type, items, validations = [] } = property;
+        const localesToCheck = localized ? availableLocales : [defaultLocale];
+        const fieldData = selectedProduct.value.fields[fieldName];
+        const inValidation = items?.validations?.find(v => v.in);
+        const sizeValidation = validations.find(v => v.size?.max);
+        const expectedType = type !== 'array' ? typeof typesMap[type] : null;
 
-  for (const property of modalProperties.value) {
-    const { value: fieldName, required, localized, type, items, validations = [] } = property;
-    const localesToCheck = localized ? availableLocales : [defaultLocale];
-    const fieldData = selectedProduct.value.fields[fieldName];
-    const inValidation = items?.validations?.find(v => v.in);
-    const sizeValidation = validations.find(v => v.size?.max);
-    const expectedType = type !== 'array' ? typeof typesMap[type] : null;
+        for (const locale of localesToCheck) {
+            const val = fieldData?.[locale];
 
-    for (const locale of localesToCheck) {
-      const val = fieldData?.[locale];
+            // 1. Required
+            if (required && requiredLocales.includes(locale) && isValueEmpty(val)) {
+                return `${fieldName} field is required (${locale})`;
+            }
 
-      // 1. Required
-       if (required && requiredLocales.includes(locale) && isValueEmpty(val)) {
-        return `${fieldName} field is required (${locale})`;
-      }
+            // 2. "in" validation
+            if (inValidation && Array.isArray(val)) {
+                const invalid = val.filter(item => !inValidation.in.includes(item));
+                if (invalid.length > 0) {
+                    return inValidation.message || `${fieldName} has invalid value(s): ${invalid.join(', ')}`;
+                }
+            }
 
-      // 2. "in" validation
-      if (inValidation && Array.isArray(val)) {
-        const invalid = val.filter(item => !inValidation.in.includes(item));
-        if (invalid.length > 0) {
-          return inValidation.message || `${fieldName} has invalid value(s): ${invalid.join(', ')}`;
+            // 3. size.max
+            if (sizeValidation && Array.isArray(val) && val.length > sizeValidation.size.max) {
+                return sizeValidation.message || `${fieldName} must have at most ${sizeValidation.size.max} item(s)`;
+            }
+
+            // 4. Type check (optional)
+            if (expectedType && val != null && typeof val !== expectedType) {
+                return `${fieldName} must be of type ${expectedType}`;
+            }
         }
-      }
-
-      // 3. size.max
-      if (sizeValidation && Array.isArray(val) && val.length > sizeValidation.size.max) {
-        return sizeValidation.message || `${fieldName} must have at most ${sizeValidation.size.max} item(s)`;
-      }
-
-      // 4. Type check (optional)
-      if (expectedType && val != null && typeof val !== expectedType) {
-        return `${fieldName} must be of type ${expectedType}`;
-      }
     }
-  }
 
-  return true; // ✅ All valid
+    return true; // ✅ All valid
 }
 
 // assets modal logic
-
+const disableModalActions = ref(false)
 const showAssetsModal = ref(false)
 const productAssets = ref([])
 const selectedProductId = ref()
@@ -418,15 +431,19 @@ const handleAssetsModal = async (id) => {
 const unlinkAsset = async (assetId) => {
     const assetsArray = productStore.products.find((product) => product.sys.id === selectedProductId.value).fields.image
     if (assetsArray.length === 1) {
-        useAlertsStore().warning("You can't delete the last asset")
+        alertsStore.warning(t("AdminProducts.alertLastAssetDeletionError"))
         return
     }
 
-    const selectedProduct = await $contentfulManager.entry.get({ entryId: selectedProductId.value });
-    const newAssetsArray = selectedProduct.fields.image['en-US'].filter(asset => asset.sys.id !== assetId)
-    selectedProduct.fields.image['en-US'] = newAssetsArray;
-    await handlePatch(selectedProduct)
+    selectedProduct.value = await $contentfulManager.entry.get({ entryId: selectedProductId.value });
+    const newAssetsArray = selectedProduct.value.fields.image['en-US'].filter(asset => asset.sys.id !== assetId)
+    selectedProduct.value.fields.image[defaultLocale] = newAssetsArray;
+    await handlePatch()
     deleteAsset(assetId)
+    //update product Assets
+    await productStore.fetchProducts()
+    const updatedProduct = productStore.products.find((product) => product.sys.id === selectedProductId.value)
+    productAssets.value = updatedProduct.fields.image
 }
 
 const deleteAsset = async (assetId) => {
@@ -439,34 +456,27 @@ const deleteAsset = async (assetId) => {
 
     catch (err) {
         console.log(err);
-        useAlertsStore().error("An error occurred while deleting the asset")
+        alertsStore.error(t("AdminProducts.alertAssetDeletionError"))
     }
 
 }
 
 
 const addNewImage = async () => {
-    const picture = document.getElementById("add-product-pic-input").files[0];
+    const pictures = Array.from(document.getElementById("product-pic-input").files);
 
-    if (picture) {
+    if (pictures.length !== 0) {
         try {
-            const asset = await handleImageUploading(picture)
-            publishAssetOrEntry(asset.sys.id)
-            const selectedProduct = await $contentfulManager.entry.get({ entryId: selectedProductId.value });
-            const newAssetsArray = selectedProduct.fields.image['en-US'] || [];
-            newAssetsArray.push({
-                sys: {
-                    id: asset.sys.id,
-                    linkType: 'Asset',
-                    type: 'Link',
-                }
-            })
-            selectedProduct.fields.image['en-US'] = newAssetsArray;
-            await handlePatch(selectedProduct)
-            useAlertsStore().success("Image added successfully")
+            alertsStore.info(t("AdminProducts.alertUploadingImage"))
+            const assets = await handleAssetsUploading(pictures)
+            showAssetsModal.value = false
+            selectedProduct.value = await $contentfulManager.entry.get({ entryId: selectedProductId.value });
+            assets.forEach((asset) => { linkAssetToEntry(asset.sys.id) })
+            await handlePatch()
+            alertsStore.success(t("AdminProducts.alertImageAdded"))
         }
         catch (err) {
-            useAlertsStore().error("An error occurred while adding the image")
+            alertsStore.error(t("AdminProducts.alertImageAddError"))
         }
     }
 }
@@ -474,34 +484,64 @@ const addNewImage = async () => {
 
 const createProduct = async () => {
     //upload picture > create asset & process it fot all locales
-    const picture = document.getElementById("product-pic-input").files[0];
-    console.log(validateProductForm());
-    return
+    const isFormValidOrError = validateProductForm();
+    const pictures = Array.from(document.getElementById("product-pic-input").files);
+
+    if (isFormValidOrError !== true) {
+        alertsStore.warning(isFormValidOrError)
+        return
+    }
+    else if (!pictures || pictures.length === 0) {
+        alertsStore.warning(t("AdminProducts.alertImageRequired"))
+        return
+    }
     //check if all fields are written then upload then create the entry and upload the image  
-    if (picture && validateProductForm()) {
+    else if (isFormValidOrError === true && pictures.length) {
 
         try {
-            const asset = await handleImageUploading(picture)
-            const entry = await createEntry(asset.sys.id);
-            publishAssetOrEntry(asset.sys.id, entry.sys.id)
-            useAlertsStore().success("Product created successfully")
+            disableModalActions.value = true;
+            alertsStore.info(t("AdminProducts.alertUploadingImage"))
+            const assets = await handleAssetsUploading(pictures)
+            assets.forEach((asset) => { linkAssetToEntry(asset.sys.id) })
+            const entry = await createEntry();
+            await publishEntry(entry)
+            alertsStore.success(t("AdminProducts.alertProductCreated"));
             showFieldsModal.value = false;
             productStore.fetchProducts()
         }
         catch (err) {
-            useAlertsStore().warning("A problem occurred while creating the product")
+            alertsStore.warning(t("AdminProducts.alertProductCreateError"))
+        } finally {
+            disableModalActions.value = false
         }
 
-    } else {
-        useAlertsStore().warning("All fields are required")
     }
 }
 
+//uploads the images and creates assets for them then publishes the asset
+const handleAssetsUploading = async (pictures) => {
 
-const handleImageUploading = async (image) => {
-    const uploadId = await uploadPicture(image)
-    const asset = await createAsset(uploadId, image)
-    return asset
+
+    // Step 1: Upload all pictures in parallel
+    const uploadIds = await Promise.all(
+        pictures.map((picture, index) =>
+            uploadPicture(picture).then((uploadId) => {
+                alertsStore.info(`${t("AdminProducts.alertImageUploaded")} ${index + 1}`);
+                return uploadId;
+            })
+        )
+    );
+    // Step 2: Create and process assets in parallel
+    const assets = await Promise.all(uploadIds.map((uploadId, i) =>
+        createAsset(uploadId, pictures[i])
+    ));
+    assets.forEach(asset => {
+        publishAsset(asset).catch(err => {
+            console.error(`Failed to publish asset ${asset.sys.id}:`, err);
+        })
+    });
+
+    return assets
 }
 
 const uploadPicture = async (picture) => {
@@ -535,46 +575,53 @@ const createAsset = async (uploadId, picture) => {
     await $contentfulManager.asset.processForAllLocales({ environmentId: "master" }, asset)
     return asset
 }
-const createEntry = async (assetId) => {
-    selectedProduct.value.fields.image = {
-        'en-US': [{
+const publishAsset = async (asset) => {
+    //somehow you need to increase the version of the asset by 1 to publish it
+    asset.sys.version = asset.sys.version + 1;
+    const assetId = asset.sys.id
+    await $contentfulManager.asset.publish({ assetId }, asset)
+
+}
+const linkAssetToEntry = (assetId) => {
+    selectedProduct.value.fields.image[defaultLocale].push(
+        {
             sys: {
                 id: assetId,
                 linkType: 'Asset',
                 type: 'Link',
             }
 
-        }]
-    }
+        })
 
-    const entry = await $contentfulManager.entry.create({ contentTypeId: "product" }, selectedProduct.value)
-    return entry
 }
-const publishAssetOrEntry = async (assetId, entryId) => {
-    if (assetId) {
-        const asset = await $contentfulManager.asset.get({ assetId })
-        $contentfulManager.asset.publish({ assetId: asset.sys.id }, asset)
-    }
 
-    if (entryId) {
-        const entry = await $contentfulManager.entry.get({ entryId })
-        $contentfulManager.entry.publish({ entryId: entry.sys.id }, entry)
-    }
+const createEntry = async () => await $contentfulManager.entry.create({ contentTypeId: "product" }, selectedProduct.value)
+const publishEntry = async (entry) => {
+    const entryId = entry.sys.id;
+    await $contentfulManager.entry.publish({ entryId }, entry)
 }
+
 
 
 const handleDelete = async () => {
     try {
+        disableModalActions.value = true;
+        await $contentfulManager.entry.unpublish({
+            entryId: selectedProduct.value.sys.id
+        })
         await $contentfulManager.entry.delete({
             entryId: selectedProduct.value.sys.id
         })
-    }
-    catch (err) {
-        console.log(err)
-    }
-    finally {
+        const entryAssetsIds = selectedProduct.value.fields.image[defaultLocale].map(asset => asset.sys.id)
+        entryAssetsIds.forEach(assetId => { deleteAsset(assetId) })
+        alertsStore.success(t("AdminProducts.alertProductDeleted"))
         showFieldsModal.value = false;
         productStore.fetchProducts()
+    }
+    catch (err) {
+        alertsStore.error(t("AdminProducts.alertProductDeletionError"))
+    } finally {
+        disableModalActions.value = false
     }
 }
 /*  Since An APi call is made to fetch the product, I chose to fetch all products instead 
@@ -591,22 +638,30 @@ const updateProductLocally = async (productId, isNewProduct) => {
 //categories logic
 const showCategoriesModal = ref(false);
 const categories = ref([])
-const contentType = ref()
+
 const openCategoriesModal = async () => {
-    contentType.value = await $contentfulManager.contentType.get({ "contentTypeId": "product" })
-    categories.value = [...contentType.value.fields.find(field => field.id === "category").items.validations[0].in]
+    const contentType = manageContentType.object
+    const field = contentType?.fields.find(field => field.id === "category");
+
+    if (field?.items?.validations?.[0]) {
+        categories.value = field.items.validations[0].in
+    }
     showCategoriesModal.value = !showCategoriesModal.value;
 }
-const patchCategories = () => {
-    contentType.value.fields.find(field => field.id === "category").items.validations[0].in = categories.value
+const patchCategories = async () => {
+    let contentType = manageContentType.object;
+
     try {
-        $contentfulManager.contentType.update({ "contentTypeId": "product" }, contentType.value)
-        useAlertsStore().success("categories are updated")
-        showCategoriesModal.value = false
-    }
-    catch (err) {
-        console.log(err);
-        useAlertsStore().error("categories didn't get updated")
+        contentType = manageContentType.object = await $contentfulManager.contentType.update(
+            { contentTypeId: "product" },
+            contentType
+        );
+        // te contetType object is updated, update the modal properties
+        modalProperties.value = generateModalProperties(contentType?.fields);
+        alertsStore.success(t("AdminProducts.alertCategoriesUpdated"));
+        showCategoriesModal.value = false;
+    } catch (err) {
+        alertsStore.error(t("AdminProducts.alertCategoriesNotUpdated"));
     }
 }
 

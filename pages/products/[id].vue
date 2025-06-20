@@ -1,7 +1,7 @@
 <script setup>
 import * as marked from "marked";
 import { useCartStore } from "~~/stores/cartStore";
-const { locale, setLocale,localeProperties } = useI18n()
+const { locale, setLocale, localeProperties } = useI18n()
 
 const route = useRoute();
 const productStore = useProductStore();
@@ -9,7 +9,7 @@ const productStore = useProductStore();
 const { data } = await useAsyncData(
   `product${route.params.id}`,
   async () => {
-  await productStore.fetchProduct(route.params.id,localeProperties.value.iso);
+    await productStore.fetchProduct(route.params.id, localeProperties.value.iso);
   },
   {
     pick: ["fields", "sys"],
@@ -28,35 +28,37 @@ function handleAddToCart(product) {
 //product images carousel 
 const productImagesToShow = computed(() => {
   const imagesArray = product.value?.fields.image
-  return imagesArray.length > 4 ? imagesArray.slice(1,5) : imagesArray;
-}); 
+  return imagesArray.length > 4 ? imagesArray.slice(1, 5) : imagesArray;
+});
 const carousel = ref(null);
 const slideTo = (index) => {
-    const carouselElement = carousel.value;
-    const slideWidth = carouselElement.clientWidth ;
-carouselElement.scrollTo({
-      left: slideWidth * index,
-      behavior: 'smooth'
-    });
-  };
+  const carouselElement = carousel.value;
+  const slideWidth = carouselElement.clientWidth;
+  carouselElement.scrollTo({
+    left: slideWidth * index,
+    behavior: 'smooth'
+  });
+};
 
-  // similar products
-  const similarItemsCount = 5;
- if( !productStore.products.length) useAsyncData("products", async () => productStore.fetchProducts());
-  
-  const similarProducts = computed(() => {
-let productsArray = productStore.products;
-   productsArray= excludeCurrentProduct(productsArray);
-  const categoryMatches = getCategoryMatches(productsArray, product.value?.fields?.category[0]);
-  const tagMatches = getTagMatches(productsArray, product.value?.fields?.tags );
- const combinedMatches = Array.from(new Set([
+// similar products
+const similarItemsCount = 5;
+if (!productStore.products.length) useAsyncData("products", async () => productStore.fetchProducts());
+
+const similarProducts = computed(() => {
+  let productsArray = productStore.products;
+  productsArray = excludeCurrentProduct(productsArray);
+  const category = product.value?.fields?.category?.[0];
+  const tags = product.value?.fields?.tags
+  const categoryMatches = category ? getCategoryMatches(productsArray, category) : [];
+  const tagMatches = tags ?  getTagMatches(productsArray, product.value?.fields?.tags) : [];
+  const combinedMatches = Array.from(new Set([
     ...categoryMatches,
     ...tagMatches
   ]));
   const shuffledMatches = shuffle(combinedMatches).slice(0, similarItemsCount);
- const MatchesArray = shuffledMatches.length < similarItemsCount ? addRandomItems(productsArray, shuffledMatches) : shuffledMatches
-return MatchesArray
-  })
+  const MatchesArray = shuffledMatches.length < similarItemsCount ? addRandomItems(productsArray, shuffledMatches) : shuffledMatches
+  return MatchesArray
+})
 
 //exclude the current product from the similar products
 const excludeCurrentProduct = (productsArray) => {
@@ -64,24 +66,24 @@ const excludeCurrentProduct = (productsArray) => {
     (p) => p.sys.id !== product.value?.sys.id
   );
 }
-  // 1. Candidates from same category
-  const getCategoryMatches = (productsArray, category)  =>  productsArray.filter(p => p.fields?.category[0] === category);
+// 1. Candidates from same category
+const getCategoryMatches = (productsArray, category) => productsArray.filter(p => p.fields?.category?.[0] === category);
 
-  // 2. Candidates with shared tags
-  const getTagMatches = (productsArray, tags)  => productsArray.filter(p => 
-    p.fields?.tags.some(tag => tags.includes(tag))
-  );
+// 2. Candidates with shared tags
+const getTagMatches = (productsArray, tags) => productsArray.filter(p =>
+  p.fields?.tags.some(tag => tags.includes(tag))
+);
 //shuffle array items
-  function shuffle(array) {
+function shuffle(array) {
   const arr = [...array];
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [arr[i], arr[j]] = [arr[j], arr[i]];
   }
   return arr;
-} 
-const addRandomItems = (productsArray,MatchesArray)=>{
- const alreadyUsedIds = new Set([...MatchesArray.map(p => p.sys.id)]);
+}
+const addRandomItems = (productsArray, MatchesArray) => {
+  const alreadyUsedIds = new Set([...MatchesArray.map(p => p.sys.id)]);
   const remaining = shuffle(productsArray).filter(p => !alreadyUsedIds.has(p.sys.id));
   MatchesArray.push(...remaining.slice(0, similarItemsCount - MatchesArray.length));
   return MatchesArray;
@@ -90,16 +92,16 @@ const addRandomItems = (productsArray,MatchesArray)=>{
 <template>
   <div class="mt-10 " v-if="product">
 
-    <div  class="max-w-6xl mx-auto">
-      <div class="sm:flex">
-      <!--product image template-->
-      <!--if there is one image show it / multiple images : a slider / no image : show the fallback image-->
-        <img v-if="product?.fields.image.length === 1" class="mr-10 h-80 object-contain max-w-2xl"
+    <div class="max-w-6xl mx-auto">
+      <div class="sm:flex gap-10">
+        <!--product image template-->
+        <!--if there is one image show it / multiple images : a slider / no image : show the fallback image-->
+        <img v-if="product?.fields.image.length === 1" class="mr-10 h-80 object-contain sm:w-1/2"
           :src="product?.fields.image[0].fields?.file.url" :alt="product?.fields.image[0].fields?.file.description" />
-        <div v-else-if="product?.fields.image.length > 1" class="carousel-cont flex flex-col items-center gap-4 max-w-2xl">
+        <div v-else-if="product?.fields.image.length > 1"
+          class="carousel-cont flex flex-col items-center gap-4 sm:w-1/2">
           <div dir="ltr" class="carousel h-80 object-contain  w-full" ref="carousel">
-            <div  class="carousel-item w-full justify-center" 
-              v-for="(image, index) in productImagesToShow">
+            <div class="carousel-item w-full justify-center" v-for="(image, index) in productImagesToShow">
               <img :src="image.fields?.file.url" />
             </div>
           </div>
@@ -109,9 +111,12 @@ const addRandomItems = (productsArray,MatchesArray)=>{
 
           </div>
         </div>
-          <div v-else class="flex items-center justify-center">
-          <img class="h-80 object-contain max-w-2xl" src="https://ibb.co/VWRcxQRK" alt="No image available" /></div>
-        <div class="px-10 sm:pl-0 sm:w-2/3">
+        <!-- in case of no image -->
+        <div v-else class="flex items-center justify-center">
+          <img class="h-80 object-contain max-w-2xl" src="https://ibb.co/VWRcxQRK" alt="No image available" />
+        </div>
+        <!-- info / buttons side  -->
+        <div class="px-10 sm:pl-0 sm:w-1/2">
           <h1 class="text-2xl font-bold">{{ product?.fields.name }}</h1>
           <h2 class="text-l  my-2">
             <ProductPrice :price="product.fields.price" />
@@ -126,21 +131,23 @@ const addRandomItems = (productsArray,MatchesArray)=>{
           <button class="btn btn-primary" @click="handleAddToCart(product)">
             {{ $t("Buttons.addToCart") }}
           </button>
-       <!-- Product reviews component Deprecated  -->
-         <!--  <ProductReviews :productId="product.sys.id" />  -->
+          <!-- Product reviews component Deprecated  -->
+          <!--  <ProductReviews :productId="product.sys.id" />  -->
         </div>
       </div>
     </div>
+    <!-- similar products section -->
     <ClientOnly>
-    <div v-if="similarProducts.length" class="similar-products-cont mt-8" >
-     <h3 class="text-xl font-semibold mb-2 px-4">{{ $t("ProductPage.similarProducts") }} </h3>
-    <div class="gap-7 p-10 sm:grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 flex-wrap justify-items-stretch items-stretch">
-      <TransitionGroup name="products">
-        <ProductCard v-for="product in similarProducts" :product="product" :key="product.sys.id" class="mb-5" />
-      </TransitionGroup>
-    </div>
-    
-    </div>
-  </ClientOnly>
+      <div v-if="similarProducts.length" class="similar-products-cont mt-20 sm:mt-10">
+        <h3 class="text-xl font-semibold px-4">{{ $t("ProductPage.similarProducts") }} </h3>
+        <div
+          class="gap-7 p-6 sm:grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 flex-wrap justify-items-stretch items-stretch">
+          <TransitionGroup name="products">
+            <ProductCard v-for="product in similarProducts" :product="product" :key="product.sys.id" class="mb-5" />
+          </TransitionGroup>
+        </div>
+
+      </div>
+    </ClientOnly>
   </div>
 </template>
