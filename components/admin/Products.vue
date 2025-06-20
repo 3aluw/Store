@@ -177,6 +177,7 @@
 const { t } = useI18n()
 const { $contentfulManager } = useNuxtApp();
 const Contentful = useContentful();
+const alertsStore = useAlertsStore()
 const manageContentType = Contentful.management.contentType
 const manageLocale = Contentful.management.locale
 const manageEntry = Contentful.management.entry
@@ -327,7 +328,7 @@ function modalBind(property) {
 const handlePatch = async () => {
     const isFormValidOrError = validateProductForm();
     if (isFormValidOrError !== true) {
-        useAlertsStore().warning(isFormValidOrError)
+        alertsStore.warning(isFormValidOrError)
         return
     }
     try {
@@ -341,10 +342,10 @@ const handlePatch = async () => {
             entryId: productObj.sys.id
         }, productObj)
 
-        useAlertsStore().success(t("AdminProducts.alertProductUpdated"));
+        alertsStore.success(t("AdminProducts.alertProductUpdated"));
     }
     catch (err) {
-        useAlertsStore().error(t("AdminProducts.alertTypicalError"))
+        alertsStore.error(t("AdminProducts.alertTypicalError"))
     }
     finally {
         showFieldsModal.value = false;
@@ -428,7 +429,7 @@ const handleAssetsModal = async (id) => {
 const unlinkAsset = async (assetId) => {
     const assetsArray = productStore.products.find((product) => product.sys.id === selectedProductId.value).fields.image
     if (assetsArray.length === 1) {
-        useAlertsStore().warning(t("AdminProducts.alertLastAssetDeletionError"))
+        alertsStore.warning(t("AdminProducts.alertLastAssetDeletionError"))
         return
     }
 
@@ -453,7 +454,7 @@ const deleteAsset = async (assetId) => {
 
     catch (err) {
         console.log(err);
-        useAlertsStore().error(t("AdminProducts.alertAssetDeletionError"))
+        alertsStore.error(t("AdminProducts.alertAssetDeletionError"))
     }
 
 }
@@ -464,16 +465,16 @@ const addNewImage = async () => {
 
     if (pictures.length !== 0) {
         try {
-            useAlertsStore().info(t("AdminProducts.alertUploadingImage"))
+            alertsStore.info(t("AdminProducts.alertUploadingImage"))
             const assets = await handleAssetsUploading(pictures)
             showAssetsModal.value = false
             selectedProduct.value = await $contentfulManager.entry.get({ entryId: selectedProductId.value });
             assets.forEach((asset) => { linkAssetToEntry(asset.sys.id) })
             await handlePatch()
-            useAlertsStore().success(t("AdminProducts.alertImageAdded"))
+            alertsStore.success(t("AdminProducts.alertImageAdded"))
         }
         catch (err) {
-            useAlertsStore().error(t("AdminProducts.alertImageAddError"))
+            alertsStore.error(t("AdminProducts.alertImageAddError"))
         }
     }
 }
@@ -485,11 +486,11 @@ const createProduct = async () => {
     const pictures = Array.from(document.getElementById("product-pic-input").files);
 
     if (isFormValidOrError !== true) {
-        useAlertsStore().warning(isFormValidOrError)
+        alertsStore.warning(isFormValidOrError)
         return
     }
     else if (!pictures || pictures.length === 0) {
-        useAlertsStore().warning(t("AdminProducts.alertImageRequired"))
+        alertsStore.warning(t("AdminProducts.alertImageRequired"))
         return
     }
     //check if all fields are written then upload then create the entry and upload the image  
@@ -497,17 +498,17 @@ const createProduct = async () => {
 
         try {
             disableModalActions.value = true;
-            useAlertsStore().info(t("AdminProducts.alertUploadingImage"))
+            alertsStore.info(t("AdminProducts.alertUploadingImage"))
             const assets = await handleAssetsUploading(pictures)
             assets.forEach((asset) => { linkAssetToEntry(asset.sys.id) })
             const entry = await createEntry();
             await publishEntry(entry)
-            useAlertsStore().success(t("AdminProducts.alertProductCreated"));
+            alertsStore.success(t("AdminProducts.alertProductCreated"));
             showFieldsModal.value = false;
             productStore.fetchProducts()
         }
         catch (err) {
-            useAlertsStore().warning(t("AdminProducts.alertProductCreateError"))
+            alertsStore.warning(t("AdminProducts.alertProductCreateError"))
         } finally {
             disableModalActions.value = false
         }
@@ -523,7 +524,7 @@ const handleAssetsUploading = async (pictures) => {
     const uploadIds = await Promise.all(
         pictures.map((picture, index) =>
             uploadPicture(picture).then((uploadId) => {
-                useAlertsStore().info(`${t("AdminProducts.alertImageUploaded")} ${index + 1}`);
+                alertsStore.info(`${t("AdminProducts.alertImageUploaded")} ${index + 1}`);
                 return uploadId;
             })
         )
@@ -611,12 +612,12 @@ const handleDelete = async () => {
         })
         const entryAssetsIds = selectedProduct.value.fields.image[defaultLocale].map(asset => asset.sys.id)
         entryAssetsIds.forEach(assetId => {deleteAsset(assetId)})
-            useAlertsStore().success(t("AdminProducts.alertProductDeleted"))
+            alertsStore.success(t("AdminProducts.alertProductDeleted"))
             showFieldsModal.value = false;
             productStore.fetchProducts()
         }
     catch (err) {
-            useAlertsStore().error(t("AdminProducts.alertProductDeletionError"))
+            alertsStore.error(t("AdminProducts.alertProductDeletionError"))
         } finally {
             disableModalActions.value = false
         }
@@ -645,11 +646,11 @@ const showCategoriesModal = ref(false);
         contentType.value.fields.find(field => field.id === "category").items.validations[0].in = categories.value
         try {
             $contentfulManager.contentType.update({ "contentTypeId": "product" }, contentType.value)
-            useAlertsStore().success(t("AdminProducts.alertCategoriesUpdated"))
+            alertsStore.success(t("AdminProducts.alertCategoriesUpdated"))
             showCategoriesModal.value = false
         }
         catch (err) {
-            useAlertsStore().error(t("AdminProducts.alertCategoriesNotUpdated"))
+            alertsStore.error(t("AdminProducts.alertCategoriesNotUpdated"))
         }
     }
 
