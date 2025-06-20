@@ -654,6 +654,7 @@ const patchCategories = async () => {
             { contentTypeId: "product" },
             contentType
         );
+        // te contetType object is updated, update the modal properties
         modalProperties.value = generateModalProperties(contentType?.fields);
         alertsStore.success(t("AdminProducts.alertCategoriesUpdated"));
         showCategoriesModal.value = false;
