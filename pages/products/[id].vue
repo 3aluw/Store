@@ -93,13 +93,13 @@ const addRandomItems = (productsArray, MatchesArray) => {
   <div class="mt-10 " v-if="product">
 
     <div class="max-w-6xl mx-auto">
-      <div class="sm:flex">
+      <div class="sm:flex gap-10">
         <!--product image template-->
         <!--if there is one image show it / multiple images : a slider / no image : show the fallback image-->
-        <img v-if="product?.fields.image.length === 1" class="mr-10 h-80 object-contain max-w-2xl"
+        <img v-if="product?.fields.image.length === 1" class="mr-10 h-80 object-contain sm:w-1/2"
           :src="product?.fields.image[0].fields?.file.url" :alt="product?.fields.image[0].fields?.file.description" />
         <div v-else-if="product?.fields.image.length > 1"
-          class="carousel-cont flex flex-col items-center gap-4 max-w-2xl">
+          class="carousel-cont flex flex-col items-center gap-4 sm:w-1/2">
           <div dir="ltr" class="carousel h-80 object-contain  w-full" ref="carousel">
             <div class="carousel-item w-full justify-center" v-for="(image, index) in productImagesToShow">
               <img :src="image.fields?.file.url" />
@@ -111,10 +111,12 @@ const addRandomItems = (productsArray, MatchesArray) => {
 
           </div>
         </div>
+        <!-- in case of no image -->
         <div v-else class="flex items-center justify-center">
           <img class="h-80 object-contain max-w-2xl" src="https://ibb.co/VWRcxQRK" alt="No image available" />
         </div>
-        <div class="px-10 sm:pl-0 sm:w-2/3">
+        <!-- info / buttons side  -->
+        <div class="px-10 sm:pl-0 sm:w-1/2">
           <h1 class="text-2xl font-bold">{{ product?.fields.name }}</h1>
           <h2 class="text-l  my-2">
             <ProductPrice :price="product.fields.price" />
@@ -134,11 +136,12 @@ const addRandomItems = (productsArray, MatchesArray) => {
         </div>
       </div>
     </div>
+    <!-- similar products section -->
     <ClientOnly>
-      <div v-if="similarProducts.length" class="similar-products-cont mt-8">
-        <h3 class="text-xl font-semibold mb-2 px-4">{{ $t("ProductPage.similarProducts") }} </h3>
+      <div v-if="similarProducts.length" class="similar-products-cont mt-20 sm:mt-10">
+        <h3 class="text-xl font-semibold px-4">{{ $t("ProductPage.similarProducts") }} </h3>
         <div
-          class="gap-7 p-10 sm:grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 flex-wrap justify-items-stretch items-stretch">
+          class="gap-7 p-6 sm:grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 flex-wrap justify-items-stretch items-stretch">
           <TransitionGroup name="products">
             <ProductCard v-for="product in similarProducts" :product="product" :key="product.sys.id" class="mb-5" />
           </TransitionGroup>
