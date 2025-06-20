@@ -83,6 +83,7 @@ export default {
         alertProductDeletionError: "حدث خطأ أثناء حذف المنتج",
         alertUploadingImage: "جاري رفع الصورة، يرجى الانتظار...",
         alertImageAdded: "تمت إضافة الصورة بنجاح",
+        alertImageUploaded: "تم رفع الصورة : ",
         alertImageAddError: "حدث خطأ أثناء إضافة الصورة",
         alertImageRequired: "يرجى رفع صورة",
         alertProductCreated: "تم إنشاء المنتج بنجاح",

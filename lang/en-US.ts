@@ -85,6 +85,7 @@ export default {
         alertProductDeletionError: "An error occurred while deleting the product",
         alertUploadingImage: "Uploading image, please wait...",
         alertImageAdded: "Image added successfully",
+        alertImageUploaded: "uploaded image :",
         alertImageAddError: "An error occurred while adding the image",
         alertImageRequired: "Please upload an image",
         alertProductCreated: "Product created successfully",

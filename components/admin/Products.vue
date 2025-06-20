@@ -518,13 +518,26 @@ const createProduct = async () => {
 //uploads the images and creates assets for them then publishes the asset
 const handleAssetsUploading = async (pictures) => {
 
-    const assets = await Promise.all(pictures.map(async (picture) => {
-        const uploadId = await uploadPicture(picture)
-        const asset = await createAsset(uploadId, picture)
-        return asset
-    }))
 
-    await Promise.all(assets.map((asset) => { publishAsset(asset) }))
+  // Step 1: Upload all pictures in parallel
+  const uploadIds = await Promise.all(
+  pictures.map((picture, index) =>
+    uploadPicture(picture).then((uploadId) => {
+      useAlertsStore().info(`${t("AdminProducts.alertImageUploaded")} ${index + 1 }`);
+      return uploadId;
+    })
+  )
+);
+    // Step 2: Create and process assets in parallel
+  const assets = await Promise.all(uploadIds.map((uploadId, i) =>
+    createAsset(uploadId, pictures[i])
+  ));
+    assets.forEach(asset => {
+        publishAsset(asset).catch(err => {
+            console.error(`Failed to publish asset ${asset.sys.id}:`, err);
+        })
+    });
+
     return assets
 }
 
@@ -559,7 +572,13 @@ const createAsset = async (uploadId, picture) => {
     await $contentfulManager.asset.processForAllLocales({ environmentId: "master" }, asset)
     return asset
 }
+const publishAsset = async (asset) => {
+    //somehow you need to increase the version of the asset by 1 to publish it
+    asset.sys.version = asset.sys.version + 1;
+    const assetId = asset.sys.id
+    await $contentfulManager.asset.publish({ assetId }, asset)
 
+}
 const linkAssetToEntry = (assetId) => {
     selectedProduct.value.fields.image[defaultLocale].push(
         {
@@ -576,15 +595,9 @@ const linkAssetToEntry = (assetId) => {
 const createEntry = async () => await $contentfulManager.entry.create({ contentTypeId: "product" }, selectedProduct.value)
 const publishEntry = async (entry) => {
     const entryId = entry.sys.id;
-    const res = await $contentfulManager.entry.publish({ entryId }, entry)
+    await $contentfulManager.entry.publish({ entryId }, entry)
 }
-const publishAsset = async (asset) => {
-    //somehow you need to increase the version of the asset by 1 to publish it
-    asset.sys.version = asset.sys.version + 1;
-    const assetId = asset.sys.id
-    await $contentfulManager.asset.publish({ assetId }, asset)
 
-}
 
 
 const handleDelete = async () => {
