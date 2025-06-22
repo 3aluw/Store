@@ -45,12 +45,13 @@ const similarItemsCount = 5;
 if (!productStore.products.length) useAsyncData("products", async () => productStore.fetchProducts());
 
 const similarProducts = computed(() => {
+
   let productsArray = productStore.products;
   productsArray = excludeCurrentProduct(productsArray);
   const category = product.value?.fields?.category?.[0];
   const tags = product.value?.fields?.tags
   const categoryMatches = category ? getCategoryMatches(productsArray, category) : [];
-  const tagMatches = tags ?  getTagMatches(productsArray, product.value?.fields?.tags) : [];
+  const tagMatches = tags?.length ?  getTagMatches(productsArray, tags) : [];
   const combinedMatches = Array.from(new Set([
     ...categoryMatches,
     ...tagMatches
@@ -71,7 +72,7 @@ const getCategoryMatches = (productsArray, category) => productsArray.filter(p =
 
 // 2. Candidates with shared tags
 const getTagMatches = (productsArray, tags) => productsArray.filter(p =>
-  p.fields?.tags.some(tag => tags.includes(tag))
+  p.fields?.tags?.some(tag => tags.includes(tag))
 );
 //shuffle array items
 function shuffle(array) {

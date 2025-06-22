@@ -3,74 +3,75 @@ import { watchDebounced } from "@vueuse/core";
 
 export const useCartStore = defineStore("CartStore", () => {
   const deskree = useDeskree();
-
+  const productStore = useProductStore();
   // state
-  const products = ref([]);
+  const products = ref([]); // [{productObj, count}]
+  const productsIds = ref([]) // [{productId, count}]
   const taxRate = 0.1;
   const isFirstLoad = ref(false);
   const loading = ref(false);
- const wilayas = [ 
-  "Adrar",
-  "Chlef",
-  "Laghouat",
-  "Oum El Bouaghi",
-  "Batna",
-  "Béjaïa",
-  "Biskra",
-  "Béchar",
-  "Blida",
-  "Bouïra",
-  "Tamanrasset",
-  "Tébessa",
-  "Tlemcen",
-  "Tiaret",
-  "Tizi Ouzou",
-  "Algiers",
-  "Djelfa",
-  "Jijel",
-  "Sétif",
-  "Saïda",
-  "Skikda",
-  "Sidi Bel Abbès",
-  "Annaba",
-  "Guelma",
-  "Constantine",
-  "Médéa",
-  "Mostaganem",
-  "M'Sila",
-  "Mascara",
-  "Ouargla",
-  "Oran",
-  "El Bayadh",
-  "Illizi",
-  "Bordj Bou Arréridj",
-  "Boumerdès",
-  "El Tarf",
-  "Tindouf",
-  "Tissemsilt",
-  "El Oued",
-  "Khenchela",
-  "Souk Ahras",
-  "Tipaza",
-  "Mila",
-  "Aïn Defla",
-  "Naâma",
-  "Aïn Témouchent",
-  "Ghardaïa",
-  "Relizane",
-  "El M'Ghair",
-  "El Menia",
-  "Ouled Djellal",
-  "Bordj Baji Mokhtar",
-  "Béni Abbès",
-  "Timimoun",
-  "Touggourt",
-  "Djanet",
-  "In Salah",
-  "In Guezzam"
-];
+  const wilayas = [
+    "Adrar",
+    "Chlef",
+    "Laghouat",
+    "Oum El Bouaghi",
+    "Batna",
+    "Béjaïa",
+    "Biskra",
+    "Béchar",
+    "Blida",
+    "Bouïra",
+    "Tamanrasset",
+    "Tébessa",
+    "Tlemcen",
+    "Tiaret",
+    "Tizi Ouzou",
+    "Algiers",
+    "Djelfa",
+    "Jijel",
+    "Sétif",
+    "Saïda",
+    "Skikda",
+    "Sidi Bel Abbès",
+    "Annaba",
+    "Guelma",
+    "Constantine",
+    "Médéa",
+    "Mostaganem",
+    "M'Sila",
+    "Mascara",
+    "Ouargla",
+    "Oran",
+    "El Bayadh",
+    "Illizi",
+    "Bordj Bou Arréridj",
+    "Boumerdès",
+    "El Tarf",
+    "Tindouf",
+    "Tissemsilt",
+    "El Oued",
+    "Khenchela",
+    "Souk Ahras",
+    "Tipaza",
+    "Mila",
+    "Aïn Defla",
+    "Naâma",
+    "Aïn Témouchent",
+    "Ghardaïa",
+    "Relizane",
+    "El M'Ghair",
+    "El Menia",
+    "Ouled Djellal",
+    "Bordj Baji Mokhtar",
+    "Béni Abbès",
+    "Timimoun",
+    "Touggourt",
+    "Djanet",
+    "In Salah",
+    "In Guezzam"
+  ];
   // getters
-  const count = computed(() => products.value.reduce((prev,current)=>{return prev += current.count},0));
+  const count = computed(() => products.value.reduce((prev, current) => { return prev += current.count }, 0));
   const isEmpty = computed(() => count.value === 0);
   const subtotal = computed((state) => {
     return products.value.reduce((p, product) => {
@@ -91,14 +92,16 @@ export const useCartStore = defineStore("CartStore", () => {
   }
 
   function addProduct(product, count) {
-    const existingProduct = products.value.find(
-      (p) => p.sys.id === product.sys.id
-    );
+    const existingProduct = products.value.find((p) => p.sys.id === product.sys.id);
+    const existingProductId = productsIds.value.find((id) => product.sys.id === id);
     if (existingProduct) {
       existingProduct.count += count;
+      existingProductId.count += count;
     } else {
       products.value.push({ ...product, count });
+      productsIds.value.push({ productId: product.sys.id , count });
     }
+    console.log(products.value, productsIds.value, );
     return count;
   }
 
@@ -108,18 +111,17 @@ export const useCartStore = defineStore("CartStore", () => {
     isFirstLoad.value = true;
     loading.value = true;
     const res = await deskree.user.getCart();
-    res.products.forEach((product) => addProduct(product, product.count));
+    // res.products.forEach((product) => addProduct(product, product.count));
     loading.value = false;
     setTimeout(() => (isFirstLoad.value = false), 1000);
   });
-
   // update data whenever products change
   watchDebounced(
     products,
     async () => {
       if (isFirstLoad.value) return;
       if (!deskree.user.get()) return;
-      await deskree.user.updateCart(products.value);
+      await deskree.user.updateCart(products.value, productsIds.value);
     },
     {
       debounce: 500,

@@ -15,7 +15,7 @@ const userIdInLocalStorage = useLocalStorage("deskree_user_uid", null);
 const loggedInUser = ref(null);
 const loggedInUserInit = ref(false);
 
-//a function that re-evaluate some data ie:cart on every auth change  (loggedInUser variable change)
+//This creates a reactive array to hold all the functions (callbacks) that want to be notified when the loggedInUser changes.
 const onAuthStateChangeCallbacks = ref([]);
 watch(loggedInUser, () => {
   onAuthStateChangeCallbacks.value.forEach((callback) => {
@@ -146,17 +146,18 @@ export function useDeskree() {
     */
 
     //cart
-    async updateCart(products) {
+    async updateCart(products,productsIds) {
       if (!loggedInUser.value || !loggedInUser.value.cartId) return;
-
       return dbRestRequest(`/carts/${loggedInUser.value.cartId}`, "PATCH", {
         products: JSON.stringify(products),
+        productsIds: JSON.stringify(productsIds),
       });
     },
     async getCart() {
       if (!loggedInUser.value || !tokenInLocalStorage.value) return;
       const res = await dbRestRequest(`carts/${loggedInUser.value.cartId}`);
-      res.data.products = JSON.parse(res.data.products);
+      res.data.productsIds = JSON.parse(res.data?.productsIds); 
+      console.log('res: ', res);
       return res.data;
     },
 
@@ -237,9 +238,8 @@ export function useDeskree() {
     if (isNew) {
       // create the user's one and only cart
       const cart = await dbRestRequest("/carts", "POST", {
-        products: JSON.stringify([]),
+        productsIds: JSON.stringify([]),
       });
-      console.log('cart: ', cart);
       // connect that cart to the user
       dbRestRequest(`/users/${user.uid}`, "PATCH", {
         cartId: cart.data.uid,
