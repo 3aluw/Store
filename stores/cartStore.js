@@ -5,8 +5,21 @@ export const useCartStore = defineStore("CartStore", () => {
   const deskree = useDeskree();
   const productStore = useProductStore();
   // state
-  const products = ref([]); // [{productObj, count}]
   const productsIds = ref([]) // [{productId, count}]
+  const products = ref([]);
+/* 
+  watchEffect(async () => {
+    const results = await Promise.all(productsIds.value.map(async (idObject) => {
+      let product = productStore.products.find(p => p.sys.id === idObject.productId);
+      if (!product) {
+        product = await productStore.fetchProduct(idObject.productId);
+      }
+      return { ...product, count: idObject.count };
+    }));
+
+    products.value = results;
+  }); */
+
   const taxRate = 0.1;
   const isFirstLoad = ref(false);
   const loading = ref(false);
@@ -71,7 +84,7 @@ export const useCartStore = defineStore("CartStore", () => {
     "In Guezzam"
   ];
   // getters
-  const count = computed(() => products.value.reduce((prev, current) => { return prev += current.count }, 0));
+  const count = computed(() => productsIds.value.reduce((prev, current) => { return prev += current.count }, 0));
   const isEmpty = computed(() => count.value === 0);
   const subtotal = computed((state) => {
     return products.value.reduce((p, product) => {
@@ -82,7 +95,6 @@ export const useCartStore = defineStore("CartStore", () => {
   });
   const taxTotal = computed(() => subtotal.value * taxRate);
   const total = computed(() => taxTotal.value + subtotal.value);
-
   // actions
   function removeProducts(productIds) {
     productIds = Array.isArray(productIds) ? productIds : [productIds];
@@ -91,18 +103,22 @@ export const useCartStore = defineStore("CartStore", () => {
     );
   }
 
-  function addProduct(product, count) {
-    const existingProduct = products.value.find((p) => p.sys.id === product.sys.id);
-    const existingProductId = productsIds.value.find((id) => product.sys.id === id);
-    if (existingProduct) {
-      existingProduct.count += count;
+  function addProduct(productId, count) {
+    const existingProductId = productsIds.value.find((id) => id === productId);
+    if (existingProductId) {
       existingProductId.count += count;
     } else {
-      products.value.push({ ...product, count });
-      productsIds.value.push({ productId: product.sys.id , count });
+      productsIds.value.push({ productId, count });
     }
-    console.log(products.value, productsIds.value, );
+    addProductObject(productId, count);
     return count;
+  }
+  const addProductObject = async (productId, count) => {
+    let product = productStore.products.find(p => p.sys.id === productId);
+    if (!product) {
+      product = await productStore.fetchProduct(productId);
+    }
+    products.value.push({ ...product, count });
   }
 
   // triggers
@@ -111,7 +127,7 @@ export const useCartStore = defineStore("CartStore", () => {
     isFirstLoad.value = true;
     loading.value = true;
     const res = await deskree.user.getCart();
-    // res.products.forEach((product) => addProduct(product, product.count));
+    res.productsIds.forEach((productIdObj) => addProduct(productIdObj.productId, productIdObj.count));
     loading.value = false;
     setTimeout(() => (isFirstLoad.value = false), 1000);
   });

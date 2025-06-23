@@ -8,7 +8,7 @@ export default {
         details: "تفاصيل",
         removeSelected: "إزالة العناصر المختارة",
         buy: "شراء!",
-        editMyInfos: "تعديل معلوماتي",
+        editMyInfo: "تعديل معلوماتي",
         buyAsAGuest: "شراء كضيف",
         login: "تسجيل الدخول",
         register: "إنشاء حساب",

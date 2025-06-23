@@ -157,7 +157,6 @@ export function useDeskree() {
       if (!loggedInUser.value || !tokenInLocalStorage.value) return;
       const res = await dbRestRequest(`carts/${loggedInUser.value.cartId}`);
       res.data.productsIds = JSON.parse(res.data?.productsIds); 
-      console.log('res: ', res);
       return res.data;
     },
 
