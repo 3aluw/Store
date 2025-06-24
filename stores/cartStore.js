@@ -6,20 +6,17 @@ export const useCartStore = defineStore("CartStore", () => {
   const productStore = useProductStore();
   // state
   const productsIds = ref([]) // [{productId, count}]
-  const products = ref([]);
-  /* 
-    watchEffect(async () => {
-      const results = await Promise.all(productsIds.value.map(async (idObject) => {
-        let product = productStore.products.find(p => p.sys.id === idObject.productId);
-        if (!product) {
-          product = await productStore.fetchProduct(idObject.productId);
-        }
-        return { ...product, count: idObject.count };
-      }));
-  
-      products.value = results;
-    }); */
-
+  const products = ref([]);    // [{sys: {id,...}, fields: {name, price, ...}}]
+  const fullCartProducts = computed(() => {   // has product object + count
+    const countMap = new Map()
+    productsIds.value.forEach(({ productId, count }) => {
+      countMap.set(productId, count)
+    })
+    return products.value.map((product)=>({
+    ...product,
+    count: countMap.get(product.sys.id) || 0
+  }))
+  })
   const taxRate = 0.1;
   const isFirstLoad = ref(false);
   const loading = ref(false);
@@ -83,11 +80,12 @@ export const useCartStore = defineStore("CartStore", () => {
     "In Salah",
     "In Guezzam"
   ];
+
   // getters
-  const count = computed(() => productsIds.value.reduce((prev, current) => { return prev += current.count }, 0));
+  const count = computed(() => fullCartProducts.value.reduce((prev, current) => { return prev += current.count }, 0));
   const isEmpty = computed(() => count.value === 0);
   const subtotal = computed((state) => {
-    return products.value.reduce((p, product) => {
+    return fullCartProducts.value.reduce((p, product) => {
       return product?.fields?.price
         ? product.fields.price * product.count + p
         : p;
@@ -95,37 +93,42 @@ export const useCartStore = defineStore("CartStore", () => {
   });
   const taxTotal = computed(() => subtotal.value * taxRate);
   const total = computed(() => taxTotal.value + subtotal.value);
+  
   // actions
   function removeProducts(productIds) {
     productIds = Array.isArray(productIds) ? productIds : [productIds];
     products.value = products.value.filter(
       (p) => !productIds.includes(p.sys.id)
     );
+    productsIds.value = productsIds.value.filter(
+      (p) => !productIds.includes(p.productId)
+    );
   }
-
   function addProduct(productId, count) {
     const existingProductId = productsIds.value.find((idObject) => idObject.productId === productId);
     if (existingProductId) {
       existingProductId.count += count;
-      
+
     } else {
       productsIds.value.push({ productId, count });
     }
-    addProductObject(productId, count);
+    addProductObject(productId);
     return count;
   }
-  const addProductObject = async (productId, count) => {
+  const addProductObject = async (productId) => {
     const productInCart = products.value.find(p => p.sys.id === productId)
-    console.log(productInCart);
-    if(productInCart) {productInCart.count += count;
-      return;
-    }
+    if (productInCart) return;
     let product = productStore.products.find(p => p.sys.id === productId);
     if (!product) {
       product = await productStore.fetchProduct(productId);
     }
-    products.value.push({ ...product, count });
+    products.value.push({ ...product });
   }
+
+  const updateCount = (productId, newCount) => {
+  productsIds.value.find(p => p.productId === productId).count = Number(newCount);
+}
+
   // triggers
   // init data
   deskree.auth.onAuthStateChange(async (user) => {
@@ -142,6 +145,7 @@ export const useCartStore = defineStore("CartStore", () => {
     async () => {
       if (isFirstLoad.value) return;
       if (!deskree.user.get()) return;
+      console.log('working on cart update');
       await deskree.user.updateCart(productsIds.value);
     },
     {
@@ -150,7 +154,9 @@ export const useCartStore = defineStore("CartStore", () => {
     }
   );
   return {
+    productsIds,
     products,
+    fullCartProducts,
     wilayas,
     taxRate,
     count,
@@ -161,6 +167,7 @@ export const useCartStore = defineStore("CartStore", () => {
     loading,
     removeProducts,
     addProduct,
+    updateCount
   };
 });
 
