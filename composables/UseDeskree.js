@@ -146,10 +146,9 @@ export function useDeskree() {
     */
 
     //cart
-    async updateCart(products,productsIds) {
+    async updateCart(productsIds) {
       if (!loggedInUser.value || !loggedInUser.value.cartId) return;
       return dbRestRequest(`/carts/${loggedInUser.value.cartId}`, "PATCH", {
-        products: JSON.stringify(products),
         productsIds: JSON.stringify(productsIds),
       });
     },

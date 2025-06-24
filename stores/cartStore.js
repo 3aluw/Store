@@ -7,18 +7,18 @@ export const useCartStore = defineStore("CartStore", () => {
   // state
   const productsIds = ref([]) // [{productId, count}]
   const products = ref([]);
-/* 
-  watchEffect(async () => {
-    const results = await Promise.all(productsIds.value.map(async (idObject) => {
-      let product = productStore.products.find(p => p.sys.id === idObject.productId);
-      if (!product) {
-        product = await productStore.fetchProduct(idObject.productId);
-      }
-      return { ...product, count: idObject.count };
-    }));
-
-    products.value = results;
-  }); */
+  /* 
+    watchEffect(async () => {
+      const results = await Promise.all(productsIds.value.map(async (idObject) => {
+        let product = productStore.products.find(p => p.sys.id === idObject.productId);
+        if (!product) {
+          product = await productStore.fetchProduct(idObject.productId);
+        }
+        return { ...product, count: idObject.count };
+      }));
+  
+      products.value = results;
+    }); */
 
   const taxRate = 0.1;
   const isFirstLoad = ref(false);
@@ -104,9 +104,10 @@ export const useCartStore = defineStore("CartStore", () => {
   }
 
   function addProduct(productId, count) {
-    const existingProductId = productsIds.value.find((id) => id === productId);
+    const existingProductId = productsIds.value.find((idObject) => idObject.productId === productId);
     if (existingProductId) {
       existingProductId.count += count;
+      
     } else {
       productsIds.value.push({ productId, count });
     }
@@ -114,13 +115,17 @@ export const useCartStore = defineStore("CartStore", () => {
     return count;
   }
   const addProductObject = async (productId, count) => {
+    const productInCart = products.value.find(p => p.sys.id === productId)
+    console.log(productInCart);
+    if(productInCart) {productInCart.count += count;
+      return;
+    }
     let product = productStore.products.find(p => p.sys.id === productId);
     if (!product) {
       product = await productStore.fetchProduct(productId);
     }
     products.value.push({ ...product, count });
   }
-
   // triggers
   // init data
   deskree.auth.onAuthStateChange(async (user) => {
@@ -133,18 +138,17 @@ export const useCartStore = defineStore("CartStore", () => {
   });
   // update data whenever products change
   watchDebounced(
-    products,
+    productsIds,
     async () => {
       if (isFirstLoad.value) return;
       if (!deskree.user.get()) return;
-      await deskree.user.updateCart(products.value, productsIds.value);
+      await deskree.user.updateCart(productsIds.value);
     },
     {
       debounce: 500,
       deep: true,
     }
   );
-
   return {
     products,
     wilayas,
