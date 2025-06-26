@@ -6,7 +6,6 @@ export const useProductStore = defineStore("ProductStore", {
        * The listing of all the products
        */
       products: [],
-
       /*
        * Different ways of fetching the listing of products (filters, order, search)
        */

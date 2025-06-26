@@ -1,38 +1,31 @@
 <script setup>
 import { useCartStore } from '~~/stores/cartStore';
-const { locale, setLocale,localeProperties } = useI18n()
+const { locale, setLocale, localeProperties } = useI18n()
 
 const deskree = useDeskree();
 const loggedInUser = computed(() => deskree.loggedInUser.value);
 const cartStore = useCartStore();
 const productStore = useProductStore();
 
+useOnLocaleChange((newLocaleObj) => {
+  const localeCode = newLocaleObj.iso
+   productStore.products = [];
+  productStore.fetchProducts(localeCode)
+  if (useRoute().path.includes('/products/')) {
+    productStore.singleProduct = undefined;
+    productStore.fetchProduct(useRoute().params.id, localeCode)
+  }
+
+})
+
+
 const isLanguageEnglish = computed(() => locale.value === "en" ? true : false)
 
-const switchLanguage = async() => {
+const switchLanguage = async () => {
   locale.value === 'en' ? setLocale('ar') : setLocale('en');
-  //await reFetchContent();
 }
-// Re-fetch content when language is switched; if on product page, fetch the specific product
-const reFetchContent = async () => {
-  productStore.products = [];
-  const currentLocale = localeProperties.value.iso
- await productStore.fetchProducts(currentLocale)
-  if(useRoute().path.includes('/products/')) {
-    productStore.singleProduct = [];
-    await useAsyncData('product', async () => productStore.fetchProducts(useRoute().params.id));
-  }
-};
 
-watch(locale, (newLocale) => {
-  const localeCode = newLocale ==="en" ? "en-US" : "ar-SA";
-    productStore.products = [];
-    productStore.fetchProducts(localeCode) 
-    if(useRoute().path.includes('/products/')) {
-    productStore.singleProduct = undefined;
-     productStore.fetchProduct(useRoute().params.id,localeCode)
-  }
-});
+
 </script>
 
 
