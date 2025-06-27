@@ -1,40 +1,3 @@
-<script setup>
-import { useCartStore } from '~~/stores/cartStore';
-const { locale, setLocale,localeProperties } = useI18n()
-
-const deskree = useDeskree();
-const loggedInUser = computed(() => deskree.loggedInUser.value);
-const cartStore = useCartStore();
-const productStore = useProductStore();
-
-const isLanguageEnglish = computed(() => locale.value === "en" ? true : false)
-
-const switchLanguage = async() => {
-  locale.value === 'en' ? setLocale('ar') : setLocale('en');
-  //await reFetchContent();
-}
-// Re-fetch content when language is switched; if on product page, fetch the specific product
-const reFetchContent = async () => {
-  productStore.products = [];
-  const currentLocale = localeProperties.value.iso
- await productStore.fetchProducts(currentLocale)
-  if(useRoute().path.includes('/products/')) {
-    productStore.singleProduct = [];
-    await useAsyncData('product', async () => productStore.fetchProducts(useRoute().params.id));
-  }
-};
-
-watch(locale, (newLocale) => {
-  const localeCode = newLocale ==="en" ? "en-US" : "ar-SA";
-    productStore.products = [];
-    productStore.fetchProducts(localeCode) 
-    if(useRoute().path.includes('/products/')) {
-    productStore.singleProduct = undefined;
-     productStore.fetchProduct(useRoute().params.id,localeCode)
-  }
-});
-</script>
-
 
 <template>
   <div class="navbar bg-base-100 shadow-md">
@@ -46,7 +9,7 @@ watch(locale, (newLocale) => {
     <!--language controller-->
     <label class="swap swap-rotate ">
       <!-- this hidden checkbox controls the state -->
-      <input type="checkbox" :checked="isLanguageEnglish" @click="switchLanguage">
+      <input type="checkbox" :checked="locale === 'en'" @click="switchLanguage">
 
       <!-- english icon -->
       <svg class="swap-on fill-current w-7 h-7 rounded-full" xmlns="http://www.w3.org/2000/svg" id="flag-icons-gb"
@@ -134,7 +97,7 @@ watch(locale, (newLocale) => {
         </label>
         <ul tabindex="0" class="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52">
           <li>
-            <NuxtLink to="user/profile" class="justify-between">
+            <NuxtLink to="/user/profile" class="justify-between">
               {{ $t('TheNavbar.profile') }}
             </NuxtLink>
           </li>
@@ -152,3 +115,16 @@ watch(locale, (newLocale) => {
     </div>
   </div>
 </template>
+<script setup>
+import { useCartStore } from '~~/stores/cartStore';
+const { locale, setLocale, localeProperties } = useI18n()
+
+const deskree = useDeskree();
+const loggedInUser = computed(() => deskree.loggedInUser.value);
+const cartStore = useCartStore();
+
+
+const switchLanguage = async () => {
+  locale.value === 'en' ? setLocale('ar') : setLocale('en');
+}
+</script>

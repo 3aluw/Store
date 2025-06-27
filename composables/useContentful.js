@@ -12,8 +12,6 @@ export default function useContentful() {
    const { $contentfulManager } = useNuxtApp();
    const requiredFields = ["name", "summary", "description", "price"]
 
-
-  
    const management = {
       locale : {
       defaultLocale: "en-US",
@@ -31,7 +29,6 @@ export default function useContentful() {
             this.object = contentType;
             return contentType;
          }
-
 
       },
       asset: {},

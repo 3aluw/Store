@@ -31,7 +31,8 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="product in cartStore.products" :key="product.sys.id">
+                  
+                  <tr v-for="product in cartStore.fullCartProducts" :key="product.sys.id">
                     <th>
                       <label>
                         <input v-model="selected" type="checkbox" class="checkbox" @change="checkAll.checked = false"
@@ -59,13 +60,13 @@
                     </td>
 
                     <td>
-                      <input class="input input-bordered w-20" type="number" v-model="product.count" />
+                      <input class="input input-bordered w-20" type="number" :value="product.count"  @input="cartStore.updateCount(product.sys.id, $event.target.value)" />
                     </td>
                     <th>
                       <NuxtLink :to="{
-        name: 'products-id',
-        params: { id: product.sys.id },
-      }">
+                        name: 'products-id',
+                        params: { id: product.sys.id },
+                      }">
                         <button class="btn btn-ghost btn-xs">{{ $t('Buttons.details') }}</button>
                       </NuxtLink>
                     </th>
@@ -73,9 +74,9 @@
                 </tbody>
               </table>
               <button v-if="selected.length" class="text-sm text-red-500" @click="
-        cartStore.removeProducts(selected);
-      selected = [];
-      ">
+                cartStore.removeProducts(selected);
+              selected = [];
+              ">
                 {{ $t('Buttons.removeSelected') }}
               </button>
             </div>
@@ -102,17 +103,17 @@
 
               <div class="card-actions justify-end w-full flex-col my-10" v-if="Deskree.loggedInUser.value">
                 <p> {{ $t('UserInfo.name') }} : {{ Deskree.loggedInUser.value.email ? Deskree.loggedInUser.value.name :
-        "not set" }}</p>
+                  "not set" }}</p>
                 <p> {{ $t('UserInfo.phoneNumber') }} : <strong> {{
-        Deskree.loggedInUser.value.phone_number.length > 5 ?
-          Deskree.loggedInUser.value.phone_number : "not set"
-      }}</strong></p>
+                  Deskree.loggedInUser.value.phone_number.length > 5 ?
+                    Deskree.loggedInUser.value.phone_number : "not set"
+                }}</strong></p>
                 <p> {{ $t('UserInfo.state') }} : <strong> {{
-        Deskree.loggedInUser.value.wilaya ? Deskree.loggedInUser.value.wilaya : "not set"
-      }}</strong></p>
+                  Deskree.loggedInUser.value.wilaya ? Deskree.loggedInUser.value.wilaya : "not set"
+                }}</strong></p>
                 <p> {{ $t('UserInfo.address') }} : <strong> {{
-        Deskree.loggedInUser.value.address ? Deskree.loggedInUser.value.address : "not set"
-      }}</strong></p>
+                  Deskree.loggedInUser.value.address ? Deskree.loggedInUser.value.address : "not set"
+                }}</strong></p>
 
                 <button class="btn btn-primary w-full" @click="handleBuyClick">
                   {{ $t('Buttons.buy') }}
