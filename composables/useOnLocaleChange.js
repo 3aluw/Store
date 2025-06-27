@@ -6,10 +6,10 @@ let isWatchInitialized = false
 export default function (callback) {
     const { locale, localeProperties } = useI18n();
     if (!isWatchInitialized) {
-        watch(locale, () => {
-            onLocaleChangeCallbacks.value.forEach(callback => {
-                callback(localeProperties.value);
-            })
+        watch(locale, async() => {
+      for (const callback of onLocaleChangeCallbacks.value) {
+        await callback(localeProperties.value)
+      }
         })
         isWatchInitialized = true
     }
