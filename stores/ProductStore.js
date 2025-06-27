@@ -10,15 +10,15 @@ export const useProductStore = defineStore("ProductStore", {
        * Different ways of fetching the listing of products (filters, order, search)
        */
       filters: {
-        "fields.category":useRoute().query["fields.category"] || "",
-        order: useRoute().query.order||"" ,
+        "fields.category": useRoute().query["fields.category"] || "",
+        order: useRoute().query.order || "",
         query: useRoute().query.query || "",
       },
 
       singleProduct: undefined,
 
       //Product categories
-     categories : []
+      categories: []
     };
   },
   getters: {
@@ -31,29 +31,42 @@ export const useProductStore = defineStore("ProductStore", {
     },
   },
   actions: {
+
     async fetchProducts(locale) {
-   const { $contentful} = useNuxtApp();
-   const activeFilters = this.activeFilters
-   const entries = await $contentful.getEntries({
-    content_type : "product",
-    ...this.filters,
-    locale: locale,
-   });
-   this.products =  entries.items ; 
-   return this.products
+      const { $contentful } = useNuxtApp();
+      const activeFilters = this.activeFilters
+      const entries = await $contentful.getEntries({
+        content_type: "product",
+        ...this.filters,
+        locale: locale,
+      });
+      this.products = entries.items;
+      return this.products
     },
 
     async fetchProduct(id, locale) {
       const { $contentful } = useNuxtApp();
-      this.singleProduct = await $contentful.getEntry(id,{
+      this.singleProduct = await $contentful.getEntry(id, {
         locale,
       });
       return this.singleProduct;
     },
-    async fetchCategories(){
-      const { $contentful} = useNuxtApp();
+    async fetchCategories() {
+      const { $contentful } = useNuxtApp();
       const contentType = await $contentful.getContentType("product")
-     this.categories = contentType.fields.find(field => field.id === "category").items.validations[0].in
+      this.categories = contentType.fields.find(field => field.id === "category").items.validations[0].in
+    },
+    initLocaleListener() { //I couldn't call the function here bcs it is an option store So I wrapped it and called it from app.vue
+      useOnLocaleChange((newLocaleObj) => {
+        const localeCode = newLocaleObj.iso
+        this.products = [];
+        this.fetchProducts(localeCode)
+        if (useRoute().path.includes('/products/')) {
+          this.singleProduct = undefined;
+          this.fetchProduct(useRoute().params.id, localeCode)
+        }
+
+      })
     }
   },
 });

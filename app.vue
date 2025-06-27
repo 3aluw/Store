@@ -10,8 +10,9 @@
 </template>
 <script setup>
 const Deskree = useDeskree();
-const route = useRoute();
-
+const productStore = useProductStore();
+//start listening to locale changes in products store
+productStore.initLocaleListener()
 
 /*
 const routesNeedsLogin = ["/user", "/cart", "/admin"]
