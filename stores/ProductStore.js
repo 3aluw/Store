@@ -57,10 +57,10 @@ export const useProductStore = defineStore("ProductStore", {
       this.categories = contentType.fields.find(field => field.id === "category").items.validations[0].in
     },
     initLocaleListener() { //I couldn't call the function here bcs it is an option store So I wrapped it and called it from app.vue
-      useOnLocaleChange((newLocaleObj) => {
+      useOnLocaleChange(async(newLocaleObj) => {
         const localeCode = newLocaleObj.iso
         this.products = [];
-        this.fetchProducts(localeCode)
+       await this.fetchProducts(localeCode)
         if (useRoute().path.includes('/products/')) {
           this.singleProduct = undefined;
           this.fetchProduct(useRoute().params.id, localeCode)

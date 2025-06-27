@@ -128,7 +128,11 @@ export const useCartStore = defineStore("CartStore", () => {
   const updateCount = (productId, newCount) => {
   productsIds.value.find(p => p.productId === productId).count = Number(newCount);
 }
+useOnLocaleChange(() => {
+products.value = [];
+productsIds.value.forEach((productIdObj) => addProduct(productIdObj.productId, 0)); 
 
+})
   // triggers
   // init data
   deskree.auth.onAuthStateChange(async (user) => {
@@ -139,6 +143,7 @@ export const useCartStore = defineStore("CartStore", () => {
     loading.value = false;
     setTimeout(() => (isFirstLoad.value = false), 1000);
   });
+
   // update data whenever products change
   watchDebounced(
     productsIds,
