@@ -142,6 +142,7 @@
   </div>
 </template>
 <script setup>
+const { t } = useI18n()
 const cartStore = useCartStore();
 const Deskree = useDeskree();
 const selected = ref([]);
@@ -154,7 +155,7 @@ const user = ref(Deskree.loggedInUser);
 function handleBuyClick() {
 
   if (user.value.email && user.value.address && user.value.wilaya && user.value.phone_number) { showConfirmation.value = !showConfirmation.value }
-  else { useAlertsStore().warning("please complete your profile infos") }
+  else { useAlertsStore().warning(t("CartPage.completeProfile")) }
 }
 function handleGuestOrder() {
   showConfirmation.value = true

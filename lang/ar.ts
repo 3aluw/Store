@@ -1,7 +1,13 @@
-import { AdminProducts } from "#build/components";
 
 export default {
     welcome: 'مرحبا',
+    Generic: {
+        success: "تمت العملية بنجاح",
+        error: "حدث خطأ",
+        loginAgain: "يرجى تسجيل الدخول مرة أخرى، انتهت صلاحية جلستك",
+        loginFirst: "يرجى تسجيل الدخول أولا",
+        cantAccess: "لا يمكنك الوصول إلى هذه الصفحة",
+    },
     Buttons: {
         discover: "استكشاف",
         submit: "إرسال",
@@ -55,6 +61,9 @@ export default {
         disclaimer: "فضلا قم بالتأكد من المعلومات التالية",
         totalPrice: "السعر الكلي",
         placeMyOrder: 'تأكيد الطلب',
+        successfulOrders: "تم تقديم طلباتك بنجاح",
+        successfulOrder: "تم طلب المنتج بنجاح: ",
+        failedOrder: "فشل في تقديم الطلب :"
     },
     ProductCard: {
         viewItem: "رؤية المنتج"
@@ -92,7 +101,9 @@ export default {
         alertCategoriesUpdated: "تم تحديث التصنيفات",
         alertCategoriesNotUpdated: "لم يتم تحديث التصنيفات"
     },
-
+    AdminUsers: {
+        failedDeleting: "فشل حذف المستخدم",
+    },
 
     //PAGES:
     AdminPage: {
@@ -103,20 +114,34 @@ export default {
         products: "المنتجات"
     },
     CartPage: {
-        "yourCart": "سلتك",
+        yourCart: "سلتك",
         product: "المنتج",
         price: "السعر",
         numberOfItems: "عدد العناصر",
         subtotal: "المجموع الفرعي",
         shippingCost: "تكاليف التوصيل",
         total: "السعر الإجمالي",
-        cartIsEmpty: "سلتك فارغة..."
+        cartIsEmpty: "سلتك فارغة...",
+        completeProfile: "يرجى إكمال ملفك الشخصي للمتابعة",
     },
     ProductPage: {
         productDescription: "تفاصيل المنتج",
         similarProducts: "منتجات مشابهة",
 
+    },
+    RegisterPage: {
+        completeProfile: "يرجى إكمال ملفك الشخصي",
+    },
+    ProductsPage: {
+        addedToCart: "تم إضافة المنتج إلى السلة",
+    },
+    UserProfilePage: {
+        updateSuccess: "تم تحديث معلوماتك بنجاح"
     }
+
+
+
+
 
 
 

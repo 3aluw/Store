@@ -27,6 +27,7 @@
 </template>
 
 <script setup>
+const { t } = useI18n()
 definePageMeta({
   middleware: ["auth"]
 })
@@ -56,11 +57,11 @@ async function handleSubmit() {
   loading.value = true
   try {
     await Deskree.user.updateUser(user.value)
-    useAlertsStore().success("your infos has been updated")
+    useAlertsStore().success(t('UserProfilePage.updateSuccess'))
     await navigateTo("/")
   }
   catch {
-    useAlertsStore().error("changes didn't take effect")
+    useAlertsStore().error(t('Generic.error'))
   }
   finally {
     loading.value = false

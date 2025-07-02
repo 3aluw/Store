@@ -2,7 +2,7 @@
 export default defineNuxtRouteMiddleware(  async(to, from) => {
   if(process.server) return
 const deskree = useDeskree();
-
+const { t } = useI18n()
 let user = deskree.user.get();
 if(user) return;
 if(!user){
@@ -14,7 +14,7 @@ if(!user){
 //but I used the routeRules in nuxtConfig.ts to prevent the error
 
     if (!user) {
-      useAlertsStore().warning("please login first")
+      useAlertsStore().warning(t('Generic.loginFirst'))
 
       return navigateTo('/login')
       } 

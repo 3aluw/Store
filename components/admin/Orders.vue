@@ -120,6 +120,7 @@
 <script setup>
 const deskree = useDeskree();
 const adminStore = useAdminStore()
+const { t } = useI18n()
 //tables logic
 const columns = [{ name: "to", value: "wilaya" },
 { name: "value (DA)", value: "price" },
@@ -177,11 +178,11 @@ const handlePatch = async (uid, reqBody) => {
         console.log(adminStore.ordersObject.data)
         const newObj = await deskree.orders.editOrder(uid, reqBody)
         adminStore.ordersObject.data.find((order) => order.uid === uid).attributes = newObj.data;
-        useAlertsStore().success("done successfully")
+        useAlertsStore().success(t('Generic.success'))
     }
     catch (err) {
         console.log(err)
-        useAlertsStore().error("an error occurred, please contact the dev team")
+        useAlertsStore().error(t('Generic.error'))
     }
 }
 

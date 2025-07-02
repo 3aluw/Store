@@ -62,6 +62,7 @@
     </div>
 </template>
 <script setup>
+const { t } = useI18n()
 const cartStore = useCartStore();
 const Deskree = useDeskree();
 
@@ -111,7 +112,7 @@ const handleOrdersResponse = async (responseArray) => {
         polishCart(registeredOrders);
         //if the cart is empty = all orders are successful
         if (!cartStore.products.length) {
-            useAlertsStore().success("your orders are placed");
+            useAlertsStore().success(t('CheckoutConfirmation.successfulOrders'));
             await navigateTo('/')
         }
         else {
@@ -151,8 +152,8 @@ const polishCart = (registeredOrders) => {
     cartStore.products = failedOrders
 }
 const showOrderAlert = (productName, isSuccess) => {
-    isSuccess ? useAlertsStore().success(`your order for ${productName} is placed successfully`)
-        : useAlertsStore().error(`An error ocurred while ordering ${productName}. please try later`)
+    isSuccess ? useAlertsStore().success(t('CheckoutConfirmation.successfulOrder'), productName )
+        : useAlertsStore().error(t('CheckoutConfirmation.failedOrder') , productName,  )
 
 }
 //a function to hide the confirmation and invoice comps
