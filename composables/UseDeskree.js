@@ -25,7 +25,7 @@ watch(loggedInUser, () => {
 
 export function useDeskree() {
   const router = useRouter();
-
+  const { t } = useI18n()
   // api configuration
   const baseURL = useRuntimeConfig().public.deskreeBaseUrl;
 
@@ -155,7 +155,7 @@ export function useDeskree() {
     async getCart() {
       if (!loggedInUser.value || !tokenInLocalStorage.value) return;
       const res = await dbRestRequest(`carts/${loggedInUser.value.cartId}`);
-      res.data.productsIds = JSON.parse(res.data?.productsIds); 
+      res.data.productsIds = JSON.parse(res.data?.productsIds);
       return res.data;
     },
 
@@ -273,7 +273,7 @@ export function useDeskree() {
         if (tokenHasExpired) {
           const getNewAccess = await useRefreshToken()
           if (getNewAccess) loginUserUsingLocalS()
-          else { router.push("/logout"); useAlertsStore().notify("please login again") }
+          else { router.push("/logout"); useAlertsStore().notify(t("Generic.loginAgain")) }
           ;
         }
       }

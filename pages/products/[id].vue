@@ -1,7 +1,7 @@
 <script setup>
 import * as marked from "marked";
 import { useCartStore } from "~~/stores/cartStore";
-const { locale, setLocale, localeProperties } = useI18n()
+const { localeProperties, t } = useI18n()
 
 const route = useRoute();
 const productStore = useProductStore();
@@ -22,7 +22,7 @@ const description = computed(() =>
 
 function handleAddToCart(product) {
   useCartStore().addProduct(product.sys.id, 1);
-  useAlertsStore().success(product.fields.name + " added to cart");
+  useAlertsStore().success( t('ProductsPage.addedToCart') + product.fields.name );
 }
 
 //product images carousel 

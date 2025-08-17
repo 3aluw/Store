@@ -12,10 +12,10 @@ export const useCartStore = defineStore("CartStore", () => {
     productsIds.value.forEach(({ productId, count }) => {
       countMap.set(productId, count)
     })
-    return products.value.map((product)=>({
-    ...product,
-    count: countMap.get(product.sys.id) || 0
-  }))
+    return products.value.map((product) => ({
+      ...product,
+      count: countMap.get(product.sys.id) || 0
+    }))
   })
   const taxRate = 0.1;
   const isFirstLoad = ref(false);
@@ -93,7 +93,7 @@ export const useCartStore = defineStore("CartStore", () => {
   });
   const taxTotal = computed(() => subtotal.value * taxRate);
   const total = computed(() => taxTotal.value + subtotal.value);
-  
+
   // actions
   function removeProducts(productIds) {
     productIds = Array.isArray(productIds) ? productIds : [productIds];
@@ -104,7 +104,7 @@ export const useCartStore = defineStore("CartStore", () => {
       (p) => !productIds.includes(p.productId)
     );
   }
-  function addProduct(productId, count) {
+  function addProduct(productId, count,localeCode) {
     const existingProductId = productsIds.value.find((idObject) => idObject.productId === productId);
     if (existingProductId) {
       existingProductId.count += count;
@@ -112,27 +112,23 @@ export const useCartStore = defineStore("CartStore", () => {
     } else {
       productsIds.value.push({ productId, count });
     }
-    addProductObject(productId);
+    addProductObject(productId,localeCode);
     return count;
   }
-  const addProductObject = async (productId) => {
+  const addProductObject = async (productId,localeCode) => {
     const productInCart = products.value.find(p => p.sys.id === productId)
     if (productInCart) return;
     let product = productStore.products.find(p => p.sys.id === productId);
     if (!product) {
-      product = await productStore.fetchProduct(productId);
+      product = await productStore.fetchProduct(productId,localeCode);
     }
     products.value.push({ ...product });
   }
 
   const updateCount = (productId, newCount) => {
-  productsIds.value.find(p => p.productId === productId).count = Number(newCount);
-}
-useOnLocaleChange(() => {
-products.value = [];
-productsIds.value.forEach((productIdObj) => addProduct(productIdObj.productId, 0)); 
+    productsIds.value.find(p => p.productId === productId).count = Number(newCount);
+  }
 
-})
   // triggers
   // init data
   deskree.auth.onAuthStateChange(async (user) => {
@@ -143,7 +139,12 @@ productsIds.value.forEach((productIdObj) => addProduct(productIdObj.productId, 0
     loading.value = false;
     setTimeout(() => (isFirstLoad.value = false), 1000);
   });
+  useOnLocaleChange((newLocaleObj) => {
+    const localeCode = newLocaleObj.iso
+    products.value = [];
+    productsIds.value.forEach((productIdObj) => addProduct(productIdObj.productId, 0,localeCode));
 
+  })
   // update data whenever products change
   watchDebounced(
     productsIds,

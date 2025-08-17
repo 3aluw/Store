@@ -2,6 +2,13 @@
 
 export default {
     welcome: 'welcome',
+    Generic: {
+        success: "Done successfully",
+        error: "An error occurred",
+        loginAgain: "Please login again, your session has expired",
+        loginFirst: "Please login first",
+        cantAccess: "You can't access this page",
+    },
     Buttons: {
         discover: "Discover",
         submit: "Submit",
@@ -56,6 +63,10 @@ export default {
         disclaimer: "Please read the following infos carefully before placing your order",
         totalPrice: "total price",
         placeMyOrder: 'place my order',
+        successfulOrders: "your orders are placed successfully",
+        successfulOrder: "product is ordered successfully:",
+        failedOrder: "ordering failed",
+
     },
 
     ProductCard: {
@@ -94,7 +105,9 @@ export default {
         alertCategoriesUpdated: "Categories are updated",
         alertCategoriesNotUpdated: "Categories didn't get updated"
     },
-
+    AdminUsers: {
+        failedDeleting: "Failed to delete the user",
+    },
 
     //PAGES:
     AdminPage: {
@@ -113,11 +126,23 @@ export default {
         shippingCost: "shipping cost",
         total: "Total",
         cartIsEmpty: "Cart is empty...",
+        completeProfile: "Please complete your profile to continue",
     },
     ProductPage: {
         productDescription: "Product description",
         similarProducts: "Similar products",
+    },
+    RegisterPage: {
+        completeProfile: "Please complete your profile",
+    },
+    ProductsPage: {
+        addedToCart: "Product added to cart",
+    },
+    UserProfilePage : {
+      updateSuccess : "your infos has been updated"
     }
+
+
 
 
 }

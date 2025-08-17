@@ -19,6 +19,7 @@
 </template>
 <script setup>
 const router = useRouter();
+const { t } = useI18n()
 const alerts = useAlertsStore();
 const userOauthData = useCookie("userOauthData")
 
@@ -41,7 +42,7 @@ async function handleRegistration(e) {
     await deskree.auth.signUp(form);
     askUserToFillInfos()
   } catch (err) {
-    alerts.error("Error registering, please contact support");
+    alerts.error(t('Generic.error' + err.code + ": " + err.message));
   } finally {
     loading.value = false;
   }
@@ -73,7 +74,7 @@ const OauthRegister = async () => {
 const askUserToFillInfos = () => {
   router.push("/");
   router.push("/user/profile");
-  useAlertsStore().info("PLease fill your profile information")
+  alerts.info(t('registerPage.completeProfile'))
 }
 </script>
 <style scoped>

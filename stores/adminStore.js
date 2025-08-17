@@ -40,7 +40,7 @@ export const useAdminStore = defineStore("AdminStore", () => {
     }
     catch (err) {
       if (!orders) { useAlertsStore().error("a problem while fetching orders") }
-      else if (!users) { useAlertsStore().error("a problem while fetching orders") }
+      else if (!users) { useAlertsStore().error("a problem while fetching users") }
     }
     finally {
       if (orders) {

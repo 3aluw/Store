@@ -1,7 +1,7 @@
 
 export default defineNuxtRouteMiddleware(  (to, from) => {
   if (process.server) return;
-
+const { t } = useI18n()
         const Deskree = useDeskree();
         const loggedInUser = computed(() => Deskree.loggedInUser.value)
         const isModOrAdmin = computed(() => loggedInUser.value?.roles.some((role) => Deskree.roles.includes(role)))
@@ -10,7 +10,7 @@ export default defineNuxtRouteMiddleware(  (to, from) => {
 //but I used teh routeRules in nuxtConfig.ts to prevent the error
        
         if (!isModOrAdmin.value) {
-useAlertsStore().error("you can't access this page")
+useAlertsStore().error(t('Generic.cantAccess'))
 return navigateTo('/')
         }
 })

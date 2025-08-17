@@ -73,6 +73,7 @@
     </div>
 </template>
 <script setup>
+const { t } = useI18n()
 const Deskree = useDeskree();
 const adminStore = useAdminStore()
 //change columns,searchOptions,modalProperties values according to user table in deskree
@@ -129,7 +130,7 @@ const deleteUser = (uid) => {
     }
     catch (err) {
         console.log(err)
-        useAlertsStore().error("couldn't delete the user, please contact teh dev team")
+        useAlertsStore().error(t('AdminUsers.failedDeleting'))
     }
 }
 </script>
